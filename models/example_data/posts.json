@@ -1,0 +1,18 @@
+{
+  "posts": [
+    {
+      "idBlog": 1,
+      "idProfessional": 1,
+      "idCustomer": 2,
+      "name": "Post 1",
+      "description": "Description post 1"
+    },
+    {
+      "idBlog": 1,
+      "idProfessional": 1,
+      "idCustomer": 2,
+      "name": "Post 2",
+      "description": "Description post 2"
+    }
+  ]
+}

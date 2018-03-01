@@ -1,0 +1,16 @@
+{
+  "services": [
+    {
+      "idService": 1 ,
+      "name": "Service 1",
+      "description": "1 hour session",
+      "price": 30
+    },
+    {
+      "idService": 2 ,
+      "name": "Service 2",
+      "description": "2 hour session",
+      "price": 50
+    }
+  ]
+}
