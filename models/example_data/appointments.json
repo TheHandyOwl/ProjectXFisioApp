@@ -1,0 +1,22 @@
+{
+  "appointments": [
+    { 
+      "idService": 1,
+      "idCustomer": 1,
+      "idProfessional": 1,
+      "idAppointment": 1,
+      "date": "201803011700",
+      "address": "40.4166159, -3.703788",
+      "extraInfo": "Tercero izquierda"
+    },
+    { 
+      "idService": 1,
+      "idCustomer": 1,
+      "idProfessional": 1,
+      "idAppointment": 2,
+      "date": "201803011800",
+      "address": "40.4166159, -3.703789",
+      "extraInfo": false
+    }
+  ]
+}

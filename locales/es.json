@@ -1,0 +1,18 @@
+{
+	"appointment_created": "cita creada!",
+	"appointment_id_duplicated": "id de cita ya existe",
+	"appointment_not_found": "Cita no encontrada",
+	"duplicate_appointment": "la cita ya existe",
+	"the_field": "el campo",
+	"notification_name_duplicated": "el nombre de la notificación ya existe",
+	"post_name_duplicated": "el post ya existe",
+	"product_name_duplicated": "el nombre de producto ya existe",
+	"service_name_duplicated": "el nombre de servicio ya existe",
+	"validation_invalid": "el campo {{field}} no es válido",
+	"validation_minchars": "{{field}} debe tener al menos {{num}} caracteres",
+	"user_email_duplicated": "el email del usuario ya existe",
+	"users_user_created": "usuario creado!",
+	"users_user_not_found": "User no encontrado",
+	"users_wrong_password": "clave erronea",
+	"generic": "generic error: {{message}}"
+}
