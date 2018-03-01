@@ -1,0 +1,24 @@
+{
+  "notifications": [
+    {
+      "idNotification": 1 ,
+      "idProfessional": 1,
+      "idCustomer": 2,
+      "name": "Message 1",
+      "description": "Description message 1" ,
+      "isSent": false,
+      "creationDate": "201802281300",
+      "sendingDate": null
+    },
+    {
+      "idNotification": 2 ,
+      "idProfessional": 1,
+      "idCustomer": 2,
+      "name": "Message 2",
+      "description": "Description message 2" ,
+      "isSent": true,
+      "creationDate": "201802281000",
+      "sendingDate": "201802281200"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+	"appointment_created": "appointment created!",
+	"appointment_id_duplicated": "appointment id already exists",
+	"appointment_not_found": "appointment not found",
+	"duplicate_appointment": "the date already exists",
+	"the_field": "the field",
+	"notification_name_duplicated": "notification name already exists",
+	"post_name_duplicated": "post name already exists",
+	"product_name_duplicated": "product name already exists",
+	"service_name_duplicated": "service name already exists",
+	"validation_invalid": "the field {{field}} is invalid",
+	"validation_minchars": "{{field}} must have at least {{num}} characters",
+	"user_email_duplicated": "user email already exists",
+	"users_user_created": "user created!",
+	"users_user_not_found": "User not found.",
+	"users_wrong_password": "wrong password",
+    "generic": "generic error: {{message}}"
+}
