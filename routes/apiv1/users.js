@@ -13,7 +13,7 @@ const hash = require('hash.js');
 router.post('/authenticate', function (req, res, next) {
 
   const email = req.body.email;
-  const clave = req.body.clave;
+  const password = req.body.password;
 
   // Search user
   User.findOne({ email: email }, function (err, user) {
@@ -29,10 +29,10 @@ router.post('/authenticate', function (req, res, next) {
     } else if (user) {
 
       // Hash password and compare
-      const claveHash = hash.sha256().update(clave).digest('hex');
+      const passwordHash = hash.sha256().update(password).digest('hex');
 
-      // la contraseña es la misma?
-      if (user.clave != claveHash) {
+      // It's the same password?
+      if (user.password != passwordHash) {
         return res.json({
           ok: false, error: {
             code: 401,
