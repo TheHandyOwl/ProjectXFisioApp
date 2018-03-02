@@ -33,7 +33,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Languajes
+// Languages
 i18n.configure({
   directory: __dirname + '/locales',
   defaultLocale: 'en',
@@ -46,6 +46,7 @@ app.use('/', require('./routes/index'));
 
 // API v1
 app.use('/apiv1/appointments', require('./routes/apiv1/appointments'));
+app.use('/apiv1/services', require('./routes/apiv1/services'));
 app.use('/apiv1/users', require('./routes/apiv1/users'));
 app.use('/apiv1/pushtokens', require('./routes/apiv1/pushtokens'));
 

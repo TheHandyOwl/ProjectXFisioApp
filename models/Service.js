@@ -27,7 +27,7 @@ serviceSchema.statics.loadJson = async function (file) {
     });
   });
 
-  console.log(file + ' readed.');
+  console.log(file + ' read.');
 
   if (!data) {
     throw new Error(file + ' is empty!');
@@ -48,6 +48,35 @@ serviceSchema.statics.exists = function (idService, cb) {
   Service.findById(idService, function (err, service) {
     if (err) return cb(err);
     return cb(null, service ? true : false);
+  });
+};
+
+serviceSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
+
+  const query = Service.find(filters);
+
+  query.sort(sortField);
+  query.skip(startRow);
+  query.limit(numRows);
+
+  return query.exec(function (err, rows) {
+    if (err) return cb(err);
+
+    // System logo for a date in an appointment
+    rows.forEach((row) => {
+      //row.foto = configApp.appURLBasePath + configApp.imageLogoDate;
+    });
+
+    const result = { rows };
+
+    if (!includeTotal) return cb(null, result);
+
+    // incluir propiedad total
+    Service.count({}, (err, total) => {
+      if (err) return cb(err);
+      result.total = total;
+      return cb(null, result);
+    });
   });
 };
 

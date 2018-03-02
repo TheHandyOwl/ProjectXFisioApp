@@ -41,7 +41,7 @@ router.post('/authenticate', function (req, res, next) {
         });
       } else {
 
-        // User finded and same password
+        // User found and same password
         // Make token
         const token = jwt.sign({ user: user }, config.jwt.secret, config.jwt.options);
 

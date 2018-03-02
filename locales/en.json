@@ -3,6 +3,10 @@
 	"appointment_id_duplicated": "appointment id already exists",
 	"appointment_not_found": "appointment not found",
 	"duplicate_appointment": "the date already exists",
+	"service_created": "service created!",
+	"service_id_duplicated": "service id already exists",
+	"service_not_found": "service not found",
+	"duplicate_service": "the service already exists",
 	"the_field": "the field",
 	"notification_name_duplicated": "notification name already exists",
 	"post_name_duplicated": "post name already exists",
@@ -14,5 +18,5 @@
 	"users_user_created": "user created!",
 	"users_user_not_found": "User not found.",
 	"users_wrong_password": "wrong password",
-    "generic": "generic error: {{message}}"
+	"generic": "generic error: {{message}}"
 }
