@@ -35,7 +35,7 @@ postSchema.statics.loadJson = async function (file) {
     });
   });
 
-  console.log(file + ' readed.');
+  console.log(file + ' read.');
 
   if (!data) {
     throw new Error(file + ' is empty!');

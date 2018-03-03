@@ -3,13 +3,13 @@
 const express = require('express');
 const Router = express.Router();
 const mongoose = require('mongoose');
-const Service = mongoose.model('Service');
+const Product = mongoose.model('Product');
 
 // Auth con JWT
 const jwtAuth = require('../../lib/jwtAuth');
 Router.use(jwtAuth());
 
-// Get all services
+// Get all products
 
 Router.get('/', (req, res, next) => {
 
@@ -27,88 +27,88 @@ Router.get('/', (req, res, next) => {
     filters.description = new RegExp('^' + req.query.description, 'i');
   }
 
-  Service.list(start, limit, sort, includeTotal, filters, function (err, result) {
+  Product.list(start, limit, sort, includeTotal, filters, function (err, result) {
     if (err) return next(err);
     res.json({ ok: true, result: result });
   });
 });
 
-// Get a service
+// Get a product
 
-Router.get('/:idService', (req, res, next) => {
+Router.get('/:idProduct', (req, res, next) => {
 
-  // Find service
-  Service.findOne({ idService: req.params.idService }, function (err, service) {
+  // Find product
+  Product.findOne({ idProduct: req.params.idProduct }, function (err, product) {
     if (err) return next(err);
 
-    if (!service) {
+    if (!product) {
       return res.json({
         ok: false, error: {
           code: 401,
-          message: res.__('service_not_found')
+          message: res.__('product_not_found')
         }
       });
-    } else if (service) {
-      res.json({ ok: true, result: service})
+    } else if (product) {
+      res.json({ ok: true, result: product})
     }
   });
 });
 
-// Create a Service
+// Create a product
 
 Router.post('/', function (req, res, next) {
-  Service.createRecord(req.body, function (err) {
+  Product.createRecord(req.body, function (err) {
     if (err) return next(err);
 
-    // Service created
-    return res.json({ ok: true, message: res.__('service_created') });
+    // product created
+    return res.json({ ok: true, message: res.__('product_created') });
   });
 });
 
-// Remove a Service
+// Remove a product
 
-Router.delete('/:idService', function (req, res, next) {
-  Service.findOne({ idService: req.params.idService }, function (err, service) {
+Router.delete('/:idProduct', function (req, res, next) {
+  Product.findOne({ idProduct: req.params.idProduct }, function (err, product) {
     if (err) return next(err);
 
-    if (!service) {
+    if (!product) {
       return res.json({
         ok: false, error: {
           code: 401,
-          message: res.__('service_not_found')
+          message: res.__('product_not_found')
         }
       });
-    } else if (service) {
-      Service.deleteOne({idService: req.params.idService}, function (err){
+    } else if (product) {
+      Product.deleteOne({idProduct: req.params.idProduct}, function (err){
         if (err) return next(err);
 
-        return res.json({ ok: true, message: res.__('service_deleted' )});
+        return res.json({ ok: true, message: res.__('product_deleted' )});
       })
     }
   });
 });
 
-// Update a service
+// Update a product
 
-Router.put('/:idService', function (req, res, next) {
+Router.put('/:idProduct', function (req, res, next) {
 
-  Service.findOne({ idService: req.params.idService }, function (err, service) {
+  Product.findOne({ idProduct: req.params.idProduct }, function (err, product) {
     if (err) return next(err);
 
-    if (!service) {
+    if (!product) {
       return res.json({
         ok: false, error: {
           code: 401,
-          message: res.__('service_not_found')
+          message: res.__('product_not_found')
         }
       });
-    } else if (service) {
+    } else if (product) {
 
-      Service.updateOne(req.body, function (err) {
+      Product.updateOne(req.body, function (err) {
         if (err) return next(err);
     
-        // Service updated
-        return res.json({ ok: true, message: res.__('service_updated') });
+        // product updated
+        return res.json({ ok: true, message: res.__('product_updated') });
       });
     }
   });

@@ -15,7 +15,11 @@ const appointmentSchema = mongoose.Schema({
   idCustomer      : Number,
   idProfessional  : Number,
   idAppointment   : Number,
+  isConfirmed     : Boolean,
+  isCancelled     : Boolean,
   date            : Date,
+  latitude        : Number,
+  longitude       : Number,
   address         : String, // TODO: [Address] ????  not sure how to do it
   extraInfo       : String
  
@@ -35,7 +39,7 @@ appointmentSchema.statics.loadJson = async function (file) {
     });
   });
 
-  console.log(file + ' readed.');
+  console.log(file + ' read.');
 
   if (!data) {
     throw new Error(file + ' is empty!');

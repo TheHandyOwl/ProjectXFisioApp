@@ -62,4 +62,54 @@ router.post('/register', function (req, res, next) {
   });
 });
 
+// Remove an user
+
+router.delete('/:email', function (req, res, next) {
+  User.findOne({ email: req.params.email }, function (err, user) {
+    if (err) return next(err);
+
+    if (!user) {
+      return res.json({
+        ok: false, error: {
+          code: 401,
+          message: res.__('user_not_found')
+        }
+      });
+    } else if (user) {
+      user.deleteOne({ email: req.params.email }, function (err) {
+        if (err) return next(err);
+
+        return res.json({ ok: true, message: res.__('user_deleted') });
+      })
+    }
+  });
+});
+
+// Update a user
+
+router.put('/:email', function (req, res, next) {
+
+  User.findOne({ email: req.params.email }, function (err, user) {
+    if (err) return next(err);
+
+    if (!user) {
+      return res.json({
+        ok: false, error: {
+          code: 401,
+          message: res.__('user_not_found')
+        }
+      });
+    } else if (service) {
+
+      User.updateOne(req.body, function (err) {
+        if (err) return next(err);
+
+        // Service updated
+        return res.json({ ok: true, message: res.__('user_updated') });
+      });
+    }
+  });
+
+});
+
 module.exports = router;

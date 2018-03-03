@@ -33,6 +33,7 @@ userSchema.statics.exists = function (idUser, cb) {
   });
 };
 
+
 userSchema.statics.createRecord = function (user, cb) {
   
   // Validations

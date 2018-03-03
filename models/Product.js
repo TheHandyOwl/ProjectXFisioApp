@@ -11,7 +11,7 @@ const productSchema = mongoose.Schema({
   
   idProduct   : { type: Number, index : true },
   name        : { type: String, index: true, lowercase: true, required: true },
-  description : { type: String, index:true, lowercase:true, required    : true },
+  description : { type: String, index:true, lowercase:true, required: true },
   price       : { type: Number, index:true, unique: false, required: true },
 
 });
@@ -27,7 +27,7 @@ productSchema.statics.loadJson = async function (file) {
     });
   });
 
-  console.log(file + ' readed.');
+  console.log(file + ' read.');
 
   if (!data) {
     throw new Error(file + ' is empty!');
@@ -48,6 +48,35 @@ productSchema.statics.exists = function (idProduct, cb) {
   Product.findById(idProduct, function (err, product) {
     if (err) return cb(err);
     return cb(null, product ? true : false);
+  });
+};
+
+productSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
+
+  const query = Product.find(filters);
+
+  query.sort(sortField);
+  query.skip(startRow);
+  query.limit(numRows);
+
+  return query.exec(function (err, rows) {
+    if (err) return cb(err);
+
+    // System logo for a date in an appointment
+    rows.forEach((row) => {
+      //row.foto = configApp.appURLBasePath + configApp.imageLogoDate;
+    });
+
+    const result = { rows };
+
+    if (!includeTotal) return cb(null, result);
+
+    // incluir propiedad total
+    Service.count({}, (err, total) => {
+      if (err) return cb(err);
+      result.total = total;
+      return cb(null, result);
+    });
   });
 };
 

@@ -5,7 +5,11 @@
       "idCustomer": 1,
       "idProfessional": 1,
       "idAppointment": 1,
-      "date": "201803011700",
+      "isConfirmed": false,
+      "isCancelled": false,
+      "date": "1520102376071",
+      "latitude": 40.4166159,
+      "longitude": -3.703788,
       "address": "40.4166159, -3.703788",
       "extraInfo": "Tercero izquierda"
     },
@@ -14,7 +18,11 @@
       "idCustomer": 1,
       "idProfessional": 1,
       "idAppointment": 2,
-      "date": "201803011800",
+      "isConfirmed": true,
+      "isCancelled": false,
+      "date": "1520102376071",
+      "latitude": 40.4166159,
+      "longitude": -3.703788,
       "address": "40.4166159, -3.703789",
       "extraInfo": false
     }
