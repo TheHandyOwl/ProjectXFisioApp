@@ -93,11 +93,11 @@ productSchema.statics.createRecord = function (product, cb) {
 
   // Check duplicates
   // Search product
-  Product.findOne({ name: product.name }, function (err, exists) {
+  Product.findOne({ name: product.name.toLowerCase() }, function (err, exists) {
     if (err) {
       return cb(err);
     }
-
+        
     // Service already exists
     if (exists) {
       return cb({ code: 409, message: __('product_name_duplicated') });

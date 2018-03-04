@@ -16,7 +16,7 @@ router.post('/authenticate', function (req, res, next) {
   const password = req.body.password;
 
   // Search user
-  User.findOne({ email: email }, function (err, user) {
+  User.findOne({ email }, function (err, user) {
     if (err) return next(err);
 
     if (!user) {
@@ -64,8 +64,12 @@ router.post('/register', function (req, res, next) {
 
 // Remove an user
 
-router.delete('/:email', function (req, res, next) {
-  User.findOne({ email: req.params.email }, function (err, user) {
+router.delete('/', function (req, res, next) {
+
+  const email = req.body.email;
+  const password = req.body.password;
+
+  User.findOne({ email }, function (err, user) {
     if (err) return next(err);
 
     if (!user) {
@@ -76,11 +80,20 @@ router.delete('/:email', function (req, res, next) {
         }
       });
     } else if (user) {
-      user.deleteOne({ email: req.params.email }, function (err) {
-        if (err) return next(err);
 
-        return res.json({ ok: true, message: res.__('user_deleted') });
-      })
+      // TODO Check the token
+
+      // if the password and the token are correct, we can remove the user information
+      const hashedPassword = hash.sha256().update(password).digest('hex');
+      if (hashedPassword === user.password) {
+        user.deleteOne({ email: req.params.email }, function (err) {
+          if (err) return next(err);
+  
+          return res.json({ ok: true, message: res.__('user_deleted') });
+        })
+      } else {
+        return res.json({ ok: false, message: res.__('users_wrong_password') });
+      }
     }
   });
 });
@@ -110,6 +123,29 @@ router.put('/:email', function (req, res, next) {
     }
   });
 
+});
+
+/*** AUX, it will be removed ***/
+router.get('/', (req, res, next) => {
+
+  const start = parseInt(req.query.start) || 0;
+  const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
+  const sort = req.query.sort || '_id';
+  const includeTotal = req.query.includeTotal === 'true';
+  const filters = {};
+
+  if (typeof req.query.status !== 'undefined') {
+    filters.status = req.query.status;
+  }
+
+  if (typeof req.query.description !== 'undefined') {
+    filters.description = new RegExp('^' + req.query.description, 'i');
+  }
+
+  User.list(start, limit, sort, includeTotal, filters, function (err, result) {
+    if (err) return next(err);
+    res.json({ ok: true, result: result });
+  });
 });
 
 module.exports = router;

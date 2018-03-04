@@ -93,7 +93,7 @@ serviceSchema.statics.createRecord = function (service, cb) {
 
   // Check duplicates
   // Search service
-  Service.findOne({ name: service.name }, function (err, exists) {
+  Service.findOne({ name: service.name.toLowerCase() }, function (err, exists) {
     if (err) {
       return cb(err);
     }
