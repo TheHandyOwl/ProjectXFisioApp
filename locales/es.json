@@ -1,8 +1,25 @@
 {
 	"appointment_created": "cita creada!",
+	"appointment_deleted": "cita eliminada!",
+	"appointment_updated": "cita actualizada!",
 	"appointment_id_duplicated": "id de cita ya existe",
 	"appointment_not_found": "Cita no encontrada",
 	"duplicate_appointment": "la cita ya existe",
+
+	"service_created": "Servicio creado!",
+	"service_deleted": "Servicio eliminado!",
+	"service_updated": "Servicio actualizado!",
+	"service_id_duplicated": "El id de servicio ya existe",
+	"service_not_found": "Servicio no encontrado",
+	"duplicate_service": "El servicio ya existe",
+
+	"product_created": "Producto creado!",
+	"product_deleted": "Producto eliminado!",
+	"product_updated": "Producto actualizado!",
+	"product_id_duplicated": "el id del producto ya existe",
+	"product_not_found": "Producto no encontrado",
+	"duplicate_product": "El producto ya existe",
+	
 	"the_field": "el campo",
 	"notification_name_duplicated": "el nombre de la notificación ya existe",
 	"post_name_duplicated": "el post ya existe",
@@ -10,8 +27,11 @@
 	"service_name_duplicated": "el nombre de servicio ya existe",
 	"validation_invalid": "el campo {{field}} no es válido",
 	"validation_minchars": "{{field}} debe tener al menos {{num}} caracteres",
+	
 	"user_email_duplicated": "el email del usuario ya existe",
 	"users_user_created": "usuario creado!",
+	"user_deleted": "usuario eliminado!",
+	"user_updated": "usuario actualizado!",
 	"users_user_not_found": "User no encontrado",
 	"users_wrong_password": "clave erronea",
 	"generic": "generic error: {{message}}"

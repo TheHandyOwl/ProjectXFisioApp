@@ -35,7 +35,7 @@ postSchema.statics.loadJson = async function (file) {
     });
   });
 
-  console.log(file + ' readed.');
+  console.log(file + ' read.');
 
   if (!data) {
     throw new Error(file + ' is empty!');
@@ -65,7 +65,7 @@ postSchema.statics.createRecord = function (post, cb) {
 
   // Check duplicates
   // Search post
-  Blog.findOne({ name: post.name }, function (err, exists) {
+  Blog.findOne({ name: post.name.toLowerCase() }, function (err, exists) {
     if (err) {
       return cb(err);
     }
