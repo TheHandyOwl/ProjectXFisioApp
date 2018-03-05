@@ -31,7 +31,7 @@ notifSchema.statics.loadJson = async function (file) {
     });
   });
 
-  console.log(file + ' readed.');
+  console.log(file + ' read.');
 
   if (!data) {
     throw new Error(file + ' is empty!');
@@ -68,7 +68,7 @@ notifSchema.statics.createRecord = function (notif, cb) {
 
   // Check duplicates
   // Search notification
-  Notif.findOne({ name: notif.name }, function (err, exists) {
+  Notif.findOne({ name: notif.name.toLowerCase() }, function (err, exists) {
     if (err) {
       return cb(err);
     }
