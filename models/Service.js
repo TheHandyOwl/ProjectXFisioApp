@@ -9,7 +9,6 @@ const flow = require('../lib/flowControl');
 
 const serviceSchema = mongoose.Schema({
   
-  idService   : { type: Number, index : true },
   name        : { type: String, index: true, lowercase: true, required: true },
   description : { type: String, index:true, lowercase:true, required: true },
   price       : { type: Number, index:true, unique: false, required: true },

@@ -4,27 +4,53 @@ const mongoose = require('mongoose');
 const hash = require('hash.js');
 const validator = require('validator');
 
+const fs = require('fs');
+
 const userSchema = mongoose.Schema({
 
-  idUser: Number,
-  isProfessional: Boolean,
-  fellowshipNumber: Number,  // CollegiateNumber
-  gender: String,  // Boolean or String????????
-  name: { type: String, lowercase: true },
-  lastName: { type: String, lowercase: true },
-  email: { type: String, lowercase: true },
-  password: String,
-  address: String,  // [Address] ????  not sure how to do it
-  phone: String,
-  birthDate: Date,
-  nationalId: String,
-  registrationDate: Date,
-  lastLoginDate: Date
+  isProfessional    : Boolean,
+  fellowshipNumber  : Number,  // CollegiateNumber
+  gender            : String,  // Boolean or String????????
+  name              : { type: String, lowercase: true },
+  lastName          : { type: String, lowercase: true },
+  email             : { type: String, lowercase: true },
+  password          : String,
+  address           : String,  // [Address] ????  not sure how to do it
+  phone             : String,
+  birthDate         : Date,
+  nationalId        : String,
+  registrationDate  : Date,
+  lastLoginDate     : Date
 
 });
 
-userSchema.index({ idUser: 1 }, { unique: true });
-userSchema.index({ email: 1 }, { unique: true });
+/**
+ * Load json - users
+ */
+userSchema.statics.loadJson = async function (file) {
+
+  const data = await new Promise((resolve, reject) => {
+    fs.readFile(file, { encoding: 'utf8' }, (err, data) => {
+      return err ? reject(err) : resolve(data);
+    });
+  });
+
+  console.log(file + ' readed.');
+
+  if (!data) {
+    throw new Error(file + ' is empty!');
+  }
+
+  const users = JSON.parse(data).users;
+  const numUsers = users.length;
+
+  for (var i = 0; i < users.length; i++) {
+    await (new User(users[i])).save();
+  }
+
+  return numUsers;
+
+};
 
 userSchema.statics.exists = function (idUser, cb) {
   User.findById(idUser, function (err, user) {

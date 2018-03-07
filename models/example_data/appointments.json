@@ -1,29 +1,25 @@
 {
   "appointments": [
     { 
-      "idService": 1,
-      "idCustomer": 1,
-      "idProfessional": 1,
-      "idAppointment": 1,
+      "service": "5aa00e386281ea2d347d4732",
+      "customer": "5a9f054f602dd0e540c71bc7",
+      "professional": "5a9f054f602dd0e540c71bc6",
       "isConfirmed": false,
       "isCancelled": false,
-      "date": "1520102376071",
+      "date": "201803011700",
       "latitude": 40.4166159,
       "longitude": -3.703788,
-      "address": "40.4166159, -3.703788",
       "extraInfo": "Tercero izquierda"
     },
     { 
-      "idService": 1,
-      "idCustomer": 1,
-      "idProfessional": 1,
-      "idAppointment": 2,
+      "service": "5aa00e386281ea2d347d4733",
+      "customer": "5a9f054f602dd0e540c71bc7",
+      "professional": "5a9f054f602dd0e540c71bc6",
       "isConfirmed": true,
       "isCancelled": false,
-      "date": "1520102376071",
+      "date": "201803011800",
       "latitude": 40.4166159,
       "longitude": -3.703788,
-      "address": "40.4166159, -3.703789",
       "extraInfo": false
     }
   ]

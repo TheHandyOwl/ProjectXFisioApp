@@ -7,12 +7,12 @@ const async = require('async');
 const db = require('./lib/connectMongoose');
 
 // Loading all models
-require('./models/Appointment');
-require('./models/Blog');
-require('./models/Notif');
-require('./models/Product');
-require('./models/Service');
 require('./models/User');
+require('./models/Service');
+require('./models/Product');
+require('./models/Notif');
+require('./models/Blog');
+require('./models/Appointment');
 require('./models/PushToken');
 
 db.once('open', function () {
@@ -161,10 +161,30 @@ function initUsers(cb) {
   User.remove({}, ()=> {
 
     console.log('Users deleted.');
+
+    // Load users.json
+    const file = './models/example_data/users.json';
+    console.log('Loading ' + file + '...');
+
+    User.loadJson(file).then(numLoaded => {
+      console.log(`Loaded ${numLoaded} users.`);
+      return cb(null, numLoaded);
+    }).catch(err => cb(err) );
+
+  });
+
+}
+
+function initUsersFromJson(cb) {
+  const User = mongoose.model('User');
+
+  User.remove({}, ()=> {
+
+    console.log('Users deleted.');
     
     const users = [
-      { idUser: 1, name: 'fisio', email: 'fisio@invalid.com', password: '1234567' },
-      { idUser: 2, name: 'customer', email: 'customer@invalid.com', password: '1234568' }
+      { idUser: "5a9f054f602dd0e540c71bc9", name: 'fisio', email: 'fisio@invalid.com', password: '1234567' },
+      { idUser: "5a9f054f602dd0e540c71bc8", name: 'customer', email: 'customer@invalid.com', password: '1234568' }
     ];
 
     async.eachSeries(users, User.createRecord, (err)=> {

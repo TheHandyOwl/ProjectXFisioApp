@@ -1,6 +1,9 @@
 'use strict';
 
 const mongoose = require('mongoose');
+let Schema = mongoose.Schema;
+let User = mongoose.model('User');
+
 const hash = require('hash.js');
 const v = require('validator');
 
@@ -9,11 +12,13 @@ const flow = require('../lib/flowControl');
 
 const postSchema = mongoose.Schema({
   
-  idBlog          : { type: Number, index : true },
-  idProfessional  : { type: Number, index : true },
-  idCustomer      : { type: Number, index : true },
+  professional    : { type: mongoose.Schema.ObjectId, ref: User },
+  customer        : { type: mongoose.Schema.ObjectId, ref: User },
   name            : { type: String, index: true, lowercase: true, required: true },
   description     : { type: String, index:true, lowercase:true, required: true },
+  isVisible       : Boolean,
+  creationDate    : Date,
+  publicationDate : Date
 
 });
 

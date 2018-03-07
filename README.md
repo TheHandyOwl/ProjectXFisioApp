@@ -1,5 +1,5 @@
 
-# FisiApp
+# FisioApp
 
 Api for the iOS/Android apps.
 

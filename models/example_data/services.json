@@ -1,13 +1,13 @@
 {
   "services": [
     {
-      "idService": 1 ,
+      "_id": "5aa00e386281ea2d347d4732",
       "name": "Service 1",
       "description": "1 hour session",
       "price": 30
     },
     {
-      "idService": 2 ,
+      "_id": "5aa00e386281ea2d347d4733",
       "name": "Service 2",
       "description": "2 hour session",
       "price": 50

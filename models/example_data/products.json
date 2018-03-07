@@ -1,13 +1,13 @@
 {
   "products": [
     {
-      "idProduct": 1 ,
+      "_id": "5a9f054f602dd0e540c71bd1" ,
       "name": "Product 1",
       "description": "1 hour session",
       "price": 30
     },
     {
-      "idProduct": 2 ,
+      "_id": "5a9f054f602dd0e540c71bd2" ,
       "name": "Product 2",
       "description": "2 hour session",
       "price": 50

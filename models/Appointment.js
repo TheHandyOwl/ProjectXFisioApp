@@ -1,6 +1,10 @@
 'use strict';
 
 const mongoose = require('mongoose');
+let Schema = mongoose.Schema;
+let User = mongoose.model('User');
+let Service = mongoose.model('Service');
+
 const hash = require('hash.js');
 const v = require('validator');
 
@@ -11,10 +15,9 @@ const configApp = require('./../local_config').app;
 
 const appointmentSchema = mongoose.Schema({
   
-  idService       : Number,
-  idCustomer      : Number,
-  idProfessional  : Number,
-  idAppointment   : Number,
+  service         : { type: mongoose.Schema.ObjectId, ref: Service },
+  customer        : { type: mongoose.Schema.ObjectId, ref: User },
+  professional    : { type: mongoose.Schema.ObjectId, ref: User },
   isConfirmed     : Boolean,
   isCancelled     : Boolean,
   date            : Date,
@@ -25,8 +28,7 @@ const appointmentSchema = mongoose.Schema({
  
 });
 
-appointmentSchema.index( { idAppointment: 1 }, { unique : true } );
-appointmentSchema.index( { idService: 1, idCustomer: 1, idProfessional: 1, date: 1 } );
+appointmentSchema.index( { service: 1, customer: 1, professional: 1, date: 1 } );
 
 /**
  * Load json - appointments
