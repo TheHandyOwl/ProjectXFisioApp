@@ -1,16 +1,16 @@
 'use strict';
 
-const mongoose = require('mongoose');
+let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 let User = mongoose.model('User');
 
-const hash = require('hash.js');
-const v = require('validator');
+let hash = require('hash.js');
+let v = require('validator');
 
-const fs = require('fs');
-const flow = require('../lib/flowControl');
+let fs = require('fs');
+let flow = require('../lib/flowControl');
 
-const notifSchema = mongoose.Schema({
+let notifSchema = mongoose.Schema({
   
   professional    : { type: mongoose.Schema.ObjectId, ref: User },
   customer        : { type: mongoose.Schema.ObjectId, ref: User },
@@ -27,7 +27,7 @@ const notifSchema = mongoose.Schema({
  */
 notifSchema.statics.loadJson = async function (file) {
 
-  const data = await new Promise((resolve, reject) => {
+  let data = await new Promise((resolve, reject) => {
     fs.readFile(file, { encoding: 'utf8' }, (err, data) => {
       return err ? reject(err) : resolve(data);
     });
@@ -39,8 +39,8 @@ notifSchema.statics.loadJson = async function (file) {
     throw new Error(file + ' is empty!');
   }
 
-  const notifs = JSON.parse(data).notifications;
-  const numNotifs = notifs.length;
+  let notifs = JSON.parse(data).notifications;
+  let numNotifs = notifs.length;
 
   for (var i = 0; i < notifs.length; i++) {
     await (new Notif(notifs[i])).save();
@@ -59,7 +59,7 @@ notifSchema.statics.exists = function (idNotification, cb) {
 
 notifSchema.statics.createRecord = function (notif, cb) {
   // Validations
-  const valErrors = [];
+  let valErrors = [];
   if (!(v.isAlpha(notif.name) && v.isLength(notif.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
   }

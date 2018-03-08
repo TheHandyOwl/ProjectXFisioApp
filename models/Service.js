@@ -1,13 +1,13 @@
 'use strict';
 
-const mongoose = require('mongoose');
-const hash = require('hash.js');
-const v = require('validator');
+let mongoose = require('mongoose');
+let hash = require('hash.js');
+let v = require('validator');
 
-const fs = require('fs');
-const flow = require('../lib/flowControl');
+let fs = require('fs');
+let flow = require('../lib/flowControl');
 
-const serviceSchema = mongoose.Schema({
+let serviceSchema = mongoose.Schema({
   
   name        : { type: String, index: true, lowercase: true, required: true },
   description : { type: String, index:true, lowercase:true, required: true },
@@ -20,7 +20,7 @@ const serviceSchema = mongoose.Schema({
  */
 serviceSchema.statics.loadJson = async function (file) {
 
-  const data = await new Promise((resolve, reject) => {
+  let data = await new Promise((resolve, reject) => {
     fs.readFile(file, { encoding: 'utf8' }, (err, data) => {
       return err ? reject(err) : resolve(data);
     });
@@ -32,8 +32,8 @@ serviceSchema.statics.loadJson = async function (file) {
     throw new Error(file + ' is empty!');
   }
 
-  const services = JSON.parse(data).services;
-  const numServices = services.length;
+  let services = JSON.parse(data).services;
+  let numServices = services.length;
 
   for (var i = 0; i < services.length; i++) {
     await (new Service(services[i])).save();
@@ -52,7 +52,7 @@ serviceSchema.statics.exists = function (idService, cb) {
 
 serviceSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
 
-  const query = Service.find(filters);
+  let query = Service.find(filters);
 
   query.sort(sortField);
   query.skip(startRow);
@@ -66,7 +66,7 @@ serviceSchema.statics.list = function (startRow, numRows, sortField, includeTota
       //row.foto = configApp.appURLBasePath + configApp.imageLogoDate;
     });
 
-    const result = { rows };
+    let result = { rows };
 
     if (!includeTotal) return cb(null, result);
 
@@ -81,7 +81,7 @@ serviceSchema.statics.list = function (startRow, numRows, sortField, includeTota
 
 serviceSchema.statics.createRecord = function (service, cb) {
   // Validations
-  const valErrors = [];
+  let valErrors = [];
   if (!(v.isAlpha(service.name) && v.isLength(service.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
   }

@@ -1,7 +1,7 @@
 
 # FisioApp
 
-Api for the iOS/Android apps.
+Api for the iOS/Android/Web apps.
 
 ## Deploy
 
@@ -111,7 +111,7 @@ i.e. Accept-Language: es
 
 ### PUT /users
 
-**Input Body**: { idUser, email, password, gender, address, phone, birthDate, nationalId }
+**Input Body**: { email, password, gender, address, phone, birthDate, nationalId }
 
 **Result:** 
 
@@ -127,24 +127,61 @@ i.e. Accept-Language: es
 **Result:** 
 
     {
-      "ok": true,
-      "result": { 
-          "idService": 1,
-          "idCustomer": 1,
-          "idProfessional": 1,
-          "idAppointment": 1,
-          "isConfirmed": false,
-          "isCancelled": false,
-          "date": "1520102376071",
-          "latitude": 40.4166159,
-          "longitude": -3.703788,
-          "address": "40.4166159, -3.703788",
-          "extraInfo": "Tercero izquierda",
-          "__v": 0
-      }
+        "ok": true,
+        "result": {
+            "_id": "5aa106e46750320b606db6ce",
+            "service": {
+                "_id": "5aa00e386281ea2d347d4732",
+                "name": "service 1",
+                "description": "1 hour session",
+                "price": 30,
+                "__v": 0
+            },
+            "customer": {
+                "_id": "5a9f054f602dd0e540c71bc7",
+                "isProfessional": true,
+                "fellowshipNumber": 33,
+                "gender": "Female",
+                "name": "thecustomer",
+                "lastName": "lastname",
+                "email": "customer@invalid.com",
+                "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
+                "address": "Customer Address, 44",
+                "phone": "626626626",
+                "birthDate": "1980-12-30T12:30:00.000Z",
+                "nationalId": "87654321Z",
+                "registrationDate": "2018-02-02T02:02:00.000Z",
+                "lastLoginDate": "2018-03-07T17:00:00.000Z",
+                "__v": 0
+            },
+            "professional": {
+                "_id": "5a9f054f602dd0e540c71bc6",
+                "isProfessional": true,
+                "fellowshipNumber": 33,
+                "gender": "Male",
+                "name": "fisio",
+                "lastName": "lastname",
+                "email": "fisio@invalid.com",
+                "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
+                "address": "Fisio Address, 33",
+                "phone": "626626626",
+                "birthDate": "1970-12-30T12:30:00.000Z",
+                "nationalId": "12345678Z",
+                "registrationDate": "2018-01-01T01:01:00.000Z",
+                "lastLoginDate": "2018-03-07T16:00:00.000Z",
+                "__v": 0
+            },
+            "isConfirmed": false,
+            "isCancelled": false,
+            "date": "1976-05-24T16:23:31.700Z",
+            "latitude": 40.4166159,
+            "longitude": -3.703788,
+            "extraInfo": "Tercero izquierda",
+            "__v": 0
+        }
     }
 
-### GET /appointments/{Date}
+### GET /appointments/date/{date}
 
 **Input Query**: { date }
 
@@ -153,43 +190,115 @@ i.e. Accept-Language: es
 {
     "ok": true,
     "result": {
-        "_id": "5a9aec0f15c5371f1159c994",
-        "idService": 1,
-        "idCustomer": 1,
-        "idProfessional": 1,
-        "idAppointment": 1,
+        "_id": "5aa106e46750320b606db6ce",
+        "service": {
+            "_id": "5aa00e386281ea2d347d4732",
+            "name": "service 1",
+            "description": "1 hour session",
+            "price": 30,
+            "__v": 0
+        },
+        "customer": {
+            "_id": "5a9f054f602dd0e540c71bc7",
+            "isProfessional": true,
+            "fellowshipNumber": 33,
+            "gender": "Female",
+            "name": "thecustomer",
+            "lastName": "lastname",
+            "email": "customer@invalid.com",
+            "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
+            "address": "Customer Address, 44",
+            "phone": "626626626",
+            "birthDate": "1980-12-30T12:30:00.000Z",
+            "nationalId": "87654321Z",
+            "registrationDate": "2018-02-02T02:02:00.000Z",
+            "lastLoginDate": "2018-03-07T17:00:00.000Z",
+            "__v": 0
+        },
+        "professional": {
+            "_id": "5a9f054f602dd0e540c71bc6",
+            "isProfessional": true,
+            "fellowshipNumber": 33,
+            "gender": "Male",
+            "name": "fisio",
+            "lastName": "lastname",
+            "email": "fisio@invalid.com",
+            "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
+            "address": "Fisio Address, 33",
+            "phone": "626626626",
+            "birthDate": "1970-12-30T12:30:00.000Z",
+            "nationalId": "12345678Z",
+            "registrationDate": "2018-01-01T01:01:00.000Z",
+            "lastLoginDate": "2018-03-07T16:00:00.000Z",
+            "__v": 0
+        },
         "isConfirmed": false,
         "isCancelled": false,
-        "date": "2018-03-03T19:17:56.071Z",
+        "date": "1976-05-24T16:23:31.700Z",
         "latitude": 40.4166159,
         "longitude": -3.703788,
-        "address": "myAddress",
-        "extraInfo": "Segundo izquierda",
+        "extraInfo": "Tercero izquierda",
         "__v": 0
     }
 }
 
-### GET /appointments/byId/{idAppointment}
+### GET /appointments/id/{_id}
 
-**Input Query**: { idAppointment }
+**Input Query**: { _id }
 
 **Result:**
 
 {
     "ok": true,
     "result": {
-        "_id": "5a9aec0f15c5371f1159c994",
-        "idService": 1,
-        "idCustomer": 1,
-        "idProfessional": 1,
-        "idAppointment": 1,
+        "_id": "5aa106e46750320b606db6ce",
+        "service": {
+            "_id": "5aa00e386281ea2d347d4732",
+            "name": "service 1",
+            "description": "1 hour session",
+            "price": 30,
+            "__v": 0
+        },
+        "customer": {
+            "_id": "5a9f054f602dd0e540c71bc7",
+            "isProfessional": true,
+            "fellowshipNumber": 33,
+            "gender": "Female",
+            "name": "thecustomer",
+            "lastName": "lastname",
+            "email": "customer@invalid.com",
+            "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
+            "address": "Customer Address, 44",
+            "phone": "626626626",
+            "birthDate": "1980-12-30T12:30:00.000Z",
+            "nationalId": "87654321Z",
+            "registrationDate": "2018-02-02T02:02:00.000Z",
+            "lastLoginDate": "2018-03-07T17:00:00.000Z",
+            "__v": 0
+        },
+        "professional": {
+            "_id": "5a9f054f602dd0e540c71bc6",
+            "isProfessional": true,
+            "fellowshipNumber": 33,
+            "gender": "Male",
+            "name": "fisio",
+            "lastName": "lastname",
+            "email": "fisio@invalid.com",
+            "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
+            "address": "Fisio Address, 33",
+            "phone": "626626626",
+            "birthDate": "1970-12-30T12:30:00.000Z",
+            "nationalId": "12345678Z",
+            "registrationDate": "2018-01-01T01:01:00.000Z",
+            "lastLoginDate": "2018-03-07T16:00:00.000Z",
+            "__v": 0
+        },
         "isConfirmed": false,
         "isCancelled": false,
-        "date": "2018-03-03T19:17:56.071Z",
+        "date": "1976-05-24T16:23:31.700Z",
         "latitude": 40.4166159,
         "longitude": -3.703788,
-        "address": "myAddress",
-        "extraInfo": "Segundo izquierda",
+        "extraInfo": "Tercero izquierda",
         "__v": 0
     }
 }
@@ -200,8 +309,7 @@ Save a new appointment.
 
 **Input body:**
 
-{ idService, idCustomer, idProfessional, idAppointment, isConfirmed, isCancelled, date, latitude,
-longitude, address, extraInfo }
+{ idService, idCustomer, idProfessional, isConfirmed, isCancelled, date, latitude, longitude, address, extraInfo }
 
 **Result:** 
 
@@ -213,7 +321,7 @@ longitude, address, extraInfo }
       }
     }
 
-### PUT /appointments/{idAppointment}
+### PUT /appointments/{id}
 
 Update an existing appointment.
 In the body is only sent the information you want to update.
@@ -229,7 +337,7 @@ In the body is only sent the information you want to update.
         "message": "appointment updated"
     }
 
-### DELETE /appointments/{idAppointment}
+### DELETE /appointments/{id}
 
 Delete an existing appointment.
 
@@ -254,16 +362,14 @@ Delete an existing appointment.
         "result": {
             "rows": [
                 {
-                    "_id": "5a9aec0f15c5371f1159c99a",
-                    "idProduct": 1,
+                    "_id": "5a9f054f602dd0e540c71bd1",
                     "name": "product 1",
                     "description": "1 hour session",
                     "price": 30,
                     "__v": 0
                 },
                 {
-                    "_id": "5a9aec0f15c5371f1159c99b",
-                    "idProduct": 2,
+                    "_id": "5a9f054f602dd0e540c71bd2",
                     "name": "product 2",
                     "description": "2 hour session",
                     "price": 50,
@@ -273,17 +379,16 @@ Delete an existing appointment.
         }
     }
 
-### GET /products/{idProduct}
+### GET /products/{id}
 
-**Input Query**: { idProduct }
+**Input Query**: { id }
 
 **Result:**
 
     {
         "ok": true,
         "result": {
-            "_id": "5a9aec0f15c5371f1159c99a",
-            "idProduct": 1,
+            "_id": "5a9f054f602dd0e540c71bd1",
             "name": "product 1",
             "description": "1 hour session",
             "price": 30,
@@ -297,7 +402,7 @@ Save a new product.
 
 **Input body:**
 
-{ idProduct, name, description, price }
+{ name, description, price }
 
 **Result:** 
 
@@ -309,7 +414,7 @@ Save a new product.
       }
     }
 
-### PUT /products/{idProduct}
+### PUT /products/{id}
 
 Update an existing product.
 In the body is only sent the information you want to update.
@@ -325,7 +430,7 @@ In the body is only sent the information you want to update.
         "message": "product updated"
     }
 
-### DELETE /products/idProduct
+### DELETE /products/id
 
 Delete an existing product.
 
@@ -349,16 +454,14 @@ Delete an existing product.
         "result": {
             "rows": [
                 {
-                    "_id": "5a9aec0f15c5371f1159c99c",
-                    "idService": 1,
+                    "_id": "5aa00e386281ea2d347d4732",
                     "name": "service 1",
                     "description": "1 hour session",
                     "price": 30,
                     "__v": 0
                 },
                 {
-                    "_id": "5a9aec0f15c5371f1159c99d",
-                    "idService": 2,
+                    "_id": "5aa00e386281ea2d347d4733",
                     "name": "service 2",
                     "description": "2 hour session",
                     "price": 50,
@@ -368,20 +471,19 @@ Delete an existing product.
         }
     }
 
-### GET /services/{idService}
+### GET /services/{id}
 
-**Input Query**: { idService }
+**Input Query**: { _id }
 
 **Result:**
 
     {
         "ok": true,
         "result": {
-            "_id": "5a9aec0f15c5371f1159c99d",
-            "idService": 2,
-            "name": "service 2",
-            "description": "2 hour session",
-            "price": 50,
+            "_id": "5aa00e386281ea2d347d4732",
+            "name": "service 1",
+            "description": "1 hour session",
+            "price": 30,
             "__v": 0
         }
     }
@@ -392,7 +494,7 @@ Save a new service.
 
 **Input body:**
 
-{ idService, name, description, price }
+{ name, description, price }
 
 **Result:** 
 
@@ -404,7 +506,7 @@ Save a new service.
       }
     }
 
-### PUT /services/{idService}
+### PUT /services/{id}
 
 Update an existing service.
 In the body is only sent the information you want to update.
@@ -420,7 +522,7 @@ In the body is only sent the information you want to update.
         "message": "service updated"
     }
 
-### DELETE /services/{idService}
+### DELETE /services/{id}
 
 Delete an existing service.
 

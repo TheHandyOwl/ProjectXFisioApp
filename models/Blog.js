@@ -1,16 +1,16 @@
 'use strict';
 
-const mongoose = require('mongoose');
+let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 let User = mongoose.model('User');
 
-const hash = require('hash.js');
-const v = require('validator');
+let hash = require('hash.js');
+let v = require('validator');
 
-const fs = require('fs');
-const flow = require('../lib/flowControl');
+let fs = require('fs');
+let flow = require('../lib/flowControl');
 
-const postSchema = mongoose.Schema({
+let postSchema = mongoose.Schema({
   
   professional    : { type: mongoose.Schema.ObjectId, ref: User },
   customer        : { type: mongoose.Schema.ObjectId, ref: User },
@@ -34,7 +34,7 @@ postSchema.statics.exists = function (idBlog, cb) {
  */
 postSchema.statics.loadJson = async function (file) {
 
-  const data = await new Promise((resolve, reject) => {
+  let data = await new Promise((resolve, reject) => {
     fs.readFile(file, { encoding: 'utf8' }, (err, data) => {
       return err ? reject(err) : resolve(data);
     });
@@ -46,8 +46,8 @@ postSchema.statics.loadJson = async function (file) {
     throw new Error(file + ' is empty!');
   }
 
-  const posts = JSON.parse(data).posts;
-  const numPosts = posts.length;
+  let posts = JSON.parse(data).posts;
+  let numPosts = posts.length;
 
   for (var i = 0; i < posts.length; i++) {
     await (new Blog(posts[i])).save();
@@ -59,7 +59,7 @@ postSchema.statics.loadJson = async function (file) {
 
 postSchema.statics.createRecord = function (post, cb) {
   // Validations
-  const valErrors = [];
+  let valErrors = [];
   if (!(v.isAlpha(post.name) && v.isLength(post.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
   }

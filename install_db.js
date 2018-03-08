@@ -1,10 +1,10 @@
 'use strict';
 
-const mongoose = require('mongoose');
-const readLine = require('readline');
-const async = require('async');
+let mongoose = require('mongoose');
+let readLine = require('readline');
+let async = require('async');
 
-const db = require('./lib/connectMongoose');
+let db = require('./lib/connectMongoose');
 
 // Loading all models
 require('./models/User');
@@ -17,7 +17,7 @@ require('./models/PushToken');
 
 db.once('open', function () {
 
-  const rl = readLine.createInterface({
+  let rl = readLine.createInterface({
     input: process.stdin,
     output: process.stdout
   });
@@ -56,14 +56,14 @@ function runInstallScript() {
 }
 
 function initAppointments(cb) {
-  const Appointment = mongoose.model('Appointment');
+  let Appointment = mongoose.model('Appointment');
 
   Appointment.remove({}, ()=> {
 
     console.log('Appointments deleted.');
 
     // Load appointments.json
-    const file = './models/example_data/appointments.json';
+    let file = './models/example_data/appointments.json';
     console.log('Loading ' + file + '...');
 
     Appointment.loadJson(file).then(numLoaded => {
@@ -76,14 +76,14 @@ function initAppointments(cb) {
 }
 
 function initNotifications(cb) {
-  const Notif = mongoose.model('Notif');
+  let Notif = mongoose.model('Notif');
 
   Notif.remove({}, ()=> {
 
     console.log('Notification deleted.');
 
     // Load notification.json
-    const file = './models/example_data/notifications.json';
+    let file = './models/example_data/notifications.json';
     console.log('Loading ' + file + '...');
 
     Notif.loadJson(file).then(numLoaded => {
@@ -96,14 +96,14 @@ function initNotifications(cb) {
 }
 
 function initPosts(cb) {
-  const Blog = mongoose.model('Blog');
+  let Blog = mongoose.model('Blog');
 
   Blog.remove({}, ()=> {
 
     console.log('Blog deleted.');
 
     // Load posts.json
-    const file = './models/example_data/posts.json';
+    let file = './models/example_data/posts.json';
     console.log('Loading ' + file + '...');
 
     Blog.loadJson(file).then(numLoaded => {
@@ -116,14 +116,14 @@ function initPosts(cb) {
 }
 
 function initProducts(cb) {
-  const Product = mongoose.model('Product');
+  let Product = mongoose.model('Product');
 
   Product.remove({}, ()=> {
 
     console.log('Products deleted.');
 
     // Load products.json
-    const file = './models/example_data/products.json';
+    let file = './models/example_data/products.json';
     console.log('Loading ' + file + '...');
 
     Product.loadJson(file).then(numLoaded => {
@@ -136,14 +136,14 @@ function initProducts(cb) {
 }
 
 function initServices(cb) {
-  const Service = mongoose.model('Service');
+  let Service = mongoose.model('Service');
 
   Service.remove({}, ()=> {
 
     console.log('Services deleted.');
 
     // Load services.json
-    const file = './models/example_data/services.json';
+    let file = './models/example_data/services.json';
     console.log('Loading ' + file + '...');
 
     Service.loadJson(file).then(numLoaded => {
@@ -156,13 +156,13 @@ function initServices(cb) {
 }
 
 function initUsersFromJson(cb) {
-  const User = mongoose.model('User');
+  let User = mongoose.model('User');
 
   User.remove({}, ()=> {
 
     console.log('Users deleted.');
     
-    const users = [
+    let users = [
       { 
         _id               : '5a9f054f602dd0e540c71bc6',
         isProfessional    : 'yes',

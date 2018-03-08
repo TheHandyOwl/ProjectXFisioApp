@@ -40,9 +40,36 @@ Router.get('/', (req, res, next) => {
 
 // Find appointment by id
 
-Router.get('/:id', (req, res, next) => {
+Router.get('/id/:id', (req, res, next) => {
   
   Appointment.findById(req.params.id).exec(function (err, appointment) {
+    if (err) return next(err);
+
+    if (!appointment) {
+      return res.json({
+        ok: false, error: {
+          code: 401,
+          message: res.__('appointment_not_found')
+        }
+      });
+    } else if (appointment) {
+      Service.populate( appointment, { path: 'service' }, function(err, appointmentsAndService) {
+        User.populate( appointmentsAndService, { path: 'customer' }, function(err, appointmentsAndServiceAndCustomer) {
+          User.populate( appointmentsAndServiceAndCustomer, { path: 'professional' }, function(err, appointmentsAndServiceAndCustomerAndProfessional) {
+            console.log("appointmentsAndServiceAndCustomerAndProfessional:");
+            console.log(appointmentsAndServiceAndCustomerAndProfessional);
+            res.json({ ok: true, result: appointmentsAndServiceAndCustomerAndProfessional});
+          });
+        });
+      });
+    }
+  });
+});
+
+// Find appointment by date
+
+Router.get('/date/:date', (req, res, next) => {
+  Appointment.find({ date: req.params.date }, function (err, appointment) {
     if (err) return next(err);
 
     if (!appointment) {

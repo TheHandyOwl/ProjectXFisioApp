@@ -1,9 +1,9 @@
 'use strict';
 
-const mongoose = require('mongoose');
-const User = mongoose.model('User');
+let mongoose = require('mongoose');
+let User = mongoose.model('User');
 
-const pushTokenSchema = mongoose.Schema({
+let pushTokenSchema = mongoose.Schema({
   plataform : { type: String, enum: ['ios', 'android'], index: true },
   token     : { type: String, index: true },
   user      : { type: String, index: true },
@@ -13,7 +13,7 @@ const pushTokenSchema = mongoose.Schema({
 pushTokenSchema.statics.createRecord = function (newItem, cb) {
 
   // Validations
-  const valErrors = [];
+  let valErrors = [];
   if (!newItem.token) {
     valErrors.push({ field: 'token', message: __('validation_invalid') });
   }

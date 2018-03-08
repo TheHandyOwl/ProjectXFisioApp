@@ -1,13 +1,13 @@
 'use strict';
 
-const mongoose = require('mongoose');
-const hash = require('hash.js');
-const v = require('validator');
+let mongoose = require('mongoose');
+let hash = require('hash.js');
+let v = require('validator');
 
-const fs = require('fs');
-const flow = require('../lib/flowControl');
+let fs = require('fs');
+let flow = require('../lib/flowControl');
 
-const productSchema = mongoose.Schema({
+let productSchema = mongoose.Schema({
   
   name        : { type: String, index: true, lowercase: true, required: true },
   description : { type: String, index:true, lowercase:true, required: true },
@@ -20,7 +20,7 @@ const productSchema = mongoose.Schema({
  */
 productSchema.statics.loadJson = async function (file) {
 
-  const data = await new Promise((resolve, reject) => {
+  let data = await new Promise((resolve, reject) => {
     fs.readFile(file, { encoding: 'utf8' }, (err, data) => {
       return err ? reject(err) : resolve(data);
     });
@@ -32,8 +32,8 @@ productSchema.statics.loadJson = async function (file) {
     throw new Error(file + ' is empty!');
   }
 
-  const products = JSON.parse(data).products;
-  const numProducts = products.length;
+  let products = JSON.parse(data).products;
+  let numProducts = products.length;
 
   for (var i = 0; i < products.length; i++) {
     await (new Product(products[i])).save();
@@ -52,7 +52,7 @@ productSchema.statics.exists = function (idProduct, cb) {
 
 productSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
 
-  const query = Product.find(filters);
+  let query = Product.find(filters);
 
   query.sort(sortField);
   query.skip(startRow);
@@ -66,7 +66,7 @@ productSchema.statics.list = function (startRow, numRows, sortField, includeTota
       //row.foto = configApp.appURLBasePath + configApp.imageLogoDate;
     });
 
-    const result = { rows };
+    let result = { rows };
 
     if (!includeTotal) return cb(null, result);
 
@@ -81,7 +81,7 @@ productSchema.statics.list = function (startRow, numRows, sortField, includeTota
 
 productSchema.statics.createRecord = function (product, cb) {
   // Validations
-  const valErrors = [];
+  let valErrors = [];
   if (!(v.isAlpha(product.name) && v.isLength(product.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
   }

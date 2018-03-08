@@ -82,10 +82,10 @@ appointmentSchema.statics.list = function (startRow, numRows, sortField, include
           console.log(appointmentsAndServiceAndCustomerAndProfessional);
 
           let result = { rows: appointmentsAndServiceAndCustomerAndProfessional };
-   
+
           if (!includeTotal) return cb(null, result);
-      
-          // incluir propiedad total
+
+          // Includes total property
           Appointment.count({}, (err, total) => {
             if (err) return cb(err);
             result.total = total;

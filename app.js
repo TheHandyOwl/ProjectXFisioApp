@@ -1,15 +1,15 @@
 'use strict';
 
-const express = require('express');
-const path = require('path');
-const logger = require('morgan');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
+let express = require('express');
+let path = require('path');
+let logger = require('morgan');
+let cookieParser = require('cookie-parser');
+let bodyParser = require('body-parser');
 
-const i18n = require('i18n');
+let i18n = require('i18n');
 
 /* jshint ignore:start */
-const db = require('./lib/connectMongoose');
+let db = require('./lib/connectMongoose');
 /* jshint ignore:end */
 
 // Loading definitions from all models
@@ -21,7 +21,7 @@ require('./models/Blog');
 require('./models/Appointment');
 require('./models/PushToken');
 
-const app = express();
+let app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -53,7 +53,7 @@ app.use('/apiv1/pushtokens', require('./routes/apiv1/pushtokens'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  const err = new Error('Not Found');
+  let err = new Error('Not Found');
   err.status = 404;
   next(err);
 });

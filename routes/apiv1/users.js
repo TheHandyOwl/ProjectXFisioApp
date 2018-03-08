@@ -1,19 +1,19 @@
 'use strict';
 
-const express = require('express');
-const router = express.Router();
+let express = require('express');
+let router = express.Router();
 
-const mongoose = require('mongoose');
-const User = mongoose.model('User');
+let mongoose = require('mongoose');
+let User = mongoose.model('User');
 
-const jwt = require('jsonwebtoken');
-const config = require('../../local_config');
-const hash = require('hash.js');
+let jwt = require('jsonwebtoken');
+let config = require('../../local_config');
+let hash = require('hash.js');
 
 router.post('/authenticate', function (req, res, next) {
 
-  const email = req.body.email;
-  const password = req.body.password;
+  let email = req.body.email;
+  let password = req.body.password;
 
   // Search user
   User.findOne({ email }, function (err, user) {
@@ -29,7 +29,7 @@ router.post('/authenticate', function (req, res, next) {
     } else if (user) {
 
       // Hash password and compare
-      const passwordHash = hash.sha256().update(password).digest('hex');
+      let passwordHash = hash.sha256().update(password).digest('hex');
 
       // It's the same password?
       if (user.password != passwordHash) {
@@ -43,7 +43,7 @@ router.post('/authenticate', function (req, res, next) {
 
         // User found and same password
         // Make token
-        const token = jwt.sign({ user: user }, config.jwt.secret, config.jwt.options);
+        let token = jwt.sign({ user: user }, config.jwt.secret, config.jwt.options);
 
         // return the information including token as JSON
         return res.json({ ok: true, token: token });
@@ -66,8 +66,8 @@ router.post('/register', function (req, res, next) {
 
 router.delete('/', function (req, res, next) {
 
-  const email = req.body.email;
-  const password = req.body.password;
+  let email = req.body.email;
+  let password = req.body.password;
 
   User.findOne({ email }, function (err, user) {
     if (err) return next(err);
@@ -84,7 +84,7 @@ router.delete('/', function (req, res, next) {
       // TODO Check the token
 
       // if the password and the token are correct, we can remove the user information
-      const hashedPassword = hash.sha256().update(password).digest('hex');
+      let hashedPassword = hash.sha256().update(password).digest('hex');
       if (hashedPassword === user.password) {
         user.deleteOne({ email: req.params.email }, function (err) {
           if (err) return next(err);
@@ -128,11 +128,11 @@ router.put('/:email', function (req, res, next) {
 /*** AUX, it will be removed ***/
 router.get('/', (req, res, next) => {
 
-  const start = parseInt(req.query.start) || 0;
-  const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
-  const sort = req.query.sort || '_id';
-  const includeTotal = req.query.includeTotal === 'true';
-  const filters = {};
+  let start = parseInt(req.query.start) || 0;
+  let limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
+  let sort = req.query.sort || '_id';
+  let includeTotal = req.query.includeTotal === 'true';
+  let filters = {};
 
   if (typeof req.query.status !== 'undefined') {
     filters.status = req.query.status;

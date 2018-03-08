@@ -1,12 +1,12 @@
 'use strict';
 
-const mongoose = require('mongoose');
-const hash = require('hash.js');
-const validator = require('validator');
+let mongoose = require('mongoose');
+let hash = require('hash.js');
+let validator = require('validator');
 
-const fs = require('fs');
+let fs = require('fs');
 
-const userSchema = mongoose.Schema({
+let userSchema = mongoose.Schema({
 
   isProfessional    : Boolean,
   fellowshipNumber  : Number,  // CollegiateNumber
@@ -29,7 +29,7 @@ const userSchema = mongoose.Schema({
  */
 userSchema.statics.loadJson = async function (file) {
 
-  const data = await new Promise((resolve, reject) => {
+  let data = await new Promise((resolve, reject) => {
     fs.readFile(file, { encoding: 'utf8' }, (err, data) => {
       return err ? reject(err) : resolve(data);
     });
@@ -41,8 +41,8 @@ userSchema.statics.loadJson = async function (file) {
     throw new Error(file + ' is empty!');
   }
 
-  const users = JSON.parse(data).users;
-  const numUsers = users.length;
+  let users = JSON.parse(data).users;
+  let numUsers = users.length;
 
   for (var i = 0; i < users.length; i++) {
     await (new User(users[i])).save();
@@ -61,7 +61,7 @@ userSchema.statics.exists = function (idUser, cb) {
 
 userSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
 
-  const query = User.find(filters);
+  let query = User.find(filters);
 
   query.sort(sortField);
   query.skip(startRow);
@@ -70,7 +70,7 @@ userSchema.statics.list = function (startRow, numRows, sortField, includeTotal, 
   return query.exec(function (err, rows) {
     if (err) return cb(err);
 
-    const result = { rows };
+    let result = { rows };
 
     if (!includeTotal) return cb(null, result);
 
@@ -86,7 +86,7 @@ userSchema.statics.list = function (startRow, numRows, sortField, includeTotal, 
 userSchema.statics.createRecord = function (user, cb) {
 
   // Validations
-  const valErrors = [];
+  let valErrors = [];
   if (!(validator.isAlpha(user.name) || validator.isLength(user.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
   }

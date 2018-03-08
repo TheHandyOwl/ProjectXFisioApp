@@ -1,23 +1,23 @@
 'use strict';
 
-const express = require('express');
-const Router = express.Router();
-const mongoose = require('mongoose');
-const Service = mongoose.model('Service');
+let express = require('express');
+let Router = express.Router();
+let mongoose = require('mongoose');
+let Service = mongoose.model('Service');
 
 // Auth con JWT
-const jwtAuth = require('../../lib/jwtAuth');
+let jwtAuth = require('../../lib/jwtAuth');
 Router.use(jwtAuth());
 
 // Get all services
 
 Router.get('/', (req, res, next) => {
 
-  const start = parseInt(req.query.start) || 0;
-  const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
-  const sort = req.query.sort || '_id';
-  const includeTotal = req.query.includeTotal === 'true';
-  const filters = {};
+  let start = parseInt(req.query.start) || 0;
+  let limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
+  let sort = req.query.sort || '_id';
+  let includeTotal = req.query.includeTotal === 'true';
+  let filters = {};
 
   if (typeof req.query.status !== 'undefined') {
     filters.status = req.query.status;
@@ -35,10 +35,10 @@ Router.get('/', (req, res, next) => {
 
 // Get a service
 
-Router.get('/:idService', (req, res, next) => {
+Router.get('/:id', (req, res, next) => {
 
   // Find service
-  Service.findOne({ idService: req.params.idService }, function (err, service) {
+  Service.findById(req.params.id).exec(function (err, service) {
     if (err) return next(err);
 
     if (!service) {
