@@ -1,7 +1,6 @@
 'use strict';
 
 let mongoose = require('mongoose');
-let Schema = mongoose.Schema;
 let User = mongoose.model('User');
 
 let hash = require('hash.js');

@@ -56,8 +56,6 @@ Router.get('/id/:id', (req, res, next) => {
       Service.populate( appointment, { path: 'service' }, function(err, appointmentsAndService) {
         User.populate( appointmentsAndService, { path: 'customer' }, function(err, appointmentsAndServiceAndCustomer) {
           User.populate( appointmentsAndServiceAndCustomer, { path: 'professional' }, function(err, appointmentsAndServiceAndCustomerAndProfessional) {
-            console.log("appointmentsAndServiceAndCustomerAndProfessional:");
-            console.log(appointmentsAndServiceAndCustomerAndProfessional);
             res.json({ ok: true, result: appointmentsAndServiceAndCustomerAndProfessional});
           });
         });

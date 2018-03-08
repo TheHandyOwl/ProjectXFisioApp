@@ -3,6 +3,7 @@
 let express = require('express');
 let Router = express.Router();
 let mongoose = require('mongoose');
+let User = mongoose.model('User');
 let Product = mongoose.model('Product');
 
 // Auth con JWT
@@ -49,7 +50,9 @@ Router.get('/:id', (req, res, next) => {
         }
       });
     } else if (product) {
-      res.json({ ok: true, result: product})
+      User.populate( product, { path: 'professional' }, function(err, productAndProfessional) {
+        res.json({ ok: true, result: productAndProfessional });
+      });
     }
   });
 });

@@ -46,8 +46,9 @@ app.use('/', require('./routes/index'));
 
 // API v1
 app.use('/apiv1/appointments', require('./routes/apiv1/appointments'));
-app.use('/apiv1/services', require('./routes/apiv1/services'));
+app.use('/apiv1/notifs', require('./routes/apiv1/notifs'));
 app.use('/apiv1/products', require('./routes/apiv1/products'));
+app.use('/apiv1/services', require('./routes/apiv1/services'));
 app.use('/apiv1/users', require('./routes/apiv1/users'));
 app.use('/apiv1/pushtokens', require('./routes/apiv1/pushtokens'));
 

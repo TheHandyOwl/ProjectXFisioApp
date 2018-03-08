@@ -1,6 +1,8 @@
 'use strict';
 
 let mongoose = require('mongoose');
+let User = mongoose.model('User');
+
 let hash = require('hash.js');
 let v = require('validator');
 
@@ -9,9 +11,10 @@ let flow = require('../lib/flowControl');
 
 let productSchema = mongoose.Schema({
   
-  name        : { type: String, index: true, lowercase: true, required: true },
-  description : { type: String, index:true, lowercase:true, required: true },
-  price       : { type: Number, index:true, unique: false, required: true },
+  professional  : { type: mongoose.Schema.ObjectId, ref: User },
+  name          : { type: String, index: true, lowercase: true, required: true },
+  description   : { type: String, index:true, lowercase:true, required: true },
+  price         : { type: Number, index:true, unique: false, required: true },
 
 });
 
@@ -66,16 +69,21 @@ productSchema.statics.list = function (startRow, numRows, sortField, includeTota
       //row.foto = configApp.appURLBasePath + configApp.imageLogoDate;
     });
 
-    let result = { rows };
+    // Populate
+    User.populate( rows, { path: 'professional' }, function(err, productAndProfessional) {
+      let result = { rows: productAndProfessional };
 
-    if (!includeTotal) return cb(null, result);
+      if (!includeTotal) return cb(null, result);
 
-    // Includes total property
-    Service.count({}, (err, total) => {
-      if (err) return cb(err);
-      result.total = total;
-      return cb(null, result);
+      // Includes total property
+      Service.count({}, (err, total) => {
+        if (err) return cb(err);
+        result.total = total;
+        return cb(null, result);
+      });
+
     });
+
   });
 };
 

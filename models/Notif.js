@@ -1,7 +1,6 @@
 'use strict';
 
 let mongoose = require('mongoose');
-let Schema = mongoose.Schema;
 let User = mongoose.model('User');
 
 let hash = require('hash.js');
@@ -48,6 +47,37 @@ notifSchema.statics.loadJson = async function (file) {
 
   return numNotifs;
 
+};
+
+notifSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
+
+  let query = Notif.find(filters);
+
+  query.sort(sortField);
+  query.skip(startRow);
+  query.limit(numRows);
+
+  return query.exec(function (err, rows) {
+    if (err) return cb(err);
+
+    // Populate
+    User.populate( rows, { path: 'customer' }, function(err, notifsAndCustomer) {
+      User.populate( notifsAndCustomer, { path: 'professional' }, function(err, notifsAndCustomerAndProfessional) {
+        let result = { rows: notifsAndCustomerAndProfessional };
+
+        if (!includeTotal) return cb(null, result);
+
+        // Includes total property
+        Notif.count({}, (err, total) => {
+          if (err) return cb(err);
+          result.total = total;
+          return cb(null, result);
+        });
+
+      });
+    });
+
+  });
 };
 
 notifSchema.statics.exists = function (idNotification, cb) {
