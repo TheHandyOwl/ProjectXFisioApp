@@ -1,12 +1,14 @@
 'use strict';
 
-const Express = require('express');
-const Router = Express.Router();
-const mongoose = require('mongoose');
-const Appointment = mongoose.model('Appointment');
+let Express = require('express');
+let Router = Express.Router();
+let mongoose = require('mongoose');
+let User = mongoose.model('User');
+let Service = mongoose.model('Service');
+let Appointment = mongoose.model('Appointment');
 
 // Auth con JWT
-const jwtAuth = require('../../lib/jwtAuth');
+let jwtAuth = require('../../lib/jwtAuth');
 Router.use(jwtAuth());
 
 // Get all appointments
@@ -15,11 +17,11 @@ Router.get('/', (req, res, next) => {
 
   //console.log('jwt decoded', req.decoded);
 
-  const start = parseInt(req.query.start) || 0;
-  const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
-  const sort = req.query.sort || '_id';
-  const includeTotal = req.query.includeTotal === 'true';
-  const filters = {};
+  let start = parseInt(req.query.start) || 0;
+  let limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
+  let sort = req.query.sort || '_id';
+  let includeTotal = req.query.includeTotal === 'true';
+  let filters = {};
 
   if (typeof req.query.status !== 'undefined') {
     filters.status = req.query.status;
@@ -33,33 +35,14 @@ Router.get('/', (req, res, next) => {
     if (err) return next(err);
     res.json({ ok: true, result: result });
   });
-});
 
-// Find appointment by date
-
-Router.get('/:date', (req, res, next) => {
-  
-  Appointment.findOne({ date: req.params.date }, function (err, appointment) {
-    if (err) return next(err);
-
-    if (!appointment) {
-      return res.json({
-        ok: false, error: {
-          code: 401,
-          message: res.__('appointment_not_found')
-        }
-      });
-    } else if (appointment) {
-      res.json({ ok: true, result: appointment})
-    }
-  });
 });
 
 // Find appointment by id
 
-Router.get('/byId/:idAppointment', (req, res, next) => {
+Router.get('/:id', (req, res, next) => {
   
-  Appointment.findOne({ idAppointment: req.params.idAppointment }, function (err, appointment) {
+  Appointment.findById(req.params.id).exec(function (err, appointment) {
     if (err) return next(err);
 
     if (!appointment) {
@@ -70,7 +53,15 @@ Router.get('/byId/:idAppointment', (req, res, next) => {
         }
       });
     } else if (appointment) {
-      res.json({ ok: true, result: appointment})
+      Service.populate( appointment, { path: 'service' }, function(err, appointmentsAndService) {
+        User.populate( appointmentsAndService, { path: 'customer' }, function(err, appointmentsAndServiceAndCustomer) {
+          User.populate( appointmentsAndServiceAndCustomer, { path: 'professional' }, function(err, appointmentsAndServiceAndCustomerAndProfessional) {
+            console.log("appointmentsAndServiceAndCustomerAndProfessional:");
+            console.log(appointmentsAndServiceAndCustomerAndProfessional);
+            res.json({ ok: true, result: appointmentsAndServiceAndCustomerAndProfessional});
+          });
+        });
+      });
     }
   });
 });

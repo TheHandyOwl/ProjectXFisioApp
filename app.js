@@ -13,12 +13,12 @@ const db = require('./lib/connectMongoose');
 /* jshint ignore:end */
 
 // Loading definitions from all models
-require('./models/Appointment');
-require('./models/Blog');
-require('./models/Notif');
-require('./models/Product');
-require('./models/Service');
 require('./models/User');
+require('./models/Service');
+require('./models/Product');
+require('./models/Notif');
+require('./models/Blog');
+require('./models/Appointment');
 require('./models/PushToken');
 
 const app = express();

@@ -70,7 +70,7 @@ productSchema.statics.list = function (startRow, numRows, sortField, includeTota
 
     if (!includeTotal) return cb(null, result);
 
-    // incluir propiedad total
+    // Includes total property
     Service.count({}, (err, total) => {
       if (err) return cb(err);
       result.total = total;

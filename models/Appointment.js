@@ -1,19 +1,19 @@
 'use strict';
 
-const mongoose = require('mongoose');
+let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 let User = mongoose.model('User');
 let Service = mongoose.model('Service');
 
-const hash = require('hash.js');
-const v = require('validator');
+let hash = require('hash.js');
+let v = require('validator');
 
-const fs = require('fs');
-const flow = require('../lib/flowControl');
+let fs = require('fs');
+let flow = require('../lib/flowControl');
 
-const configApp = require('./../local_config').app;
+let configApp = require('./../local_config').app;
 
-const appointmentSchema = mongoose.Schema({
+let appointmentSchema = mongoose.Schema({
   
   service         : { type: mongoose.Schema.ObjectId, ref: Service },
   customer        : { type: mongoose.Schema.ObjectId, ref: User },
@@ -35,7 +35,7 @@ appointmentSchema.index( { service: 1, customer: 1, professional: 1, date: 1 } )
  */
 appointmentSchema.statics.loadJson = async function (file) {
 
-  const data = await new Promise((resolve, reject) => {
+  let data = await new Promise((resolve, reject) => {
     fs.readFile(file, { encoding: 'utf8' }, (err, data) => {
       return err ? reject(err) : resolve(data);
     });
@@ -47,8 +47,8 @@ appointmentSchema.statics.loadJson = async function (file) {
     throw new Error(file + ' is empty!');
   }
 
-  const appointments = JSON.parse(data).appointments;
-  const numAppointments = appointments.length;
+  let appointments = JSON.parse(data).appointments;
+  let numAppointments = appointments.length;
 
   for (var i = 0; i < appointments.length; i++) {
     await (new Appointment(appointments[i])).save();
@@ -60,7 +60,7 @@ appointmentSchema.statics.loadJson = async function (file) {
 
 appointmentSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
 
-  const query = Appointment.find(filters);
+  let query = Appointment.find(filters);
 
   query.sort(sortField);
   query.skip(startRow);
@@ -74,16 +74,28 @@ appointmentSchema.statics.list = function (startRow, numRows, sortField, include
       row.foto = configApp.appURLBasePath + configApp.imageLogoDate;
     });
 
-    const result = { rows: rows };
+    // Populate
+    Service.populate( rows, { path: 'service' }, function(err, appointmentsAndService) {
+      User.populate( appointmentsAndService, { path: 'customer' }, function(err, appointmentsAndServiceAndCustomer) {
+        User.populate( appointmentsAndServiceAndCustomer, { path: 'professional' }, function(err, appointmentsAndServiceAndCustomerAndProfessional) {
+          console.log("appointmentsAndServiceAndCustomerAndProfessional:");
+          console.log(appointmentsAndServiceAndCustomerAndProfessional);
 
-    if (!includeTotal) return cb(null, result);
+          let result = { rows: appointmentsAndServiceAndCustomerAndProfessional };
+   
+          if (!includeTotal) return cb(null, result);
+      
+          // incluir propiedad total
+          Appointment.count({}, (err, total) => {
+            if (err) return cb(err);
+            result.total = total;
+            return cb(null, result);
+          });
 
-    // incluir propiedad total
-    Appointment.count({}, (err, total) => {
-      if (err) return cb(err);
-      result.total = total;
-      return cb(null, result);
+        });
+      });
     });
+
   });
 };
 
@@ -96,7 +108,7 @@ appointmentSchema.statics.exists = function (idAppointment, cb) {
 
 appointmentSchema.statics.createRecord = function (appointment, cb) {
   // Validations
-  const valErrors = [];
+  let valErrors = [];
   if (!(v.isAlpha(appointment.name) && v.isLength(appointment.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
   }
