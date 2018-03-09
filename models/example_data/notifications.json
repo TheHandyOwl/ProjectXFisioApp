@@ -1,24 +1,24 @@
 {
   "notifications": [
     {
-      "idNotification": 1 ,
-      "idProfessional": 1,
-      "idCustomer": 2,
+      "_id": "5aa01386f056e02c7ce13f1e",
+      "professional": "5a9f054f602dd0e540c71bc6",
+      "customer": "5a9f054f602dd0e540c71bc7",
       "name": "Message 1",
       "description": "Description message 1" ,
       "isSent": false,
-      "creationDate": "201802281300",
+      "creationDate": "2018-03-07T16:00:00.000Z",
       "sendingDate": null
     },
     {
-      "idNotification": 2 ,
-      "idProfessional": 1,
-      "idCustomer": 2,
+      "_id": "5aa01386f056e02c7ce13f1f",
+      "professional": "5a9f054f602dd0e540c71bc6",
+      "customer": "5a9f054f602dd0e540c71bc7",
       "name": "Message 2",
       "description": "Description message 2" ,
-      "isSent": true,
-      "creationDate": "201802281000",
-      "sendingDate": "201802281200"
+      "isSent": false,
+      "creationDate": "2018-03-07T16:00:00.000Z",
+      "sendingDate": null
     }
   ]
 }

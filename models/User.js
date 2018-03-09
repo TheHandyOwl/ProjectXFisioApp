@@ -2,11 +2,12 @@
 
 const mongoose = require('mongoose');
 const hash = require('hash.js');
-const v = require('validator');
+const validator = require('validator');
+
+const fs = require('fs');
 
 const userSchema = mongoose.Schema({
 
-  idUser            : Number,
   isProfessional    : Boolean,
   fellowshipNumber  : Number,  // CollegiateNumber
   gender            : String,  // Boolean or String????????
@@ -23,8 +24,33 @@ const userSchema = mongoose.Schema({
 
 });
 
-userSchema.index( { idUser: 1 }, { unique : true } );
-userSchema.index( { email: 1 }, { unique : true } );
+/**
+ * Load json - users
+ */
+userSchema.statics.loadJson = async function (file) {
+
+  const data = await new Promise((resolve, reject) => {
+    fs.readFile(file, { encoding: 'utf8' }, (err, data) => {
+      return err ? reject(err) : resolve(data);
+    });
+  });
+
+  console.log(file + ' readed.');
+
+  if (!data) {
+    throw new Error(file + ' is empty!');
+  }
+
+  const users = JSON.parse(data).users;
+  const numUsers = users.length;
+
+  for (let i = 0; i < users.length; i++) {
+    await (new User(users[i])).save();
+  }
+
+  return numUsers;
+
+};
 
 userSchema.statics.exists = function (idUser, cb) {
   User.findById(idUser, function (err, user) {
@@ -33,42 +59,63 @@ userSchema.statics.exists = function (idUser, cb) {
   });
 };
 
+userSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
+
+  const query = User.find(filters);
+
+  query.sort(sortField);
+  query.skip(startRow);
+  query.limit(numRows);
+
+  return query.exec(function (err, rows) {
+    if (err) return cb(err);
+
+    let result = { rows };
+
+    if (!includeTotal) return cb(null, result);
+
+    // incluir propiedad total
+    User.count({}, (err, total) => {
+      if (err) return cb(err);
+      result.total = total;
+      return cb(null, result);
+    });
+  });
+};
+
 userSchema.statics.createRecord = function (user, cb) {
-  
+
   // Validations
-  const valErrors = [];
-  if (!(v.isAlpha(user.name) && v.isLength(user.name, 2))) {
+  let valErrors = [];
+  if (!(validator.isAlpha(user.name) || validator.isLength(user.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
   }
 
-  if (!v.isEmail(user.email)) {
+  if (!validator.isEmail(user.email)) {
     valErrors.push({ field: 'email', message: __('validation_invalid', { field: 'email' }) });
   }
 
-  if (!v.isLength(user.password, 6)) {
+  if (!validator.isLength(user.password, 6)) {
     valErrors.push({ field: 'password', message: __('validation_minchars', { num: '6' }) });
   }
 
   if (valErrors.length > 0) {
     return cb({ code: 422, errors: valErrors });
   }
-  
+
   // Check duplicates
   // Search user
   User.findOne({ email: user.email }, function (err, exists) {
-    if (err) {
-      return cb(err);
-    }
+    
+    if (err) return cb(err);
 
     // user already exists
     if (exists) {
       return cb({ code: 409, message: __('user_email_duplicated') });
     } else {
 
-      // Hash of the password
-      let hashedPassword = hash.sha256().update(user.password).digest('hex');
-
-      user.password = hashedPassword;
+      // Hash the password
+      user.password = hash.sha256().update(user.password).digest('hex');
 
       // Add new user
       new User(user).save(cb);
@@ -76,4 +123,4 @@ userSchema.statics.createRecord = function (user, cb) {
   });
 };
 
-var User = mongoose.model('User', userSchema);
+let User = mongoose.model('User', userSchema);

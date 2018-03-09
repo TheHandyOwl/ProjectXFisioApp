@@ -1,6 +1,8 @@
 'use strict';
 
 const mongoose = require('mongoose');
+const User = mongoose.model('User');
+
 const hash = require('hash.js');
 const v = require('validator');
 
@@ -9,10 +11,10 @@ const flow = require('../lib/flowControl');
 
 const productSchema = mongoose.Schema({
   
-  idProduct   : { type: Number, index : true },
-  name        : { type: String, index: true, lowercase: true, required: true },
-  description : { type: String, index:true, lowercase:true, required    : true },
-  price       : { type: Number, index:true, unique: false, required: true },
+  professional  : { type: mongoose.Schema.ObjectId, ref: User },
+  name          : { type: String, index: true, lowercase: true, required: true },
+  description   : { type: String, index:true, lowercase:true, required: true },
+  price         : { type: Number, index:true, unique: false, required: true },
 
 });
 
@@ -27,7 +29,7 @@ productSchema.statics.loadJson = async function (file) {
     });
   });
 
-  console.log(file + ' readed.');
+  console.log(file + ' read.');
 
   if (!data) {
     throw new Error(file + ' is empty!');
@@ -36,7 +38,7 @@ productSchema.statics.loadJson = async function (file) {
   const products = JSON.parse(data).products;
   const numProducts = products.length;
 
-  for (var i = 0; i < products.length; i++) {
+  for (let i = 0; i < products.length; i++) {
     await (new Product(products[i])).save();
   }
 
@@ -51,9 +53,43 @@ productSchema.statics.exists = function (idProduct, cb) {
   });
 };
 
+productSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
+
+  const query = Product.find(filters);
+
+  query.sort(sortField);
+  query.skip(startRow);
+  query.limit(numRows);
+
+  return query.exec(function (err, rows) {
+    if (err) return cb(err);
+
+    // System logo for a date in an appointment
+    rows.forEach((row) => {
+      //row.foto = configApp.appURLBasePath + configApp.imageLogoDate;
+    });
+
+    // Populate
+    User.populate( rows, { path: 'professional' }, function(err, productAndProfessional) {
+      let result = { rows: productAndProfessional };
+
+      if (!includeTotal) return cb(null, result);
+
+      // Includes total property
+      Service.count({}, (err, total) => {
+        if (err) return cb(err);
+        result.total = total;
+        return cb(null, result);
+      });
+
+    });
+
+  });
+};
+
 productSchema.statics.createRecord = function (product, cb) {
   // Validations
-  const valErrors = [];
+  let valErrors = [];
   if (!(v.isAlpha(product.name) && v.isLength(product.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
   }
@@ -64,11 +100,11 @@ productSchema.statics.createRecord = function (product, cb) {
 
   // Check duplicates
   // Search product
-  Product.findOne({ name: product.name }, function (err, exists) {
+  Product.findOne({ name: product.name.toLowerCase() }, function (err, exists) {
     if (err) {
       return cb(err);
     }
-
+        
     // Service already exists
     if (exists) {
       return cb({ code: 409, message: __('product_name_duplicated') });
@@ -80,4 +116,4 @@ productSchema.statics.createRecord = function (product, cb) {
   });
 };
 
-var Product = mongoose.model('Product', productSchema);
+let Product = mongoose.model('Product', productSchema);

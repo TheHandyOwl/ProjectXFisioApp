@@ -13,7 +13,7 @@ const pushTokenSchema = mongoose.Schema({
 pushTokenSchema.statics.createRecord = function (newItem, cb) {
 
   // Validations
-  const valErrors = [];
+  let valErrors = [];
   if (!newItem.token) {
     valErrors.push({ field: 'token', message: __('validation_invalid') });
   }
@@ -47,4 +47,4 @@ pushTokenSchema.statics.createRecord = function (newItem, cb) {
   }
 };
 
-var PushToken = mongoose.model('PushToken', pushTokenSchema);
+let PushToken = mongoose.model('PushToken', pushTokenSchema);

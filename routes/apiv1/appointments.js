@@ -1,15 +1,19 @@
 'use strict';
 
-const express = require('express');
-const router = express.Router();
+const Express = require('express');
+const Router = Express.Router();
 const mongoose = require('mongoose');
+const User = mongoose.model('User');
+const Service = mongoose.model('Service');
 const Appointment = mongoose.model('Appointment');
 
 // Auth con JWT
 const jwtAuth = require('../../lib/jwtAuth');
-router.use(jwtAuth());
+Router.use(jwtAuth());
 
-router.get('/', (req, res, next) => {
+// Get all appointments
+
+Router.get('/', (req, res, next) => {
 
   //console.log('jwt decoded', req.decoded);
 
@@ -17,7 +21,7 @@ router.get('/', (req, res, next) => {
   const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
   const sort = req.query.sort || '_id';
   const includeTotal = req.query.includeTotal === 'true';
-  const filters = {};
+  let filters = {};
 
   if (typeof req.query.status !== 'undefined') {
     filters.status = req.query.status;
@@ -31,28 +35,65 @@ router.get('/', (req, res, next) => {
     if (err) return next(err);
     res.json({ ok: true, result: result });
   });
+
 });
 
-router.get('/:date', (req, res, next) => {
+// Find appointment by id
 
-  // Find appointment
-  Appointment.findOne({ date: req.params.date }, function (err, date) {
+Router.get('/id/:id', (req, res, next) => {
+  
+  Appointment.findById(req.params.id).exec(function (err, appointment) {
     if (err) return next(err);
 
-    if (!date) {
+    if (!appointment) {
       return res.json({
         ok: false, error: {
           code: 401,
           message: res.__('appointment_not_found')
         }
       });
-    } else if (date) {
-      res.json({ ok: true, result: date})
+    } else if (appointment) {
+      Service.populate( appointment, { path: 'service' }, function(err, appointmentsAndService) {
+        User.populate( appointmentsAndService, { path: 'customer' }, function(err, appointmentsAndServiceAndCustomer) {
+          User.populate( appointmentsAndServiceAndCustomer, { path: 'professional' }, function(err, appointmentsAndServiceAndCustomerAndProfessional) {
+            res.json({ ok: true, result: appointmentsAndServiceAndCustomerAndProfessional});
+          });
+        });
+      });
     }
   });
 });
 
-router.post('/', function (req, res, next) {
+// Find appointment by date
+
+Router.get('/date/:date', (req, res, next) => {
+  Appointment.find({ date: req.params.date }, function (err, appointment) {
+    if (err) return next(err);
+
+    if (!appointment) {
+      return res.json({
+        ok: false, error: {
+          code: 401,
+          message: res.__('appointment_not_found')
+        }
+      });
+    } else if (appointment) {
+      Service.populate( appointment, { path: 'service' }, function(err, appointmentsAndService) {
+        User.populate( appointmentsAndService, { path: 'customer' }, function(err, appointmentsAndServiceAndCustomer) {
+          User.populate( appointmentsAndServiceAndCustomer, { path: 'professional' }, function(err, appointmentsAndServiceAndCustomerAndProfessional) {
+            console.log("appointmentsAndServiceAndCustomerAndProfessional:");
+            console.log(appointmentsAndServiceAndCustomerAndProfessional);
+            res.json({ ok: true, result: appointmentsAndServiceAndCustomerAndProfessional});
+          });
+        });
+      });
+    }
+  });
+});
+
+// Create an appointment
+
+Router.post('/', function (req, res, next) {
   Appointment.createRecord(req.body, function (err) {
     if (err) return next(err);
 
@@ -61,4 +102,54 @@ router.post('/', function (req, res, next) {
   });
 });
 
-module.exports = router;
+// Update an appointment
+
+Router.put('/:idAppointment', function (req, res, next) {
+
+  Appointment.findOne({ idAppointment: req.params.idAppointment }, function (err, appointment) {
+    if (err) return next(err);
+
+    if (!appointment) {
+      return res.json({
+        ok: false, error: {
+          code: 401,
+          message: res.__('appointment_not_found')
+        }
+      });
+    } else if (appointment) {
+
+      Appointment.updateOne(req.body, function (err) {
+        if (err) return next(err);
+    
+        // Appointment updated
+        return res.json({ ok: true, message: res.__('appointment_updated') });
+      });
+    }
+  });
+});
+
+
+// Remove an appointment
+
+Router.delete('/:idAppointment', function (req, res, next) {
+  Appointment.findOne({ idAppointment: req.params.idAppointment }, function (err, appointment) {
+    if (err) return next(err);
+
+    if (!appointment) {
+      return res.json({
+        ok: false, error: {
+          code: 401,
+          message: res.__('appointment_not_found')
+        }
+      });
+    } else if (appointment) {
+      Appointment.deleteOne({idAppointment: req.params.idAppointment}, function (err){
+        if (err) return next(err);
+
+        return res.json({ ok: true, message: res.__('appointment_deleted' )});
+      })
+    }
+  });
+});
+
+module.exports = Router;
