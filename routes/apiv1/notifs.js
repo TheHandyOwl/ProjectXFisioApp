@@ -1,13 +1,13 @@
 'use strict';
 
-let Express = require('express');
-let Router = Express.Router();
-let mongoose = require('mongoose');
-let User = mongoose.model('User');
-let Notif = mongoose.model('Notif');
+const Express = require('express');
+const Router = Express.Router();
+const mongoose = require('mongoose');
+const User = mongoose.model('User');
+const Notif = mongoose.model('Notif');
 
 // Auth con JWT
-let jwtAuth = require('../../lib/jwtAuth');
+const jwtAuth = require('../../lib/jwtAuth');
 Router.use(jwtAuth());
 
 // Get all notifs
@@ -16,10 +16,10 @@ Router.get('/', (req, res, next) => {
 
   //console.log('jwt decoded', req.decoded);
 
-  let start = parseInt(req.query.start) || 0;
-  let limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
-  let sort = req.query.sort || '_id';
-  let includeTotal = req.query.includeTotal === 'true';
+  const start = parseInt(req.query.start) || 0;
+  const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
+  const sort = req.query.sort || '_id';
+  const includeTotal = req.query.includeTotal === 'true';
   let filters = {};
 
   if (typeof req.query.status !== 'undefined') {

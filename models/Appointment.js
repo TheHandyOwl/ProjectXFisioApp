@@ -1,18 +1,18 @@
 'use strict';
 
-let mongoose = require('mongoose');
-let User = mongoose.model('User');
-let Service = mongoose.model('Service');
+const mongoose = require('mongoose');
+const User = mongoose.model('User');
+const Service = mongoose.model('Service');
 
-let hash = require('hash.js');
-let v = require('validator');
+const hash = require('hash.js');
+const v = require('validator');
 
-let fs = require('fs');
-let flow = require('../lib/flowControl');
+const fs = require('fs');
+const flow = require('../lib/flowControl');
 
-let configApp = require('./../local_config').app;
+const configApp = require('./../local_config').app;
 
-let appointmentSchema = mongoose.Schema({
+const appointmentSchema = mongoose.Schema({
   
   service         : { type: mongoose.Schema.ObjectId, ref: Service },
   customer        : { type: mongoose.Schema.ObjectId, ref: User },
@@ -34,7 +34,7 @@ appointmentSchema.index( { service: 1, customer: 1, professional: 1, date: 1 } )
  */
 appointmentSchema.statics.loadJson = async function (file) {
 
-  let data = await new Promise((resolve, reject) => {
+  const data = await new Promise((resolve, reject) => {
     fs.readFile(file, { encoding: 'utf8' }, (err, data) => {
       return err ? reject(err) : resolve(data);
     });
@@ -46,10 +46,10 @@ appointmentSchema.statics.loadJson = async function (file) {
     throw new Error(file + ' is empty!');
   }
 
-  let appointments = JSON.parse(data).appointments;
-  let numAppointments = appointments.length;
+  const appointments = JSON.parse(data).appointments;
+  const numAppointments = appointments.length;
 
-  for (var i = 0; i < appointments.length; i++) {
+  for (let i = 0; i < appointments.length; i++) {
     await (new Appointment(appointments[i])).save();
   }
 
@@ -59,7 +59,7 @@ appointmentSchema.statics.loadJson = async function (file) {
 
 appointmentSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
 
-  let query = Appointment.find(filters);
+  const query = Appointment.find(filters);
 
   query.sort(sortField);
   query.skip(startRow);
@@ -77,8 +77,6 @@ appointmentSchema.statics.list = function (startRow, numRows, sortField, include
     Service.populate( rows, { path: 'service' }, function(err, appointmentsAndService) {
       User.populate( appointmentsAndService, { path: 'customer' }, function(err, appointmentsAndServiceAndCustomer) {
         User.populate( appointmentsAndServiceAndCustomer, { path: 'professional' }, function(err, appointmentsAndServiceAndCustomerAndProfessional) {
-          console.log("appointmentsAndServiceAndCustomerAndProfessional:");
-          console.log(appointmentsAndServiceAndCustomerAndProfessional);
 
           let result = { rows: appointmentsAndServiceAndCustomerAndProfessional };
 
@@ -134,4 +132,4 @@ appointmentSchema.statics.createRecord = function (appointment, cb) {
   });
 };
 
-var Appointment = mongoose.model('Appointment', appointmentSchema);
+let Appointment = mongoose.model('Appointment', appointmentSchema);

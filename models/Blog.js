@@ -1,15 +1,15 @@
 'use strict';
 
-let mongoose = require('mongoose');
-let User = mongoose.model('User');
+const mongoose = require('mongoose');
+const User = mongoose.model('User');
 
-let hash = require('hash.js');
-let v = require('validator');
+const hash = require('hash.js');
+const v = require('validator');
 
-let fs = require('fs');
-let flow = require('../lib/flowControl');
+const fs = require('fs');
+const flow = require('../lib/flowControl');
 
-let postSchema = mongoose.Schema({
+const postSchema = mongoose.Schema({
   
   professional    : { type: mongoose.Schema.ObjectId, ref: User },
   customer        : { type: mongoose.Schema.ObjectId, ref: User },
@@ -33,7 +33,7 @@ postSchema.statics.exists = function (idBlog, cb) {
  */
 postSchema.statics.loadJson = async function (file) {
 
-  let data = await new Promise((resolve, reject) => {
+  const data = await new Promise((resolve, reject) => {
     fs.readFile(file, { encoding: 'utf8' }, (err, data) => {
       return err ? reject(err) : resolve(data);
     });
@@ -45,10 +45,10 @@ postSchema.statics.loadJson = async function (file) {
     throw new Error(file + ' is empty!');
   }
 
-  let posts = JSON.parse(data).posts;
-  let numPosts = posts.length;
+  const posts = JSON.parse(data).posts;
+  const numPosts = posts.length;
 
-  for (var i = 0; i < posts.length; i++) {
+  for (let i = 0; i < posts.length; i++) {
     await (new Blog(posts[i])).save();
   }
 
@@ -85,4 +85,4 @@ postSchema.statics.createRecord = function (post, cb) {
   });
 };
 
-var Blog = mongoose.model('Blog', postSchema);
+let Blog = mongoose.model('Blog', postSchema);

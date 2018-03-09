@@ -1,7 +1,7 @@
 'use strict';
 
-let router = require('express').Router();
-let fs = require('fs');
+const router = require('express').Router();
+const fs = require('fs');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {

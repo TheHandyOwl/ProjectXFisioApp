@@ -1,14 +1,14 @@
 'use strict';
 
-let express = require('express');
-let router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-let mongoose = require('mongoose');
-let PushToken = mongoose.model('PushToken');
+const mongoose = require('mongoose');
+const PushToken = mongoose.model('PushToken');
 
 router.post('/', function (req, res, next) {
 
-  let nuevo = {
+  const nuevo = {
     token: req.body.pushtoken,
     user: req.body.iduser || undefined,
     plataforma: req.body.plataforma

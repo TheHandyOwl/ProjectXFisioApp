@@ -1,23 +1,23 @@
 'use strict';
 
-let express = require('express');
-let Router = express.Router();
-let mongoose = require('mongoose');
-let User = mongoose.model('User');
-let Product = mongoose.model('Product');
+const express = require('express');
+const Router = express.Router();
+const mongoose = require('mongoose');
+const User = mongoose.model('User');
+const Product = mongoose.model('Product');
 
 // Auth con JWT
-let jwtAuth = require('../../lib/jwtAuth');
+const jwtAuth = require('../../lib/jwtAuth');
 Router.use(jwtAuth());
 
 // Get all products
 
 Router.get('/', (req, res, next) => {
 
-  let start = parseInt(req.query.start) || 0;
-  let limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
-  let sort = req.query.sort || '_id';
-  let includeTotal = req.query.includeTotal === 'true';
+  const start = parseInt(req.query.start) || 0;
+  const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
+  const sort = req.query.sort || '_id';
+  const includeTotal = req.query.includeTotal === 'true';
   let filters = {};
 
   if (typeof req.query.status !== 'undefined') {

@@ -1,9 +1,9 @@
 'use strict';
 
-let mongoose = require('mongoose');
-let User = mongoose.model('User');
+const mongoose = require('mongoose');
+const User = mongoose.model('User');
 
-let pushTokenSchema = mongoose.Schema({
+const pushTokenSchema = mongoose.Schema({
   plataform : { type: String, enum: ['ios', 'android'], index: true },
   token     : { type: String, index: true },
   user      : { type: String, index: true },
@@ -47,4 +47,4 @@ pushTokenSchema.statics.createRecord = function (newItem, cb) {
   }
 };
 
-var PushToken = mongoose.model('PushToken', pushTokenSchema);
+let PushToken = mongoose.model('PushToken', pushTokenSchema);

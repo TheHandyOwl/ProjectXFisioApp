@@ -1,15 +1,15 @@
 'use strict';
 
-let mongoose = require('mongoose');
-let User = mongoose.model('User');
+const mongoose = require('mongoose');
+const User = mongoose.model('User');
 
-let hash = require('hash.js');
-let v = require('validator');
+const hash = require('hash.js');
+const v = require('validator');
 
-let fs = require('fs');
-let flow = require('../lib/flowControl');
+const fs = require('fs');
+const flow = require('../lib/flowControl');
 
-let productSchema = mongoose.Schema({
+const productSchema = mongoose.Schema({
   
   professional  : { type: mongoose.Schema.ObjectId, ref: User },
   name          : { type: String, index: true, lowercase: true, required: true },
@@ -23,7 +23,7 @@ let productSchema = mongoose.Schema({
  */
 productSchema.statics.loadJson = async function (file) {
 
-  let data = await new Promise((resolve, reject) => {
+  const data = await new Promise((resolve, reject) => {
     fs.readFile(file, { encoding: 'utf8' }, (err, data) => {
       return err ? reject(err) : resolve(data);
     });
@@ -35,10 +35,10 @@ productSchema.statics.loadJson = async function (file) {
     throw new Error(file + ' is empty!');
   }
 
-  let products = JSON.parse(data).products;
-  let numProducts = products.length;
+  const products = JSON.parse(data).products;
+  const numProducts = products.length;
 
-  for (var i = 0; i < products.length; i++) {
+  for (let i = 0; i < products.length; i++) {
     await (new Product(products[i])).save();
   }
 
@@ -55,7 +55,7 @@ productSchema.statics.exists = function (idProduct, cb) {
 
 productSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
 
-  let query = Product.find(filters);
+  const query = Product.find(filters);
 
   query.sort(sortField);
   query.skip(startRow);
@@ -116,4 +116,4 @@ productSchema.statics.createRecord = function (product, cb) {
   });
 };
 
-var Product = mongoose.model('Product', productSchema);
+let Product = mongoose.model('Product', productSchema);

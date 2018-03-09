@@ -1,12 +1,12 @@
 'use strict';
 
-let mongoose = require('mongoose');
-let hash = require('hash.js');
-let validator = require('validator');
+const mongoose = require('mongoose');
+const hash = require('hash.js');
+const validator = require('validator');
 
-let fs = require('fs');
+const fs = require('fs');
 
-let userSchema = mongoose.Schema({
+const userSchema = mongoose.Schema({
 
   isProfessional    : Boolean,
   fellowshipNumber  : Number,  // CollegiateNumber
@@ -29,7 +29,7 @@ let userSchema = mongoose.Schema({
  */
 userSchema.statics.loadJson = async function (file) {
 
-  let data = await new Promise((resolve, reject) => {
+  const data = await new Promise((resolve, reject) => {
     fs.readFile(file, { encoding: 'utf8' }, (err, data) => {
       return err ? reject(err) : resolve(data);
     });
@@ -41,10 +41,10 @@ userSchema.statics.loadJson = async function (file) {
     throw new Error(file + ' is empty!');
   }
 
-  let users = JSON.parse(data).users;
-  let numUsers = users.length;
+  const users = JSON.parse(data).users;
+  const numUsers = users.length;
 
-  for (var i = 0; i < users.length; i++) {
+  for (let i = 0; i < users.length; i++) {
     await (new User(users[i])).save();
   }
 
@@ -61,7 +61,7 @@ userSchema.statics.exists = function (idUser, cb) {
 
 userSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
 
-  let query = User.find(filters);
+  const query = User.find(filters);
 
   query.sort(sortField);
   query.skip(startRow);
@@ -123,4 +123,4 @@ userSchema.statics.createRecord = function (user, cb) {
   });
 };
 
-var User = mongoose.model('User', userSchema);
+let User = mongoose.model('User', userSchema);

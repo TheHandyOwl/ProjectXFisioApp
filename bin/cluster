@@ -4,18 +4,18 @@
  * Module dependencies
  */
 
-var debug = require('debug')('nodepop:server');
-var http = require('http');
+let debug = require('debug')('nodepop:server');
+let http = require('http');
 
 /**
  * Get port from environment and store in Express
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+let port = normalizePort(process.env.PORT || '3000');
 
 // Cluster control - begin
 
-var cluster = require('cluster');
+let cluster = require('cluster');
 
 if (cluster.isMaster) {
 
@@ -34,12 +34,12 @@ if (cluster.isMaster) {
     console.log('The worker #' + worker.id + ' has disconnected');
   });
 
-  var numCPUs = require('os').cpus().length;
+  let numCPUs = require('os').cpus().length;
 
   console.log('starting cluster for ' + numCPUs + ' cpus...');
 
   // Fork workers
-  for (var i = 0; i < numCPUs; i++) {
+  for (let i = 0; i < numCPUs; i++) {
     cluster.fork();
   }
 
@@ -49,7 +49,7 @@ if (cluster.isMaster) {
 
   // Cluster control - end
 
-  var app = require('../app');
+  let app = require('../app');
 
   app.set('port', port);
 
@@ -57,7 +57,7 @@ if (cluster.isMaster) {
    * Create HTTP server
    */
 
-  var server = http.createServer(app);
+  let server = http.createServer(app);
 
   /**
    * Listen on provided port, on all network interfaces
@@ -73,7 +73,7 @@ if (cluster.isMaster) {
  */
 
 function normalizePort(val) {
-  var port = parseInt(val, 10);
+  let port = parseInt(val, 10);
 
   if (isNaN(port)) {
     // named pipe
@@ -97,7 +97,7 @@ function onError(error) {
     throw error;
   }
 
-  var bind = typeof port === 'string'
+  let bind = typeof port === 'string'
     ? 'Pipe ' + port
     : 'Port ' + port;
 
@@ -121,8 +121,8 @@ function onError(error) {
  */
 
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
+  let addr = server.address();
+  let bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind + ' (env: ' + app.get('env') + ')');

@@ -1,15 +1,15 @@
 'use strict';
 
-let mongoose = require('mongoose');
-let User = mongoose.model('User');
+const mongoose = require('mongoose');
+const User = mongoose.model('User');
 
-let hash = require('hash.js');
-let v = require('validator');
+const hash = require('hash.js');
+const v = require('validator');
 
-let fs = require('fs');
-let flow = require('../lib/flowControl');
+const fs = require('fs');
+const flow = require('../lib/flowControl');
 
-let notifSchema = mongoose.Schema({
+const notifSchema = mongoose.Schema({
   
   professional    : { type: mongoose.Schema.ObjectId, ref: User },
   customer        : { type: mongoose.Schema.ObjectId, ref: User },
@@ -26,7 +26,7 @@ let notifSchema = mongoose.Schema({
  */
 notifSchema.statics.loadJson = async function (file) {
 
-  let data = await new Promise((resolve, reject) => {
+  const data = await new Promise((resolve, reject) => {
     fs.readFile(file, { encoding: 'utf8' }, (err, data) => {
       return err ? reject(err) : resolve(data);
     });
@@ -38,10 +38,10 @@ notifSchema.statics.loadJson = async function (file) {
     throw new Error(file + ' is empty!');
   }
 
-  let notifs = JSON.parse(data).notifications;
-  let numNotifs = notifs.length;
+  const notifs = JSON.parse(data).notifications;
+  const numNotifs = notifs.length;
 
-  for (var i = 0; i < notifs.length; i++) {
+  for (let i = 0; i < notifs.length; i++) {
     await (new Notif(notifs[i])).save();
   }
 
@@ -51,7 +51,7 @@ notifSchema.statics.loadJson = async function (file) {
 
 notifSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
 
-  let query = Notif.find(filters);
+  const query = Notif.find(filters);
 
   query.sort(sortField);
   query.skip(startRow);
@@ -116,4 +116,4 @@ notifSchema.statics.createRecord = function (notif, cb) {
   });
 };
 
-var Notif = mongoose.model('Notif', notifSchema);
+let Notif = mongoose.model('Notif', notifSchema);
