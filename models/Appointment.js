@@ -103,7 +103,7 @@ appointmentSchema.statics.exists = function (idAppointment, cb) {
   });
 };
 
-appointmentSchema.statics.createRecord = function (appointment, cb) {
+appointmentSchema.statics.createRecord = function (appointment, idProfessional, cb) {
   // Validations
   let valErrors = [];
   if (!(v.isAlpha(appointment.name) && v.isLength(appointment.name, 2))) {
@@ -116,16 +116,17 @@ appointmentSchema.statics.createRecord = function (appointment, cb) {
 
   // Check duplicates
   // Search appointment
-  Appointment.findOne({ idAppointment: appointment.idAppointment }, function (err, appointment) {
+  Appointment.findOne({ date: appointment.date }, function (err, foundAppointment) {
     if (err) {
       return cb(err);
     }
 
     // appointment already exists
-    if (appointment) {
+    if (foundAppointment) {
       return cb({ code: 409, message: __('appointment_id_duplicated') });
     } else {
 
+      appointment.idProfessional = idProfessional;
       // Add new appointment
       new Appointment(appointment).save(cb);
     }
