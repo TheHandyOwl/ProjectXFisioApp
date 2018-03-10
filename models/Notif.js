@@ -17,7 +17,9 @@ const notifSchema = mongoose.Schema({
   description     : { type: String, index:true, lowercase:true, required: true },
   isSent          : { type: Boolean, index:true, required: true },
   creationDate    : { type : Date, index: true },
-  sendingDate     : { type : Date, index: true }
+  sendingDate     : { type : Date, index: true },
+  
+  deleted         : { type: Boolean, default: false }
 
 });
 
