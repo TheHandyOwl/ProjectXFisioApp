@@ -40,11 +40,38 @@ Router.get('/', (req, res, next) => {
 
 });
 
+// Find all the appointment from a PROFESSIONAL
+
+Router.get('/professional', (req, res, next) => {
+  
+  Appointment.find({ professional: req.decoded.user._id }).exec(function (err, appointment) {
+    if (err) return next(err);
+
+
+    if (!appointment) {
+      return res.json({
+        ok: false, error: {
+          code: 401,
+          message: res.__('appointment_not_found')
+        }
+      });
+    } else if (appointment) {
+      Service.populate( appointment, { path: 'service' }, function(err, appointmentsAndService) {
+        User.populate( appointmentsAndService, { path: 'customer' }, function(err, appointmentsAndServiceAndCustomer) {
+          User.populate( appointmentsAndServiceAndCustomer, { path: 'professional' }, function(err, appointmentsAndServiceAndCustomerAndProfessional) {
+            res.json({ ok: true, result: appointmentsAndServiceAndCustomerAndProfessional});
+          });
+        });
+      });
+    }
+  });
+});
+
 // Find appointment by id as PROFESSIONAL
 
 Router.get('/professional/id/:id', (req, res, next) => {
   
-  Appointment.find({idAppointment: req.params.id, professional: req.decoded.user._id }).exec(function (err, appointment) {
+  Appointment.find({_id: req.params.id, professional: req.decoded.user._id }).exec(function (err, appointment) {
     if (err) return next(err);
 
 
@@ -93,12 +120,38 @@ Router.get('/professional/date/:date', (req, res, next) => {
   });
 });
 
+// Find all the appointment from a CUSTOMER
+
+Router.get('/customer', (req, res, next) => {
+  
+  Appointment.find({ customer: req.decoded.user._id }).exec(function (err, appointment) {
+    if (err) return next(err);
+
+
+    if (!appointment) {
+      return res.json({
+        ok: false, error: {
+          code: 401,
+          message: res.__('appointment_not_found')
+        }
+      });
+    } else if (appointment) {
+      Service.populate( appointment, { path: 'service' }, function(err, appointmentsAndService) {
+        User.populate( appointmentsAndService, { path: 'customer' }, function(err, appointmentsAndServiceAndCustomer) {
+          User.populate( appointmentsAndServiceAndCustomer, { path: 'professional' }, function(err, appointmentsAndServiceAndCustomerAndProfessional) {
+            res.json({ ok: true, result: appointmentsAndServiceAndCustomerAndProfessional});
+          });
+        });
+      });
+    }
+  });
+});
 
 // Find appointment by id as CUSTOMER
 
 Router.get('/customer/id/:id', (req, res, next) => {
   
-  Appointment.find({idAppointment: req.params.id, customer: req.decoded.user._id }).exec(function (err, appointment) {
+  Appointment.find({_id: req.params.id, customer: req.decoded.user._id }).exec(function (err, appointment) {
     if (err) return next(err);
 
     

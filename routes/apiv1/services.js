@@ -5,6 +5,7 @@ const Router = express.Router();
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 const Service = mongoose.model('Service');
+const Appointment = mongoose.model('Appointment');
 
 // Auth con JWT
 const jwtAuth = require('../../lib/jwtAuth');
@@ -16,7 +17,7 @@ Router.get('/', (req, res, next) => {
 
   const start = parseInt(req.query.start) || 0;
   const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
-  const sort = req.query.sort || '_id';
+  const sort = req.query.sort || 'name';
   const includeTotal = req.query.includeTotal === 'true';
   let filters = {};
 
@@ -70,8 +71,8 @@ Router.post('/', function (req, res, next) {
 
 // Remove a Service
 
-Router.delete('/:idService', function (req, res, next) {
-  Service.findOne({ idService: req.params.idService }, function (err, service) {
+Router.delete('/:id', function (req, res, next) {
+  Service.findOne( { _id: req.params.id, deleted: false } , function (err, service) {
     if (err) return next(err);
 
     if (!service) {
@@ -82,20 +83,36 @@ Router.delete('/:idService', function (req, res, next) {
         }
       });
     } else if (service) {
-      Service.deleteOne({idService: req.params.idService}, function (err){
+      const now = new Date().toISOString();
+      Appointment.find( { service: service._id, isConfirmed: true, date: { $gte:  now }, deleted: false } ,function (err, appointmentsPending) {
         if (err) return next(err);
 
-        return res.json({ ok: true, message: res.__('service_deleted' )});
-      })
+        const numAppointmentsPending = appointmentsPending.length;
+        if (!appointmentsPending || numAppointmentsPending == 0) {
+          Appointment.where( { service: service._id } ).setOptions({ multi: true }).update( { deleted: true }, function (err, allAppointmentsToDelete) {
+            if (err) return next(err);
+            Service.findOneAndUpdate( { _id: service._id }, { deleted: true }, function (err, serviceToDelete) {
+              if (err) return next(err);
+
+              return res.json({ ok: true, message: res.__('service_deleted')});
+            });
+          });
+
+        } else {
+          return res.json({ ok: true, message: res.__('service_not_completed', { num: numAppointmentsPending })});
+        }
+
+      });
     }
+
   });
 });
 
 // Update a service
 
-Router.put('/:idService', function (req, res, next) {
+Router.put('/:id', function (req, res, next) {
 
-  Service.findOne({ idService: req.params.idService }, function (err, service) {
+  Service.findOne({ id: req.params.id }, function (err, service) {
     if (err) return next(err);
 
     if (!service) {

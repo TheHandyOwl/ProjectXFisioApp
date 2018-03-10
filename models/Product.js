@@ -15,6 +15,8 @@ const productSchema = mongoose.Schema({
   name          : { type: String, index: true, lowercase: true, required: true },
   description   : { type: String, index:true, lowercase:true, required: true },
   price         : { type: Number, index:true, unique: false, required: true },
+  
+  deleted       : { type: Boolean, default: false }
 
 });
 

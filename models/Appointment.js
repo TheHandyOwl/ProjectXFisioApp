@@ -23,7 +23,9 @@ const appointmentSchema = mongoose.Schema({
   latitude        : Number,
   longitude       : Number,
   address         : String, // TODO: [Address] ????  not sure how to do it
-  extraInfo       : String
+  extraInfo       : String,
+  
+  deleted         : { type: Boolean, default: false }
  
 });
 

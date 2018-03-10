@@ -20,7 +20,9 @@ const userSchema = mongoose.Schema({
   birthDate         : Date,
   nationalId        : String,
   registrationDate  : Date,
-  lastLoginDate     : Date
+  lastLoginDate     : Date,
+  
+  deleted           : { type: Boolean, default: false }
 
 });
 
