@@ -6,9 +6,9 @@
     "configurations": [
         {
             "type": "node",
-            "request": "launch",
-            "name": "Iniciar programa",
-            "program": "${workspaceFolder}/bin/www"
+            "request": "attach",
+            "name": "Attach to Process",
+            "port": 9229
         }
     ]
 }

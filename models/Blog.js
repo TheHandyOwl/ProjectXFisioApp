@@ -17,7 +17,9 @@ const postSchema = mongoose.Schema({
   description     : { type: String, index:true, lowercase:true, required: true },
   isVisible       : Boolean,
   creationDate    : Date,
-  publicationDate : Date
+  publicationDate : Date,
+  
+  deleted         : { type: Boolean, default: false }
 
 });
 
