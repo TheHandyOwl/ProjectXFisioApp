@@ -14,14 +14,16 @@
 
 	"product_created": "product created!",
 	"product_deleted": "product deleted!",
+	"product_information_error": "product information error!",
 	"product_updated": "product updated!",
 	"product_id_duplicated": "product id already exists",
 	"product_name_duplicated": "product name already exists",
 	"product_not_found": "product not found",
 	"duplicate_product": "the product already exists",
-
+	
 	"service_created": "service created!",
 	"service_deleted": "service removed and all associated appointments!",
+	"service_information_error": "service information error!",
 	"service_updated": "service updated!",
 	"service_id_duplicated": "service id already exists",
 	"service_name_duplicated": "service name already exists",
