@@ -14,14 +14,16 @@
 
 	"product_created": "Producto creado!",
 	"product_deleted": "Producto eliminado!",
+	"product_information_error": "Error en la información de producto!",
 	"product_updated": "Producto actualizado!",
 	"product_id_duplicated": "el id del producto ya existe",
 	"product_name_duplicated": "el nombre de producto ya existe",
 	"product_not_found": "Producto no encontrado",
 	"duplicate_product": "El producto ya existe",
-
+	
 	"service_created": "Servicio creado!",
 	"service_deleted": "Servicio eliminado y todas las citas asociadas!",
+	"service_information_error": "Error en la información de servicio!",
 	"service_updated": "Servicio actualizado!",
 	"service_id_duplicated": "El id de servicio ya existe",
 	"service_name_duplicated": "el nombre de servicio ya existe",
