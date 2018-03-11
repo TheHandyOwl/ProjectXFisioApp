@@ -70,8 +70,8 @@ Router.post('/', function (req, res, next) {
 
 // Remove a product
 
-Router.delete('/:idProduct', function (req, res, next) {
-  Product.findOne({ idProduct: req.params.idProduct }, function (err, product) {
+Router.delete('/:id', function (req, res, next) {
+  Product.findOneAndUpdate({ _id: req.params.id, deleted: false }, {  deleted: true }, function (err, product) {
     if (err) return next(err);
 
     if (!product) {
@@ -82,20 +82,20 @@ Router.delete('/:idProduct', function (req, res, next) {
         }
       });
     } else if (product) {
-      Product.deleteOne({idProduct: req.params.idProduct}, function (err){
-        if (err) return next(err);
-
-        return res.json({ ok: true, message: res.__('product_deleted' )});
-      })
+      return res.json({ ok: true, message: res.__('product_deleted')});
     }
   });
 });
 
 // Update a product
 
-Router.put('/:idProduct', function (req, res, next) {
+Router.put('/:id', function (req, res, next) {
 
-  Product.findOne({ idProduct: req.params.idProduct }, function (err, product) {
+  if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
+    return res.status(422).json({ ok: false, message: res.__('product_information_error') });
+  }
+
+  Product.findOneAndUpdate({ _id: req.params.id, deleted: false }, req.body, function (err, product) {
     if (err) return next(err);
 
     if (!product) {
@@ -106,13 +106,7 @@ Router.put('/:idProduct', function (req, res, next) {
         }
       });
     } else if (product) {
-
-      Product.updateOne(req.body, function (err) {
-        if (err) return next(err);
-    
-        // product updated
-        return res.json({ ok: true, message: res.__('product_updated') });
-      });
+      return res.json({ ok: true, message: res.__('product_updated') });
     }
   });
 

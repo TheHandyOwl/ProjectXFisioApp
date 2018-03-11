@@ -214,9 +214,16 @@ Router.post('/', function (req, res, next) {
 
 // Update an appointment
 
-Router.put('/:idAppointment', function (req, res, next) {
+Router.put('/:id', function (req, res, next) {
 
-  Appointment.findOne({ idAppointment: req.params.idAppointment }, function (err, appointment) {
+  if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
+    return res.status(422).json({ ok: false, message: res.__('appointment_information_error') });
+  }
+
+  if (req.body.professional != null) delete req.body.professional;
+  if (req.body.customer != null) delete req.body.customer;
+
+  Appointment.findOneAndUpdate({ _id: req.params.id, deleted: false }, req.body, function (err, appointment) {
     if (err) return next(err);
 
     if (!appointment) {
@@ -227,13 +234,7 @@ Router.put('/:idAppointment', function (req, res, next) {
         }
       });
     } else if (appointment) {
-
-      Appointment.updateOne(req.body, function (err) {
-        if (err) return next(err);
-    
-        // Appointment updated
         return res.json({ ok: true, message: res.__('appointment_updated') });
-      });
     }
   });
 });

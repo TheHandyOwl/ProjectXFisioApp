@@ -7,6 +7,7 @@
 
 	"appointment_created": "appointment created!",
 	"appointment_deleted": "appointment deleted!",
+	"appointment_information_error": "appointment information error!",
 	"appointment_updated": "appointment updated",
 	"appointment_id_duplicated": "appointment id already exists",
 	"appointment_not_found": "appointment not found",
@@ -14,14 +15,16 @@
 
 	"product_created": "product created!",
 	"product_deleted": "product deleted!",
+	"product_information_error": "product information error!",
 	"product_updated": "product updated!",
 	"product_id_duplicated": "product id already exists",
 	"product_name_duplicated": "product name already exists",
 	"product_not_found": "product not found",
 	"duplicate_product": "the product already exists",
-
+	
 	"service_created": "service created!",
 	"service_deleted": "service removed and all associated appointments!",
+	"service_information_error": "service information error!",
 	"service_updated": "service updated!",
 	"service_id_duplicated": "service id already exists",
 	"service_name_duplicated": "service name already exists",
