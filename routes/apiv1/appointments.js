@@ -2,10 +2,10 @@
 
 const Express = require('express');
 const Router = Express.Router();
-const mongoose = require('mongoose');
-const User = mongoose.model('User');
-const Service = mongoose.model('Service');
-const Appointment = mongoose.model('Appointment');
+const Mongoose = require('mongoose');
+const User = Mongoose.model('User');
+const Service = Mongoose.model('Service');
+const Appointment = Mongoose.model('Appointment');
 
 // Auth con JWT
 const jwtAuth = require('../../lib/jwtAuth');
@@ -14,8 +14,6 @@ Router.use(jwtAuth());
 // Get all appointments
 
 Router.get('/', (req, res, next) => {
-
-  //console.log('jwt decoded', req.decoded);
 
   const start = parseInt(req.query.start) || 0;
   const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
@@ -32,6 +30,7 @@ Router.get('/', (req, res, next) => {
   }
 
   filters.customer = req.decoded.user._id;
+  filters.deleted = false;
 
   Appointment.list(start, limit, sort, includeTotal, filters, function (err, result) {
     if (err) return next(err);
@@ -40,13 +39,11 @@ Router.get('/', (req, res, next) => {
 
 });
 
-// Find all the appointment from a PROFESSIONAL
-
+// Find all the appointments from a PROFESSIONAL
 Router.get('/professional', (req, res, next) => {
   
-  Appointment.find({ professional: req.decoded.user._id }).exec(function (err, appointment) {
+  Appointment.find({ professional: req.decoded.user._id, deleted: false }).exec(function (err, appointment) {
     if (err) return next(err);
-
 
     if (!appointment) {
       return res.json({
@@ -67,13 +64,11 @@ Router.get('/professional', (req, res, next) => {
   });
 });
 
-// Find appointment by id as PROFESSIONAL
-
+// Find appointments by id as PROFESSIONAL
 Router.get('/professional/id/:id', (req, res, next) => {
   
-  Appointment.find({_id: req.params.id, professional: req.decoded.user._id }).exec(function (err, appointment) {
+  Appointment.find({_id: req.params.id, professional: req.decoded.user._id, deleted: false }).exec(function (err, appointment) {
     if (err) return next(err);
-
 
     if (!appointment) {
       return res.json({
@@ -95,12 +90,10 @@ Router.get('/professional/id/:id', (req, res, next) => {
 });
 
 // Find appointment by date as PROFESSIONAL
-
 Router.get('/professional/date/:date', (req, res, next) => {
-  Appointment.find({ date: req.params.date, professional: req.decoded.user._id }, function (err, appointment) {
+  Appointment.find({ date: req.params.date, professional: req.decoded.user._id, deleted: false }, function (err, appointment) {
     if (err) return next(err);
-
-    
+ 
     if (!appointment) {
       return res.json({
         ok: false, error: {
@@ -120,13 +113,11 @@ Router.get('/professional/date/:date', (req, res, next) => {
   });
 });
 
-// Find all the appointment from a CUSTOMER
-
+// Find all the appointments from a CUSTOMER
 Router.get('/customer', (req, res, next) => {
   
-  Appointment.find({ customer: req.decoded.user._id }).exec(function (err, appointment) {
+  Appointment.find({ customer: req.decoded.user._id, deleted: false }).exec(function (err, appointment) {
     if (err) return next(err);
-
 
     if (!appointment) {
       return res.json({
@@ -148,13 +139,11 @@ Router.get('/customer', (req, res, next) => {
 });
 
 // Find appointment by id as CUSTOMER
-
 Router.get('/customer/id/:id', (req, res, next) => {
   
-  Appointment.find({_id: req.params.id, customer: req.decoded.user._id }).exec(function (err, appointment) {
+  Appointment.find({_id: req.params.id, customer: req.decoded.user._id, deleted: false }).exec(function (err, appointment) {
     if (err) return next(err);
 
-    
     if (!appointment) {
       return res.json({
         ok: false, error: {
@@ -175,12 +164,10 @@ Router.get('/customer/id/:id', (req, res, next) => {
 });
 
 // Find appointment by date as CUSTOMER
-
 Router.get('/customer/date/:date', (req, res, next) => {
-  Appointment.find({ date: req.params.date, customer: req.decoded.user._id }, function (err, appointment) {
+  Appointment.find({ date: req.params.date, customer: req.decoded.user._id, deleted: false }, function (err, appointment) {
     if (err) return next(err);
 
-    
     if (!appointment) {
       return res.json({
         ok: false, error: {
@@ -201,10 +188,13 @@ Router.get('/customer/date/:date', (req, res, next) => {
 });
 
 // Create an appointment
-
 Router.post('/', function (req, res, next) {
-  const idProfessional = req.decoded.user._id;
-  Appointment.createRecord(req.body, idProfessional, function (err) {
+  
+  if ( (req.body.customer != null) && (req.body.customer != req.decoded.user._id) ) {
+    return res.status(422).json({ ok: false, message: res.__('appointment_information_error') });
+  }
+
+  Appointment.createRecord(req.body, function (err) {
     if (err) return next(err);
 
     // Appointment created
@@ -213,7 +203,6 @@ Router.post('/', function (req, res, next) {
 });
 
 // Update an appointment
-
 Router.put('/:id', function (req, res, next) {
 
   if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
@@ -241,7 +230,6 @@ Router.put('/:id', function (req, res, next) {
 
 
 // Remove an appointment
-
 Router.delete('/:idAppointment', function (req, res, next) {
   Appointment.findOne({ idAppointment: req.params.idAppointment }, function (err, appointment) {
     if (err) return next(err);

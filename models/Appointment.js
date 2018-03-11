@@ -105,11 +105,17 @@ appointmentSchema.statics.exists = function (idAppointment, cb) {
   });
 };
 
-appointmentSchema.statics.createRecord = function (appointment, idProfessional, cb) {
+appointmentSchema.statics.createRecord = function (appointment, cb) {
   // Validations
   let valErrors = [];
   if (!(v.isAlpha(appointment.name) && v.isLength(appointment.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
+  }
+
+  let date = new Date();
+  date.setDate(date.getDate() + 1);
+  if (!v.isAfter(appointment.date, date)) {
+    valErrors.push({ field: 'date', message: __('validation_invalid', { field: 'date' }) });
   }
 
   if (valErrors.length > 0) {
@@ -128,7 +134,6 @@ appointmentSchema.statics.createRecord = function (appointment, idProfessional, 
       return cb({ code: 409, message: __('appointment_id_duplicated') });
     } else {
 
-      appointment.idProfessional = idProfessional;
       // Add new appointment
       new Appointment(appointment).save(cb);
     }

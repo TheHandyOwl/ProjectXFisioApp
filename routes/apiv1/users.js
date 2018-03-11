@@ -43,7 +43,7 @@ router.post('/authenticate', function (req, res, next) {
 
         // User found and same password
         // Make token
-        const token = jwt.sign({ user: user }, config.jwt.secret, config.jwt.options);
+        const token = jwt.sign({ user }, config.jwt.secret, config.jwt.options);
 
         // return the information including token as JSON
         return res.json({ ok: true, token: token });
