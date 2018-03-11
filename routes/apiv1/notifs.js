@@ -47,7 +47,7 @@ Router.get('/:id', (req, res, next) => {
       return res.json({
         ok: false, error: {
           code: 401,
-          message: res.__('notif_not_found')
+          message: res.__('notification_not_found')
         }
       });
     } else if (notif) {
@@ -67,7 +67,7 @@ Router.post('/', function (req, res, next) {
     if (err) return next(err);
 
     // Notif created
-    return res.json({ ok: true, message: res.__('notif_created') });
+    return res.json({ ok: true, message: res.__('notification_created') });
   });
 });
 
@@ -75,28 +75,28 @@ Router.post('/', function (req, res, next) {
 
 Router.put('/:id', function (req, res, next) {
 
-  Notif.findById(req.params.id).exec( function (err, notif) {
+  if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
+    return res.status(422).json({ ok: false, message: res.__('appointment_information_error') });
+  }
+
+  if (req.body.professional != null) delete req.body.professional;
+  if (req.body.customer != null) delete req.body.customer;
+
+  Notif.findOneAndUpdate({ _id: req.params.id, deleted: false }, req.body, function (err, notif) {
     if (err) return next(err);
 
     if (!notif) {
       return res.json({
         ok: false, error: {
           code: 401,
-          message: res.__('notif_not_found')
+          message: res.__('notification_not_found')
         }
       });
     } else if (notif) {
-
-      Notif.updateOne(req.body, function (err) {
-        if (err) return next(err);
-    
-        // Notif updated
-        return res.json({ ok: true, message: res.__('notif_updated') });
-      });
+      return res.json({ ok: true, message: res.__('notification_updated') });
     }
   });
 });
-
 
 // Remove an notif
 
@@ -108,14 +108,14 @@ Router.delete('/:id', function (req, res, next) {
       return res.json({
         ok: false, error: {
           code: 401,
-          message: res.__('notif_not_found')
+          message: res.__('notification_not_found')
         }
       });
     } else if (notif) {
       Notif.deleteOne({idNotif: req.params.idNotif}, function (err){
         if (err) return next(err);
 
-        return res.json({ ok: true, message: res.__('notif_deleted' )});
+        return res.json({ ok: true, message: res.__('notification_deleted' )});
       })
     }
   });
