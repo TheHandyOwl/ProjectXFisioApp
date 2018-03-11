@@ -167,7 +167,7 @@ function initUsersFromJson(cb) {
         _id               : '5a9f054f602dd0e540c71bc6',
         isProfessional    : 'yes',
         fellowshipNumber  : 33,
-        gender            : 'Male',
+        gender            : 'male',
         name              : 'fisio',
         lastName          : 'lastname',
         email             : 'fisio@invalid.com',
@@ -182,8 +182,8 @@ function initUsersFromJson(cb) {
         _id               : '5a9f054f602dd0e540c71bc7',
         isProfessional    : 'yes',
         fellowshipNumber  : 33,
-        gender            : 'Female',
-        name              : 'thecustomer',
+        gender            : 'female',
+        name              : 'customer',
         lastName          : 'lastname',
         email             : 'customer@invalid.com',
         password          : '12345678',
@@ -193,6 +193,22 @@ function initUsersFromJson(cb) {
         nationalId        : '87654321Z',
         registrationDate  : '2018-02-02T02:02:00.000Z',
         lastLoginDate     : '2018-03-07T17:00:00.000Z'
+      }, {
+        _id               : '5a9f054f602dd0e540c71bc8',
+        isProfessional    : 'yes',
+        fellowshipNumber  : 33,
+        gender            : 'male',
+        name              : 'customerDeleted',
+        lastName          : 'lastname',
+        email             : 'customerDeleted@invalid.com',
+        password          : '12345678',
+        address           : 'Customer Address, 44',
+        phone             : '626626626',
+        birthDate         : '1980-12-30T12:30:00.000Z',
+        nationalId        : '87654321Z',
+        registrationDate  : '2018-02-02T02:02:00.000Z',
+        lastLoginDate     : '2018-03-07T17:00:00.000Z',
+        deleted           : false
       }
     ];
 

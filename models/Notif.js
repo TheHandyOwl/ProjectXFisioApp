@@ -13,15 +13,22 @@ const notifSchema = mongoose.Schema({
   
   professional    : { type: mongoose.Schema.ObjectId, ref: User },
   customer        : { type: mongoose.Schema.ObjectId, ref: User },
-  name            : { type: String, index: true, lowercase: true, required: true },
-  description     : { type: String, index:true, lowercase:true, required: true },
-  isSent          : { type: Boolean, index:true, required: true },
-  creationDate    : { type : Date, index: true },
-  sendingDate     : { type : Date, index: true },
+  name            : { type: String, lowercase: true, required: true },
+  description     : { type: String, lowercase:true, required: true },
+  isSent          : { type: Boolean, required: true },
+  creationDate    : { type : Date },
+  sendingDate     : { type : Date },
   
   deleted         : { type: Boolean, default: false }
 
 });
+
+//Indexes
+notifSchema.index( { professional: 1 } );
+notifSchema.index( { customer: 1 } );
+notifSchema.index( { name: 1 } );
+notifSchema.index( { isSent: 1 } );
+notifSchema.index( { deleted: 1 } );
 
 /**
  * Load json - notifs
