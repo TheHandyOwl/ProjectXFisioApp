@@ -36,7 +36,12 @@
 	"token_information_error": "Fallo de autenticación del token.",
 	"token_not_provided": "no se proporciona token.",
 
+	"notification_created": "Notificación creada!",
+	"notification_deleted": "notification eliminada!",
+	"notification_updated": "notification actualizada!",
 	"notification_name_duplicated": "el nombre de la notificación ya existe",
+	"notification_not_found": "notificación no encontrada",
+
 	"post_name_duplicated": "el post ya existe",
 
 	"user_email_duplicated": "el email del usuario ya existe",
