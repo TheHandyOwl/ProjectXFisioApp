@@ -11,14 +11,20 @@ const flow = require('../lib/flowControl');
 
 const productSchema = mongoose.Schema({
   
-  professional  : { type: mongoose.Schema.ObjectId, ref: User },
-  name          : { type: String, index: true, lowercase: true, required: true },
-  description   : { type: String, index:true, lowercase:true, required: true },
-  price         : { type: Number, index:true, unique: false, required: true },
+  professional  : { type: mongoose.Schema.ObjectId, ref: User, required: true },
+  name          : { type: String, lowercase: true, required: true },
+  description   : { type: String, lowercase:true, required: true },
+  price         : { type: Number, unique: false, required: true },
   
   deleted       : { type: Boolean, default: false }
 
 });
+
+//Indexes
+productSchema.index( { professional: 1 } );
+productSchema.index( { name: 1 } );
+productSchema.index( { price: 1 } );
+productSchema.index( { deleted: 1 } );
 
 /**
  * Load json - products
