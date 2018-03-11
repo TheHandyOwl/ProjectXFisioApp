@@ -2,9 +2,9 @@
 
 const express = require('express');
 const Router = express.Router();
-const mongoose = require('mongoose');
-const User = mongoose.model('User');
-const Product = mongoose.model('Product');
+const Mongoose = require('mongoose');
+const User = Mongoose.model('User');
+const Product = Mongoose.model('Product');
 
 // Auth con JWT
 const jwtAuth = require('../../lib/jwtAuth');
@@ -64,7 +64,7 @@ Router.get('/:id', (req, res, next) => {
 
 Router.post('/', function (req, res, next) {
   // Check owner
-  if ( req.body.professional != req.decoded.user._id ) {
+  if ( (req.body.professional != null) && (req.body.professional != req.decoded.user._id) ) {
     return res.status(403).json({ ok: false, message: res.__('forbidden_access') });
   }
 
@@ -106,6 +106,8 @@ Router.put('/:id', function (req, res, next) {
   if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
     return res.status(422).json({ ok: false, message: res.__('product_information_error') });
   }
+
+  if (req.body.professional != null) delete req.body.professional;
 
   Product.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id,  deleted: false }, req.body, function (err, product) {
     if (err) return next(err);

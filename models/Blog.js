@@ -23,7 +23,7 @@ const postSchema = mongoose.Schema({
 
 });
 
-//Indexes
+// Indexes
 postSchema.index( { professional: 1 } );
 postSchema.index( { customer: 1 } );
 postSchema.index( { name: 1 } );

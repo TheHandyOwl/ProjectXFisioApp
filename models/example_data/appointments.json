@@ -47,6 +47,18 @@
       "latitude": 40.4166159,
       "longitude": -3.703788,
       "extraInfo": false
+    },
+    {
+      "_id": "5aa444978f1844370be55514",
+      "service": "5aa00e386281ea2d347d4733",
+      "customer": "5a9f054f602dd0e540c71bc6",
+      "professional": "5a9f054f602dd0e540c71bc6",
+      "isConfirmed": false,
+      "isCancelled": false,
+      "date": "2018-04-04 13:00:00.000Z",
+      "latitude": 40.4166159,
+      "longitude": -3.703788,
+      "extraInfo": false
     }
   ]
 }
