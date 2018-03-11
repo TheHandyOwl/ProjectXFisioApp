@@ -14,8 +14,6 @@ Router.use(jwtAuth());
 
 Router.get('/', (req, res, next) => {
 
-  //console.log('jwt decoded', req.decoded);
-
   const start = parseInt(req.query.start) || 0;
   const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
   const sort = req.query.sort || '_id';
