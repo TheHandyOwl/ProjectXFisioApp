@@ -15,10 +15,18 @@ const serviceSchema = mongoose.Schema({
   name          : { type: String, lowercase: true, required: true },
   description   : { type: String, lowercase:true, required: true },
   price         : { type: Number, unique: false, required: true },
+  isActive      : { type: Boolean, unique: false, required: true, default: false },
   
   deleted       : { type: Boolean, default: false }
 
 });
+ 
+// Indexes
+serviceSchema.index( { professional: 1 } );
+serviceSchema.index( { name: 1 } );
+serviceSchema.index( { price: 1 } );
+serviceSchema.index( { isActive: 1 } );
+serviceSchema.index( { deleted: 1 } );
 
 //Indexes
 serviceSchema.index( { professional: 1 } );
@@ -108,7 +116,7 @@ serviceSchema.statics.createRecord = function (service, cb) {
 
   // Check duplicates
   // Search service
-  Service.findOne({ name: service.name.toLowerCase() }, function (err, exists) {
+  Service.findOne({ professional: service.professional, name: service.name.toLowerCase() }, function (err, exists) {
     if (err) {
       return cb(err);
     }

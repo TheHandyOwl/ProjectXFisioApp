@@ -2,9 +2,9 @@
 
 const Express = require('express');
 const Router = Express.Router();
-const mongoose = require('mongoose');
-const User = mongoose.model('User');
-const Notif = mongoose.model('Notif');
+const Mongoose = require('mongoose');
+const User = Mongoose.model('User');
+const Notif = Mongoose.model('Notif');
 
 // Auth con JWT
 const jwtAuth = require('../../lib/jwtAuth');
@@ -14,11 +14,12 @@ Router.use(jwtAuth());
 
 Router.get('/', (req, res, next) => {
 
+  let filters = {};
+
   const start = parseInt(req.query.start) || 0;
   const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
   const sort = req.query.sort || '_id';
   const includeTotal = req.query.includeTotal === 'true';
-  let filters = {};
 
   if (typeof req.query.status !== 'undefined') {
     filters.status = req.query.status;

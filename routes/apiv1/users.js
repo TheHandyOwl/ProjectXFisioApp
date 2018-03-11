@@ -3,8 +3,8 @@
 const express = require('express');
 const Router = express.Router();
 
-const mongoose = require('mongoose');
-const User = mongoose.model('User');
+const Mongoose = require('mongoose');
+const User = Mongoose.model('User');
 
 const jwt = require('jsonwebtoken');
 const config = require('../../local_config');
@@ -47,7 +47,7 @@ Router.post('/authenticate', function (req, res, next) {
 
         // User found and same password
         // Make token
-        const token = jwt.sign({ user: user }, config.jwt.secret, config.jwt.options);
+        const token = jwt.sign({ user }, config.jwt.secret, config.jwt.options);
 
         // return the information including token as JSON
         return res.json({ ok: true, token: token });
@@ -72,15 +72,20 @@ Router.post('/register', function (req, res, next) {
 
 Router.delete('/:id', function (req, res, next) {
 
+  if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
+    return res.status(422).json({ ok: false, message: res.__('user_information_error') });
+  }
+
   const email = req.body.email;
   const password = req.body.password;
-  
-  User.findOne({ _id: req.params.id, deleted: false }, function (err, user) {
+
+  User.findOne({ _id: req.params.id, email, deleted: false }, function (err, user) {
     if (err) return next(err);
 
     if (!user) {
       return res.json({
-        ok: false, error: {
+        ok: false,
+        error: {
           code: 401,
           message: res.__('user_or_password_incorrect')
         }
@@ -98,9 +103,9 @@ Router.delete('/:id', function (req, res, next) {
           return res.json({ ok: true, message: res.__('user_deleted') });
         })
       } else {
-        console.log("OTROS!!!!");
         return res.json({
-          ok: false, error: {
+          ok: false,
+          error: {
             code: 401,
             message: res.__('user_or_password_incorrect')
           }
@@ -116,6 +121,8 @@ Router.put('/:id', function (req, res, next) {
   if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
     return res.status(422).json({ ok: false, message: res.__('product_information_error') });
   }
+
+  if (req.body.professional != null) delete req.body.professional;
 
   User.findOne({ _id: req.params.id, deleted: false }, function (err, user) {
     if (err) return next(err);

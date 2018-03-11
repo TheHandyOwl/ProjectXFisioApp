@@ -25,6 +25,18 @@ const userSchema = mongoose.Schema({
   deleted           : { type: Boolean, default: false }
 
 });
+ 
+// Indexes
+userSchema.index( { isProfessional: 1 } );
+userSchema.index( { fellowshipNumber: 1 } );
+userSchema.index( { gender: 1 } );
+userSchema.index( { name: 1 } );
+userSchema.index( { lastName: 1 } );
+userSchema.index( { email: 1 } );
+userSchema.index( { address: 1 } );
+userSchema.index( { birthDate: 1 } );
+userSchema.index( { nationalId: 1 } );
+userSchema.index( { deleted: 1 } );
 
 //Indexes
 userSchema.index( { isProfessional: 1 } );

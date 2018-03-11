@@ -15,15 +15,20 @@ const productSchema = mongoose.Schema({
   name          : { type: String, lowercase: true, required: true },
   description   : { type: String, lowercase:true, required: true },
   price         : { type: Number, unique: false, required: true },
+<<<<<<< HEAD
+=======
+  isActive      : { type: Boolean, unique: false, required: true, default: false },
+>>>>>>> improve_gema_9march
   
   deleted       : { type: Boolean, default: false }
 
 });
 
-//Indexes
+// Indexes
 productSchema.index( { professional: 1 } );
 productSchema.index( { name: 1 } );
 productSchema.index( { price: 1 } );
+productSchema.index( { isActive: 1 } );
 productSchema.index( { deleted: 1 } );
 
 /**
@@ -108,7 +113,7 @@ productSchema.statics.createRecord = function (product, cb) {
 
   // Check duplicates
   // Search product
-  Product.findOne({ name: product.name.toLowerCase() }, function (err, exists) {
+  Product.findOne({ professional: product.professional, name: product.name.toLowerCase() }, function (err, exists) {
     if (err) {
       return cb(err);
     }

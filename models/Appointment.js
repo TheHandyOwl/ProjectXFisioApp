@@ -112,19 +112,25 @@ appointmentSchema.statics.createRecord = function (appointment, cb) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
   }
 
+  let date = new Date();
+  date.setDate(date.getDate() + 1);
+  if (!v.isAfter(appointment.date, date)) {
+    valErrors.push({ field: 'date', message: __('validation_invalid', { field: 'date' }) });
+  }
+
   if (valErrors.length > 0) {
     return cb({ code: 422, errors: valErrors });
   }
 
   // Check duplicates
   // Search appointment
-  Appointment.findOne({ idAppointment: appointment.idAppointment }, function (err, appointment) {
+  Appointment.findOne({ date: appointment.date }, function (err, foundAppointment) {
     if (err) {
       return cb(err);
     }
 
     // appointment already exists
-    if (appointment) {
+    if (foundAppointment) {
       return cb({ code: 409, message: __('appointment_id_duplicated') });
     } else {
 
