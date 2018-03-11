@@ -23,6 +23,13 @@ const postSchema = mongoose.Schema({
 
 });
 
+// Indexes
+postSchema.index( { professional: 1 } );
+postSchema.index( { customer: 1 } );
+postSchema.index( { name: 1 } );
+postSchema.index( { isVisible: 1 } );
+postSchema.index( { deleted: 1 } );
+
 postSchema.statics.exists = function (idBlog, cb) {
   Blog.findById(idBlog, function (err, post) {
     if (err) return cb(err);

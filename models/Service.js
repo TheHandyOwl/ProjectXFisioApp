@@ -11,14 +11,22 @@ const flow = require('../lib/flowControl');
 
 const serviceSchema = mongoose.Schema({
   
-  professional  : { type: mongoose.Schema.ObjectId, ref: User },
-  name          : { type: String, index: true, lowercase: true, required: true },
-  description   : { type: String, index:true, lowercase:true, required: true },
-  price         : { type: Number, index:true, unique: false, required: true },
+  professional  : { type: mongoose.Schema.ObjectId, ref: User, required: true },
+  name          : { type: String, lowercase: true, required: true },
+  description   : { type: String, lowercase:true, required: true },
+  price         : { type: Number, unique: false, required: true },
+  isActive      : { type: Boolean, unique: false, required: true, default: false },
   
   deleted       : { type: Boolean, default: false }
 
 });
+ 
+// Indexes
+serviceSchema.index( { professional: 1 } );
+serviceSchema.index( { name: 1 } );
+serviceSchema.index( { price: 1 } );
+serviceSchema.index( { isActive: 1 } );
+serviceSchema.index( { deleted: 1 } );
 
 /**
  * Load json - services
@@ -102,7 +110,7 @@ serviceSchema.statics.createRecord = function (service, cb) {
 
   // Check duplicates
   // Search service
-  Service.findOne({ name: service.name.toLowerCase() }, function (err, exists) {
+  Service.findOne({ professional: service.professional, name: service.name.toLowerCase() }, function (err, exists) {
     if (err) {
       return cb(err);
     }

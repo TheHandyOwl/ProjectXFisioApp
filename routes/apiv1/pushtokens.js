@@ -3,8 +3,8 @@
 const express = require('express');
 const router = express.Router();
 
-const mongoose = require('mongoose');
-const PushToken = mongoose.model('PushToken');
+const Mongoose = require('mongoose');
+const PushToken = Mongoose.model('PushToken');
 
 router.post('/', function (req, res, next) {
 

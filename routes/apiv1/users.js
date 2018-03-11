@@ -1,22 +1,25 @@
 'use strict';
 
 const express = require('express');
-const router = express.Router();
+const Router = express.Router();
 
-const mongoose = require('mongoose');
-const User = mongoose.model('User');
+const Mongoose = require('mongoose');
+const User = Mongoose.model('User');
 
 const jwt = require('jsonwebtoken');
 const config = require('../../local_config');
 const hash = require('hash.js');
 
-router.post('/authenticate', function (req, res, next) {
+
+// User authentication for known users
+
+Router.post('/authenticate', function (req, res, next) {
 
   const email = req.body.email;
   const password = req.body.password;
 
   // Search user
-  User.findOne({ email }, function (err, user) {
+  User.findOne({ email, deleted: false }, function (err, user) {
     if (err) return next(err);
 
     if (!user) {
@@ -53,7 +56,9 @@ router.post('/authenticate', function (req, res, next) {
 
 });
 
-router.post('/register', function (req, res, next) {
+// User registration for new users
+
+Router.post('/register', function (req, res, next) {
   User.createRecord(req.body, function (err) {
     if (err) return next(err);
 
@@ -62,21 +67,26 @@ router.post('/register', function (req, res, next) {
   });
 });
 
-// Remove an user
+// Remove user
 
-router.delete('/', function (req, res, next) {
+Router.delete('/:id', function (req, res, next) {
+
+  if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
+    return res.status(422).json({ ok: false, message: res.__('user_information_error') });
+  }
 
   const email = req.body.email;
   const password = req.body.password;
 
-  User.findOne({ email }, function (err, user) {
+  User.findOne({ _id: req.params.id, email, deleted: false }, function (err, user) {
     if (err) return next(err);
 
     if (!user) {
       return res.json({
-        ok: false, error: {
+        ok: false,
+        error: {
           code: 401,
-          message: res.__('user_not_found')
+          message: res.__('user_or_password_incorrect')
         }
       });
     } else if (user) {
@@ -86,13 +96,19 @@ router.delete('/', function (req, res, next) {
       // if the password and the token are correct, we can remove the user information
       const hashedPassword = hash.sha256().update(password).digest('hex');
       if (hashedPassword === user.password) {
-        user.deleteOne({ email: req.params.email }, function (err) {
+        User.findOneAndUpdate({ _id: user._id }, { deleted: true } , function (err) {
           if (err) return next(err);
   
           return res.json({ ok: true, message: res.__('user_deleted') });
         })
       } else {
-        return res.json({ ok: false, message: res.__('users_wrong_password') });
+        return res.json({
+          ok: false,
+          error: {
+            code: 401,
+            message: res.__('user_or_password_incorrect')
+          }
+        });
       }
     }
   });
@@ -100,9 +116,15 @@ router.delete('/', function (req, res, next) {
 
 // Update a user
 
-router.put('/:email', function (req, res, next) {
+Router.put('/:id', function (req, res, next) {
+ 
+  if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
+    return res.status(422).json({ ok: false, message: res.__('product_information_error') });
+  }
 
-  User.findOne({ email: req.params.email }, function (err, user) {
+  if (req.body.professional != null) delete req.body.professional;
+
+  User.findOne({ _id: req.params.id, deleted: false }, function (err, user) {
     if (err) return next(err);
 
     if (!user) {
@@ -126,13 +148,15 @@ router.put('/:email', function (req, res, next) {
 });
 
 /*** AUX, it will be removed ***/
-router.get('/', (req, res, next) => {
+Router.get('/', (req, res, next) => {
+
+  const filters = {};
+  filters.deleted = false; // Not deleted
 
   const start = parseInt(req.query.start) || 0;
   const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
   const sort = req.query.sort || '_id';
   const includeTotal = req.query.includeTotal === 'true';
-  const filters = {};
 
   if (typeof req.query.status !== 'undefined') {
     filters.status = req.query.status;
@@ -148,4 +172,4 @@ router.get('/', (req, res, next) => {
   });
 });
 
-module.exports = router;
+module.exports = Router;

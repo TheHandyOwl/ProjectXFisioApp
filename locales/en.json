@@ -1,45 +1,53 @@
 {
 
+	"forbidden_access": "forbidden access",
+	"generic": "generic error: {{message}}",
 	"the_field": "the field",
 	"validation_invalid": "the field {{field}} is invalid",
 	"validation_minchars": "{{field}} must have at least {{num}} characters",
-	"generic": "generic error: {{message}}",
 
-	"appointment_created": "appointment created!",
-	"appointment_deleted": "appointment deleted!",
-	"appointment_information_error": "appointment information error!",
+	"appointment_created": "appointment created",
+	"appointment_deleted": "appointment deleted",
+	"appointment_information_error": "appointment information error",
 	"appointment_updated": "appointment updated",
 	"appointment_id_duplicated": "appointment id already exists",
 	"appointment_not_found": "appointment not found",
 	"duplicate_appointment": "the date already exists",
 
-	"product_created": "product created!",
-	"product_deleted": "product deleted!",
-	"product_information_error": "product information error!",
-	"product_updated": "product updated!",
+	"product_created": "product created",
+	"product_deleted": "product deleted",
+	"product_information_error": "product information error",
+	"product_updated": "product updated",
 	"product_id_duplicated": "product id already exists",
 	"product_name_duplicated": "product name already exists",
 	"product_not_found": "product not found",
 	"duplicate_product": "the product already exists",
 	
-	"service_created": "service created!",
-	"service_deleted": "service removed and all associated appointments!",
-	"service_information_error": "service information error!",
-	"service_updated": "service updated!",
+	"service_created": "service created",
+	"service_deleted": "service removed and all associated appointments",
+	"service_information_error": "service information error",
+	"service_updated": "service updated",
 	"service_id_duplicated": "service id already exists",
 	"service_name_duplicated": "service name already exists",
 	"service_not_completed": "{{num}} appointment(s) are pending and confirmed",
 	"service_not_found": "service not found",
 	"duplicate_service": "the service already exists",
-
+	
+	"token_information_error": "failed to authenticate token.",
+	"token_not_provided": "No token provided.",
+	
+	"notification_created": "notification created",
+	"notification_deleted": "notification removed",
+	"notification_updated": "notification updated",
 	"notification_name_duplicated": "notification name already exists",
+	"notification_not_found": "notification not found",
 	"post_name_duplicated": "post name already exists",
-
+	
 	"user_email_duplicated": "user email already exists",
-	"users_user_created": "user created!",
-	"user_deleted": "user deleted!",
-	"user_updated": "user updated!",
-	"users_user_not_found": "User not found.",
-	"users_wrong_password": "wrong password"
+	"user_information_error": "service information error",
+	"users_user_created": "user created",
+	"user_deleted": "user deleted",
+	"user_updated": "user updated",
+	"user_or_password_incorrect": "incorrect authentication"
 
 }

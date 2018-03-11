@@ -79,7 +79,7 @@ i.e. Accept-Language: es
 
 **Input Body**: { name, email, password }
 
-**Result:** 
+**Result:**
 
     {
       "ok": true, 
@@ -90,7 +90,7 @@ i.e. Accept-Language: es
 
 **Input Body**: { email, password }
 
-**Result:** 
+**Result:**
 
     {
       "ok": true, 
@@ -101,7 +101,7 @@ i.e. Accept-Language: es
 
 **Input Body**: { email, password }
 
-**Result:** 
+**Result:**
 
     {
       "ok": true, 
@@ -113,7 +113,7 @@ i.e. Accept-Language: es
 
 **Input Body**: { email, password, gender, address, phone, birthDate, nationalId }
 
-**Result:** 
+**Result:**
 
     {
       "ok": true, 
@@ -124,7 +124,7 @@ i.e. Accept-Language: es
 
 **Input Query**: 
 
-**Result:** 
+**Result:**
 
     {
         "ok": true,
@@ -185,7 +185,7 @@ i.e. Accept-Language: es
 
 **Input Query**: { id }
 
-**Result:** 
+**Result:**
 
     {
         "ok": true,
@@ -491,7 +491,7 @@ Save a new appointment.
 
 { idService, idCustomer, idProfessional, isConfirmed, isCancelled, date, latitude, longitude, address, extraInfo }
 
-**Result:** 
+**Result:**
 
     {
       "ok": true,
@@ -510,7 +510,7 @@ In the body is only sent the information you want to update.
 
 { isConfirmed, isCancelled, date, latitude, longitude, address, extraInfo }
 
-**Result:** 
+**Result:**
 
     {
         "ok": true,
@@ -523,7 +523,7 @@ Delete an existing appointment.
 
 **Input body:**
 
-**Result:** 
+**Result:**
 
     {
         "ok": true,
@@ -534,7 +534,7 @@ Delete an existing appointment.
 
 **Input Query**: 
 
-**Result:** 
+**Result:**
 
     {
         "ok": true,
@@ -691,7 +691,7 @@ Save a new notifs.
 
 { "professional", "customer", "name", "description", "isSent" }
 
-**Result:** 
+**Result:**
 
     {
       "ok": true,
@@ -710,7 +710,7 @@ In the body is only sent the information you want to update.
 
 { name, description, price }
 
-**Result:** 
+**Result:**
 
     {
         "ok": true,
@@ -723,7 +723,7 @@ Delete an existing notification.
 
 **Input body:**
 
-**Result:** 
+**Result:**
 
     {
         "ok": true,
@@ -734,7 +734,7 @@ Delete an existing notification.
 
 **Input Query**: 
 
-**Result:** 
+**Result:**
 
     {
         "ok": true,
@@ -834,7 +834,7 @@ Save a new product.
 
 { name, description, price }
 
-**Result:** 
+**Result:**
 
     {
       "ok": true,
@@ -853,7 +853,7 @@ In the body is only sent the information you want to update.
 
 { name, description, price }
 
-**Result:** 
+**Result:**
 
     {
         "ok": true,
@@ -866,7 +866,7 @@ Delete an existing product.
 
 **Input body:**
 
-**Result:** 
+**Result:**
 
     {
         "ok": true,
@@ -877,7 +877,7 @@ Delete an existing product.
 
 **Input Query**: 
 
-**Result:** 
+**Result:**
 
     {
         "ok": true,
@@ -977,7 +977,7 @@ Save a new service.
 
 { name, description, price }
 
-**Result:** 
+**Result:**
 
     {
       "ok": true,
@@ -996,7 +996,7 @@ In the body is only sent the information you want to update.
 
 { name, description, price }
 
-**Result:** 
+**Result:**
 
     {
         "ok": true,
@@ -1009,7 +1009,7 @@ Delete an existing service.
 
 **Input body:**
 
-**Result:** 
+**Result:**
 
     {
         "ok": true,
@@ -1024,7 +1024,7 @@ Save user pushtoken { pushtoken, platform, iduser}
 iduser is optional.
 platform can be 'ios' or 'android'  
 
-**Result:** 
+**Result:**
 
     {
       "ok": true,

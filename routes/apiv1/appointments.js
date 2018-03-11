@@ -14,12 +14,15 @@ Router.use(jwtAuth());
 // Get all appointments
 
 Router.get('/', (req, res, next) => {
+  
+  let filters = {};
+  filters.customer = req.decoded.user._id;
+  filters.deleted = false;
 
   const start = parseInt(req.query.start) || 0;
   const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
   const sort = req.query.sort || '_id';
   const includeTotal = req.query.includeTotal === 'true';
-  let filters = {};
 
   if (typeof req.query.status !== 'undefined') {
     filters.status = req.query.status;
@@ -230,8 +233,8 @@ Router.put('/:id', function (req, res, next) {
 
 
 // Remove an appointment
-Router.delete('/:idAppointment', function (req, res, next) {
-  Appointment.findOne({ idAppointment: req.params.idAppointment }, function (err, appointment) {
+Router.delete('/:id', function (req, res, next) {
+  Appointment.findOneAndUpdate({ _id: req.params.id, deleted: false }, { deleted: true }, function (err, appointment) {
     if (err) return next(err);
 
     if (!appointment) {
@@ -242,11 +245,7 @@ Router.delete('/:idAppointment', function (req, res, next) {
         }
       });
     } else if (appointment) {
-      Appointment.deleteOne({idAppointment: req.params.idAppointment}, function (err){
-        if (err) return next(err);
-
-        return res.json({ ok: true, message: res.__('appointment_deleted' )});
-      })
+      return res.json({ ok: true, message: res.__('product_deleted')});
     }
   });
 });
