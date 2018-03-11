@@ -11,15 +11,18 @@ const Appointment = mongoose.model('Appointment');
 const jwtAuth = require('../../lib/jwtAuth');
 Router.use(jwtAuth());
 
-// Get all services
+// Get all services by owner and not deleted
 
 Router.get('/', (req, res, next) => {
+
+  let filters = {};
+  filters.professional = req.decoded.user._id; // Check owner
+  filters.deleted = false; // Not deleted
 
   const start = parseInt(req.query.start) || 0;
   const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
   const sort = req.query.sort || 'name';
   const includeTotal = req.query.includeTotal === 'true';
-  let filters = {};
 
   if (typeof req.query.status !== 'undefined') {
     filters.status = req.query.status;
@@ -35,12 +38,12 @@ Router.get('/', (req, res, next) => {
   });
 });
 
-// Get a service
+// Get a service by owner and not deleted
 
 Router.get('/:id', (req, res, next) => {
 
-  // Find service
-  Service.findById(req.params.id).exec(function (err, service) {
+  // Find service by owner and not deleted
+  Service.findOne( { _id: req.params.id, professional: req.decoded.user._id, deleted: false }, function (err, service) {
     if (err) return next(err);
 
     if (!service) {
@@ -61,6 +64,11 @@ Router.get('/:id', (req, res, next) => {
 // Create a Service
 
 Router.post('/', function (req, res, next) {
+  // Check owner
+  if ( (req.body.professional != req.decoded.user._id) ) {
+    return res.status(403).json({ ok: false, message: res.__('forbidden_access') });
+  }
+
   Service.createRecord(req.body, function (err) {
     if (err) return next(err);
 
@@ -69,10 +77,10 @@ Router.post('/', function (req, res, next) {
   });
 });
 
-// Remove a Service
+// Remove a Service by owner and not deleted
 
 Router.delete('/:id', function (req, res, next) {
-  Service.findOne( { _id: req.params.id, deleted: false } , function (err, service) {
+  Service.findOne( { _id: req.params.id, professional: req.decoded.user._id, deleted: false }, function (err, service) {
     if (err) return next(err);
 
     if (!service) {
@@ -108,15 +116,19 @@ Router.delete('/:id', function (req, res, next) {
   });
 });
 
-// Update a service
+// Update a service by owner and not deleted
 
 Router.put('/:id', function (req, res, next) {
 
+  if ( (req.params.id != req.decoded.user._id) ) {
+    return res.status(403).json({ ok: false, message: res.__('forbidden_access') });
+  }
+ 
   if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
     return res.status(422).json({ ok: false, message: res.__('service_information_error') });
   }
-
-  Service.findOneAndUpdate({ _id: req.params.id, deleted: false }, req.body, function (err, service) {
+ 
+  Service.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, req.body, function (err, service) {
     if (err) return next(err);
 
     if (!service) {

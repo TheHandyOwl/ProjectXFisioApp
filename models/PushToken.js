@@ -35,7 +35,7 @@ pushTokenSchema.statics.createRecord = function (newItem, cb) {
   User.exists(newItem.user, function (err, exists) {
     if (err) return cb(err);
 
-    // si no exists devuelvo error
+    // not exists returns an error
     if (!exists) return cb({ code: 404, message: __('users_user_not_found') });
 
     return crear();

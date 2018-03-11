@@ -10,10 +10,10 @@ const userSchema = mongoose.Schema({
 
   isProfessional    : Boolean,
   fellowshipNumber  : Number,  // CollegiateNumber
-  gender            : String,  // Boolean or String????????
+  gender            : { type: String, enum: ['female', 'male'] },
   name              : { type: String, lowercase: true },
   lastName          : { type: String, lowercase: true },
-  email             : { type: String, lowercase: true },
+  email             : { type: String, unique: true, lowercase: true },
   password          : String,
   address           : String,  // [Address] ????  not sure how to do it
   phone             : String,
@@ -25,6 +25,18 @@ const userSchema = mongoose.Schema({
   deleted           : { type: Boolean, default: false }
 
 });
+
+//Indexes
+userSchema.index( { isProfessional: 1 } );
+userSchema.index( { fellowshipNumber: 1 } );
+userSchema.index( { gender: 1 } );
+userSchema.index( { name: 1 } );
+userSchema.index( { lastName: 1 } );
+userSchema.index( { email: 1 } );
+userSchema.index( { address: 1 } );
+userSchema.index( { birthDate: 1 } );
+userSchema.index( { nationalId: 1 } );
+userSchema.index( { deleted: 1 } );
 
 /**
  * Load json - users
@@ -108,14 +120,12 @@ userSchema.statics.createRecord = function (user, cb) {
   // Check duplicates
   // Search user
   User.findOne({ email: user.email }, function (err, exists) {
-    
     if (err) return cb(err);
 
     // user already exists
     if (exists) {
       return cb({ code: 409, message: __('user_email_duplicated') });
     } else {
-
       // Hash the password
       user.password = hash.sha256().update(user.password).digest('hex');
 
