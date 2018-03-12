@@ -68,10 +68,17 @@ if (app.get('env') === 'development') {
   app.use(function (err, req, res, next) {
     if (err.status && err.status >= 500) console.error(err);
     res.status(err.status || err.code || 500);
-    if (isAPI(req)) { // llamada de API, devuelvo JSON
-      return res.json({ ok: false,
-        error: { code: err.code || err.status || 500, message: err.message, err: err }
-      });
+    if (isAPI(req)) { // If it's API, JSON is returned
+      return res
+        .status(500)
+        .json({
+          ok: false,
+          error: {
+            code: err.code || err.status || 500,
+            message: err.message,
+            err: err
+          }
+        });
     }
 
     res.render('error', { message: err.message, error: err });
@@ -85,10 +92,17 @@ if (app.get('env') === 'development') {
 app.use(function (err, req, res, next) {
   if (err.status && err.status >= 500) console.error(err);
   res.status(err.status || err.code || 500);
-  if (isAPI(req)) { // llamada de API, devuelvo JSON
-    return res.json({ ok: false,
-      error: { code: err.code || err.status || 500, message: err.message, err: {} }
-    });
+  if (isAPI(req)) { //  If it's API, JSON is returned
+    return res
+      .status(500)
+      .json({
+        ok: false,
+        error: {
+          code: err.code || err.status || 500,
+          message: err.message,
+          err: err
+        }
+      });
   }
 
   res.render('error', { message: err.message, error: {} });

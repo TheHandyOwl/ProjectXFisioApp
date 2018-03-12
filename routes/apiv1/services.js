@@ -42,17 +42,31 @@ Router.get('/', (req, res, next) => {
 
 Router.get('/:id', (req, res, next) => {
 
+  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false ) return res
+                        .status(422)
+                        .json({
+                          ok: false,
+                          error: {
+                            code: 422,
+                            message: res.__('unprocessable_entity')
+                          }
+                        });
+
   // Find service by owner and not deleted
   Service.findOne( { _id: req.params.id, professional: req.decoded.user._id, deleted: false }, function (err, service) {
     if (err) return next(err);
 
     if (!service) {
-      return res.json({
-        ok: false, error: {
-          code: 401,
-          message: res.__('service_not_found')
-        }
-      });
+      return res
+        .status(401)
+        .json({
+          ok: false,
+          error: {
+            code: 401,
+            message: res.__('service_not_found')
+          }
+        });
     } else if (service) {
       User.populate( service, { path: 'professional' }, function(err, serviceAndProfessional) {
         res.json({ ok: true, result: serviceAndProfessional });
@@ -66,14 +80,27 @@ Router.get('/:id', (req, res, next) => {
 Router.post('/', function (req, res, next) {
   // Check owner
   if ( (req.body.professional != null) && (req.body.professional != req.decoded.user._id) ) {
-    return res.status(403).json({ ok: false, message: res.__('forbidden_access') });
+    return res
+      .status(403)
+      .json({
+        ok: false,
+        error: {
+          code: 403,
+          message: res.__('forbidden_access')
+        }
+      });
   }
 
   Service.createRecord(req.body, function (err) {
     if (err) return next(err);
 
     // Service created
-    return res.json({ ok: true, message: res.__('service_created') });
+    return res
+      .status(200)
+      .json({
+        ok: true,
+        result: res.__('service_created')
+      });
   });
 });
 
@@ -81,26 +108,49 @@ Router.post('/', function (req, res, next) {
 
 Router.put('/:id', function (req, res, next) {
 
-  if ( (req.params.id != req.decoded.user._id) ) {
-    return res.status(403).json({ ok: false, message: res.__('forbidden_access') });
-  }
- 
+  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false ) return res
+                        .status(422)
+                        .json({
+                          ok: false,
+                          error: {
+                            code: 422,
+                            message: res.__('unprocessable_entity')
+                          }
+                        });
+
   if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
-    return res.status(422).json({ ok: false, message: res.__('service_information_error') });
+    return res
+      .status(422)
+      .json({
+        ok: false,
+        error: {
+          code: 422,
+          message: res.__('unprocessable_entity')
+        }
+      });
   }
 
   Service.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, req.body, function (err, service) {
     if (err) return next(err);
 
     if (!service) {
-      return res.json({
-        ok: false, error: {
-          code: 401,
-          message: res.__('service_not_found')
-        }
-      });
+      return res
+        .status(401)
+        .json({
+          ok: false,
+          error: {
+            code: 401,
+            message: res.__('service_not_found')
+          }
+        });
     } else if (service) {
-      return res.json({ ok: true, message: res.__('service_updated') });
+      return res
+        .status(200)
+        .json({
+          ok: true,
+          result: res.__('service_updated')
+        });
     }
   });
 
@@ -109,16 +159,31 @@ Router.put('/:id', function (req, res, next) {
 // Remove a service by owner and not deleted
 
 Router.delete('/:id', function (req, res, next) {
+
+  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false ) return res
+                        .status(422)
+                        .json({
+                          ok: false,
+                          error: {
+                            code: 422,
+                            message: res.__('unprocessable_entity')
+                          }
+                        });
+
   Service.findOne( { _id: req.params.id, professional: req.decoded.user._id, deleted: false }, function (err, service) {
     if (err) return next(err);
 
     if (!service) {
-      return res.json({
-        ok: false, error: {
-          code: 401,
-          message: res.__('service_not_found')
-        }
-      });
+      return res
+        .status(401)
+        .json({
+          ok: false,
+          error: {
+            code: 401,
+            message: res.__('service_not_found')
+          }
+        });
     } else if (service) {
       const now = new Date().toISOString();
       Appointment.find( { service: service._id, isConfirmed: true, date: { $gte:  now }, deleted: false } ,function (err, appointmentsPending) {
@@ -131,12 +196,22 @@ Router.delete('/:id', function (req, res, next) {
             Service.findOneAndUpdate( { _id: service._id }, { deleted: true }, function (err, serviceToDelete) {
               if (err) return next(err);
 
-              return res.json({ ok: true, message: res.__('service_deleted')});
+              return res
+                .status(200)
+                .json({
+                  ok: true,
+                  result: res.__('service_deleted')
+                });
             });
           });
 
         } else {
-          return res.json({ ok: true, message: res.__('service_not_completed', { num: numAppointmentsPending })});
+          return res
+            .status(200)
+            .json({
+              ok: true,
+              result: res.__('service_not_completed', { num: numAppointmentsPending })
+            });
         }
 
       });
