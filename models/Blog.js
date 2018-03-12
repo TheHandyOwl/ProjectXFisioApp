@@ -1,6 +1,8 @@
 'use strict';
 
 const mongoose = require('mongoose');
+const User = mongoose.model('User');
+
 const hash = require('hash.js');
 const v = require('validator');
 
@@ -9,13 +11,24 @@ const flow = require('../lib/flowControl');
 
 const postSchema = mongoose.Schema({
   
-  idBlog          : { type: Number, index : true },
-  idProfessional  : { type: Number, index : true },
-  idCustomer      : { type: Number, index : true },
+  professional    : { type: mongoose.Schema.ObjectId, ref: User },
+  customer        : { type: mongoose.Schema.ObjectId, ref: User },
   name            : { type: String, index: true, lowercase: true, required: true },
   description     : { type: String, index:true, lowercase:true, required: true },
+  isVisible       : Boolean,
+  creationDate    : Date,
+  publicationDate : Date,
+  
+  deleted         : { type: Boolean, default: false }
 
 });
+
+// Indexes
+postSchema.index( { professional: 1 } );
+postSchema.index( { customer: 1 } );
+postSchema.index( { name: 1 } );
+postSchema.index( { isVisible: 1 } );
+postSchema.index( { deleted: 1 } );
 
 postSchema.statics.exists = function (idBlog, cb) {
   Blog.findById(idBlog, function (err, post) {
@@ -44,7 +57,7 @@ postSchema.statics.loadJson = async function (file) {
   const posts = JSON.parse(data).posts;
   const numPosts = posts.length;
 
-  for (var i = 0; i < posts.length; i++) {
+  for (let i = 0; i < posts.length; i++) {
     await (new Blog(posts[i])).save();
   }
 
@@ -54,7 +67,7 @@ postSchema.statics.loadJson = async function (file) {
 
 postSchema.statics.createRecord = function (post, cb) {
   // Validations
-  const valErrors = [];
+  let valErrors = [];
   if (!(v.isAlpha(post.name) && v.isLength(post.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
   }
@@ -81,4 +94,4 @@ postSchema.statics.createRecord = function (post, cb) {
   });
 };
 
-var Blog = mongoose.model('Blog', postSchema);
+let Blog = mongoose.model('Blog', postSchema);

@@ -1,6 +1,8 @@
 'use strict';
 
 const mongoose = require('mongoose');
+const User = mongoose.model('User');
+
 const hash = require('hash.js');
 const v = require('validator');
 
@@ -9,12 +11,28 @@ const flow = require('../lib/flowControl');
 
 const serviceSchema = mongoose.Schema({
   
-  idService   : { type: Number, index : true },
-  name        : { type: String, index: true, lowercase: true, required: true },
-  description : { type: String, index:true, lowercase:true, required: true },
-  price       : { type: Number, index:true, unique: false, required: true },
+  professional  : { type: mongoose.Schema.ObjectId, ref: User, required: true },
+  name          : { type: String, lowercase: true, required: true },
+  description   : { type: String, lowercase:true, required: true },
+  price         : { type: Number, unique: false, required: true },
+  isActive      : { type: Boolean, unique: false, required: true, default: false },
+  
+  deleted       : { type: Boolean, default: false }
 
 });
+ 
+// Indexes
+serviceSchema.index( { professional: 1 } );
+serviceSchema.index( { name: 1 } );
+serviceSchema.index( { price: 1 } );
+serviceSchema.index( { isActive: 1 } );
+serviceSchema.index( { deleted: 1 } );
+
+//Indexes
+serviceSchema.index( { professional: 1 } );
+serviceSchema.index( { name: 1 } );
+serviceSchema.index( { price: 1 } );
+serviceSchema.index( { deleted: 1 } );
 
 /**
  * Load json - services
@@ -36,7 +54,7 @@ serviceSchema.statics.loadJson = async function (file) {
   const services = JSON.parse(data).services;
   const numServices = services.length;
 
-  for (var i = 0; i < services.length; i++) {
+  for (let i = 0; i < services.length; i++) {
     await (new Service(services[i])).save();
   }
 
@@ -67,22 +85,27 @@ serviceSchema.statics.list = function (startRow, numRows, sortField, includeTota
       //row.foto = configApp.appURLBasePath + configApp.imageLogoDate;
     });
 
-    const result = { rows };
+    // Populate
+    User.populate( rows, { path: 'professional' }, function(err, serviceAndProfessional) {
+      let result = { rows: serviceAndProfessional };
 
-    if (!includeTotal) return cb(null, result);
+      if (!includeTotal) return cb(null, result);
 
-    // incluir propiedad total
-    Service.count({}, (err, total) => {
-      if (err) return cb(err);
-      result.total = total;
-      return cb(null, result);
+      // Includes total property
+      Service.count({}, (err, total) => {
+        if (err) return cb(err);
+        result.total = total;
+        return cb(null, result);
+      });
+
     });
+
   });
 };
 
 serviceSchema.statics.createRecord = function (service, cb) {
   // Validations
-  const valErrors = [];
+  let valErrors = [];
   if (!(v.isAlpha(service.name) && v.isLength(service.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
   }
@@ -93,7 +116,7 @@ serviceSchema.statics.createRecord = function (service, cb) {
 
   // Check duplicates
   // Search service
-  Service.findOne({ name: service.name.toLowerCase() }, function (err, exists) {
+  Service.findOne({ professional: service.professional, name: service.name.toLowerCase() }, function (err, exists) {
     if (err) {
       return cb(err);
     }
@@ -109,4 +132,4 @@ serviceSchema.statics.createRecord = function (service, cb) {
   });
 };
 
-var Service = mongoose.model('Service', serviceSchema);
+let Service = mongoose.model('Service', serviceSchema);

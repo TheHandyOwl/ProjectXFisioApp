@@ -13,12 +13,12 @@ const db = require('./lib/connectMongoose');
 /* jshint ignore:end */
 
 // Loading definitions from all models
-require('./models/Appointment');
-require('./models/Blog');
-require('./models/Notif');
-require('./models/Product');
-require('./models/Service');
 require('./models/User');
+require('./models/Service');
+require('./models/Product');
+require('./models/Notif');
+require('./models/Blog');
+require('./models/Appointment');
 require('./models/PushToken');
 
 const app = express();
@@ -46,8 +46,9 @@ app.use('/', require('./routes/index'));
 
 // API v1
 app.use('/apiv1/appointments', require('./routes/apiv1/appointments'));
-app.use('/apiv1/services', require('./routes/apiv1/services'));
+app.use('/apiv1/notifs', require('./routes/apiv1/notifs'));
 app.use('/apiv1/products', require('./routes/apiv1/products'));
+app.use('/apiv1/services', require('./routes/apiv1/services'));
 app.use('/apiv1/users', require('./routes/apiv1/users'));
 app.use('/apiv1/pushtokens', require('./routes/apiv1/pushtokens'));
 
@@ -67,10 +68,17 @@ if (app.get('env') === 'development') {
   app.use(function (err, req, res, next) {
     if (err.status && err.status >= 500) console.error(err);
     res.status(err.status || err.code || 500);
-    if (isAPI(req)) { // llamada de API, devuelvo JSON
-      return res.json({ ok: false,
-        error: { code: err.code || err.status || 500, message: err.message, err: err }
-      });
+    if (isAPI(req)) { // If it's API, JSON is returned
+      return res
+        .status(500)
+        .json({
+          ok: false,
+          error: {
+            code: err.code || err.status || 500,
+            message: err.message,
+            err: err
+          }
+        });
     }
 
     res.render('error', { message: err.message, error: err });
@@ -84,10 +92,17 @@ if (app.get('env') === 'development') {
 app.use(function (err, req, res, next) {
   if (err.status && err.status >= 500) console.error(err);
   res.status(err.status || err.code || 500);
-  if (isAPI(req)) { // llamada de API, devuelvo JSON
-    return res.json({ ok: false,
-      error: { code: err.code || err.status || 500, message: err.message, err: {} }
-    });
+  if (isAPI(req)) { //  If it's API, JSON is returned
+    return res
+      .status(500)
+      .json({
+        ok: false,
+        error: {
+          code: err.code || err.status || 500,
+          message: err.message,
+          err: err
+        }
+      });
   }
 
   res.render('error', { message: err.message, error: {} });

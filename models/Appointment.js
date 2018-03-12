@@ -1,6 +1,9 @@
 'use strict';
 
 const mongoose = require('mongoose');
+const User = mongoose.model('User');
+const Service = mongoose.model('Service');
+
 const hash = require('hash.js');
 const v = require('validator');
 
@@ -11,22 +14,22 @@ const configApp = require('./../local_config').app;
 
 const appointmentSchema = mongoose.Schema({
   
-  idService       : Number,
-  idCustomer      : Number,
-  idProfessional  : Number,
-  idAppointment   : Number,
+  service         : { type: mongoose.Schema.ObjectId, ref: Service },
+  customer        : { type: mongoose.Schema.ObjectId, ref: User },
+  professional    : { type: mongoose.Schema.ObjectId, ref: User },
   isConfirmed     : Boolean,
   isCancelled     : Boolean,
   date            : Date,
   latitude        : Number,
   longitude       : Number,
   address         : String, // TODO: [Address] ????  not sure how to do it
-  extraInfo       : String
+  extraInfo       : String,
+  
+  deleted         : { type: Boolean, default: false }
  
 });
 
-appointmentSchema.index( { idAppointment: 1 }, { unique : true } );
-appointmentSchema.index( { idService: 1, idCustomer: 1, idProfessional: 1, date: 1 } );
+appointmentSchema.index( { service: 1, customer: 1, professional: 1, date: 1 } );
 
 /**
  * Load json - appointments
@@ -48,7 +51,7 @@ appointmentSchema.statics.loadJson = async function (file) {
   const appointments = JSON.parse(data).appointments;
   const numAppointments = appointments.length;
 
-  for (var i = 0; i < appointments.length; i++) {
+  for (let i = 0; i < appointments.length; i++) {
     await (new Appointment(appointments[i])).save();
   }
 
@@ -72,16 +75,26 @@ appointmentSchema.statics.list = function (startRow, numRows, sortField, include
       row.foto = configApp.appURLBasePath + configApp.imageLogoDate;
     });
 
-    const result = { rows: rows };
+    // Populate
+    Service.populate( rows, { path: 'service' }, function(err, appointmentsAndService) {
+      User.populate( appointmentsAndService, { path: 'customer' }, function(err, appointmentsAndServiceAndCustomer) {
+        User.populate( appointmentsAndServiceAndCustomer, { path: 'professional' }, function(err, appointmentsAndServiceAndCustomerAndProfessional) {
 
-    if (!includeTotal) return cb(null, result);
+          let result = { rows: appointmentsAndServiceAndCustomerAndProfessional };
 
-    // incluir propiedad total
-    Appointment.count({}, (err, total) => {
-      if (err) return cb(err);
-      result.total = total;
-      return cb(null, result);
+          if (!includeTotal) return cb(null, result);
+
+          // Includes total property
+          Appointment.count({}, (err, total) => {
+            if (err) return cb(err);
+            result.total = total;
+            return cb(null, result);
+          });
+
+        });
+      });
     });
+
   });
 };
 
@@ -94,9 +107,15 @@ appointmentSchema.statics.exists = function (idAppointment, cb) {
 
 appointmentSchema.statics.createRecord = function (appointment, cb) {
   // Validations
-  const valErrors = [];
+  let valErrors = [];
   if (!(v.isAlpha(appointment.name) && v.isLength(appointment.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
+  }
+
+  let date = new Date();
+  date.setDate(date.getDate() + 1);
+  if (!v.isAfter(appointment.date, date)) {
+    valErrors.push({ field: 'date', message: __('validation_invalid', { field: 'date' }) });
   }
 
   if (valErrors.length > 0) {
@@ -105,13 +124,13 @@ appointmentSchema.statics.createRecord = function (appointment, cb) {
 
   // Check duplicates
   // Search appointment
-  Appointment.findOne({ idAppointment: appointment.idAppointment }, function (err, appointment) {
+  Appointment.findOne({ date: appointment.date }, function (err, foundAppointment) {
     if (err) {
       return cb(err);
     }
 
     // appointment already exists
-    if (appointment) {
+    if (foundAppointment) {
       return cb({ code: 409, message: __('appointment_id_duplicated') });
     } else {
 
@@ -121,4 +140,4 @@ appointmentSchema.statics.createRecord = function (appointment, cb) {
   });
 };
 
-var Appointment = mongoose.model('Appointment', appointmentSchema);
+let Appointment = mongoose.model('Appointment', appointmentSchema);

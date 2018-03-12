@@ -1,29 +1,63 @@
 {
   "appointments": [
-    { 
-      "idService": 1,
-      "idCustomer": 1,
-      "idProfessional": 1,
-      "idAppointment": 1,
-      "isConfirmed": false,
+    {
+      "_id": "5aa444978f1844370be55510",
+      "service": "5aa00e386281ea2d347d4732",
+      "customer": "5a9f054f602dd0e540c71bc7",
+      "professional": "5a9f054f602dd0e540c71bc6",
+      "isConfirmed": true,
       "isCancelled": false,
-      "date": "1520102376071",
+      "date": "2018-02-02 12:00:00.000Z",
       "latitude": 40.4166159,
       "longitude": -3.703788,
-      "address": "40.4166159, -3.703788",
       "extraInfo": "Tercero izquierda"
     },
     { 
-      "idService": 1,
-      "idCustomer": 1,
-      "idProfessional": 1,
-      "idAppointment": 2,
-      "isConfirmed": true,
+      "_id": "5aa444978f1844370be55511",
+      "service": "5aa00e386281ea2d347d4732",
+      "customer": "5a9f054f602dd0e540c71bc7",
+      "professional": "5a9f054f602dd0e540c71bc6",
+      "isConfirmed": false,
       "isCancelled": false,
-      "date": "1520102376071",
+      "date": "2018-02-02 13:00:00.000Z",
       "latitude": 40.4166159,
       "longitude": -3.703788,
-      "address": "40.4166159, -3.703789",
+      "extraInfo": "Tercero izquierda"
+    },
+    { 
+      "_id": "5aa444978f1844370be55512",
+      "service": "5aa00e386281ea2d347d4733",
+      "customer": "5a9f054f602dd0e540c71bc7",
+      "professional": "5a9f054f602dd0e540c71bc6",
+      "isConfirmed": true,
+      "isCancelled": false,
+      "date": "2018-04-04 12:00:00.000Z",
+      "latitude": 40.4166159,
+      "longitude": -3.703788,
+      "extraInfo": false
+    },
+    {
+      "_id": "5aa444978f1844370be55513",
+      "service": "5aa00e386281ea2d347d4733",
+      "customer": "5a9f054f602dd0e540c71bc7",
+      "professional": "5a9f054f602dd0e540c71bc6",
+      "isConfirmed": false,
+      "isCancelled": false,
+      "date": "2018-04-04 13:00:00.000Z",
+      "latitude": 40.4166159,
+      "longitude": -3.703788,
+      "extraInfo": false
+    },
+    {
+      "_id": "5aa444978f1844370be55514",
+      "service": "5aa00e386281ea2d347d4733",
+      "customer": "5a9f054f602dd0e540c71bc6",
+      "professional": "5a9f054f602dd0e540c71bc6",
+      "isConfirmed": false,
+      "isCancelled": false,
+      "date": "2018-04-04 13:00:00.000Z",
+      "latitude": 40.4166159,
+      "longitude": -3.703788,
       "extraInfo": false
     }
   ]

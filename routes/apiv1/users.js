@@ -1,31 +1,38 @@
 'use strict';
 
 const express = require('express');
-const router = express.Router();
+const Router = express.Router();
 
-const mongoose = require('mongoose');
-const User = mongoose.model('User');
+const Mongoose = require('mongoose');
+const User = Mongoose.model('User');
 
 const jwt = require('jsonwebtoken');
 const config = require('../../local_config');
 const hash = require('hash.js');
 
-router.post('/authenticate', function (req, res, next) {
+
+// User authentication for known users
+
+Router.post('/authenticate', function (req, res, next) {
 
   const email = req.body.email;
   const password = req.body.password;
+  const deleted = false;
 
   // Search user
-  User.findOne({ email }, function (err, user) {
+  User.findOne({ email, deleted }, function (err, user) {
     if (err) return next(err);
 
     if (!user) {
-      return res.json({
-        ok: false, error: {
-          code: 401,
-          message: res.__('users_user_not_found')
-        }
-      });
+      return res
+        .status(401)
+        .json({
+          ok: false,
+          error: {
+            code: 401,
+            message: res.__('users_user_not_found')
+          }
+        });
     } else if (user) {
 
       // Hash password and compare
@@ -33,52 +40,95 @@ router.post('/authenticate', function (req, res, next) {
 
       // It's the same password?
       if (user.password != passwordHash) {
-        return res.json({
-          ok: false, error: {
-            code: 401,
-            message: res.__('users_wrong_password')
-          }
-        });
+        return res
+          .status(401)
+          .json({
+            ok: false,
+            error: {
+              code: 401,
+              message: res.__('users_wrong_password')
+            }
+          });
       } else {
 
         // User found and same password
         // Make token
-        const token = jwt.sign({ user: user }, config.jwt.secret, config.jwt.options);
+        const token = jwt.sign({ user }, config.jwt.secret, config.jwt.options);
 
         // return the information including token as JSON
-        return res.json({ ok: true, token: token });
+        return res
+          .status(200)
+          .json({
+            ok: true,
+            token
+          });
       }
     }
   });
 
 });
 
-router.post('/register', function (req, res, next) {
+// User registration for new users
+
+Router.post('/register', function (req, res, next) {
   User.createRecord(req.body, function (err) {
+    console.log("err");
+    console.log(err);
     if (err) return next(err);
 
     // User created
-    return res.json({ ok: true, message: res.__('users_user_created') });
+    return res
+      .status(200)
+      .json({
+        ok: true,
+        result: res.__('users_user_created')
+      });
   });
 });
 
-// Remove an user
+// Remove user
 
-router.delete('/', function (req, res, next) {
+Router.delete('/:id', function (req, res, next) {
+
+  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false ) return res
+                        .status(422)
+                        .json({
+                          ok: false,
+                          error: {
+                            code: 422,
+                            message: res.__('unprocessable_entity')
+                          }
+                        });
+
+  if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
+    return res
+      .status(422)
+      .json({
+        ok: false,
+        error: {
+          code: 422,
+          message: res.__('unprocessable_entity')
+        }
+      });
+  }
 
   const email = req.body.email;
   const password = req.body.password;
 
-  User.findOne({ email }, function (err, user) {
+  User.findOne({ _id: req.params.id, email, deleted: false }, function (err, user) {
     if (err) return next(err);
 
     if (!user) {
-      return res.json({
-        ok: false, error: {
-          code: 401,
-          message: res.__('user_not_found')
-        }
-      });
+      return res
+        .status(401)
+        .json({
+          ok: false,
+          error: {
+            code: 401,
+            message: res.__('user_or_password_incorrect')
+          }
+        });
     } else if (user) {
 
       // TODO Check the token
@@ -86,39 +136,79 @@ router.delete('/', function (req, res, next) {
       // if the password and the token are correct, we can remove the user information
       const hashedPassword = hash.sha256().update(password).digest('hex');
       if (hashedPassword === user.password) {
-        user.deleteOne({ email: req.params.email }, function (err) {
+        User.findOneAndUpdate({ _id: user._id }, { deleted: true } , function (err) {
           if (err) return next(err);
   
           return res.json({ ok: true, message: res.__('user_deleted') });
         })
       } else {
-        return res.json({ ok: false, message: res.__('users_wrong_password') });
+        return res
+          .status(401)
+          .json({
+            ok: false,
+            error: {
+              code: 401,
+              message: res.__('user_or_password_incorrect')
+            }
+          });
       }
     }
   });
 });
 
 // Update a user
+Router.put('/:id', function (req, res, next) {
 
-router.put('/:email', function (req, res, next) {
+  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false ) return res
+                        .status(422)
+                        .json({
+                          ok: false,
+                          error: {
+                            code: 422,
+                            message: res.__('unprocessable_entity')
+                          }
+                        });
 
-  User.findOne({ email: req.params.email }, function (err, user) {
+  if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
+    return res
+      .status(422)
+      .json({
+        ok: false,
+        error: {
+          code: 422,
+          message: res.__('unprocessable_entity')
+        }
+      });
+  }
+
+  if (req.body.professional != null) delete req.body.professional;
+
+  User.findOne({ _id: req.params.id, deleted: false }, function (err, user) {
     if (err) return next(err);
 
     if (!user) {
-      return res.json({
-        ok: false, error: {
-          code: 401,
-          message: res.__('user_not_found')
-        }
-      });
-    } else if (service) {
+      return res
+        .status(401)
+        .json({
+          ok: false,
+          error: {
+            code: 401,
+            message: res.__('user_not_found')
+          }
+        });
+    } else if (user) {
 
       User.updateOne(req.body, function (err) {
         if (err) return next(err);
 
         // Service updated
-        return res.json({ ok: true, message: res.__('user_updated') });
+        return res
+          .status(200)
+          .json({
+            ok: true,
+            result: res.__('user_updated')
+          });
       });
     }
   });
@@ -126,13 +216,15 @@ router.put('/:email', function (req, res, next) {
 });
 
 /*** AUX, it will be removed ***/
-router.get('/', (req, res, next) => {
+Router.get('/', (req, res, next) => {
+
+  const filters = {};
+  filters.deleted = false; // Not deleted
 
   const start = parseInt(req.query.start) || 0;
   const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
   const sort = req.query.sort || '_id';
   const includeTotal = req.query.includeTotal === 'true';
-  const filters = {};
 
   if (typeof req.query.status !== 'undefined') {
     filters.status = req.query.status;
@@ -148,4 +240,4 @@ router.get('/', (req, res, next) => {
   });
 });
 
-module.exports = router;
+module.exports = Router;

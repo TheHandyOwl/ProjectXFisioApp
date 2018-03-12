@@ -1,26 +1,24 @@
 'use strict';
 
-const express = require('express');
-const Router = express.Router();
+const Express = require('express');
+const Router = Express.Router();
 const Mongoose = require('mongoose');
 const User = Mongoose.model('User');
-const Product = Mongoose.model('Product');
+const Notif = Mongoose.model('Notif');
 
 // Auth con JWT
 const jwtAuth = require('../../lib/jwtAuth');
 Router.use(jwtAuth());
 
-// Get all products by owner and not deleted
+// Get all notifs
 
 Router.get('/', (req, res, next) => {
 
   let filters = {};
-  filters.professional = req.decoded.user._id; // Check owner
-  filters.deleted = false; // Not deleted
 
   const start = parseInt(req.query.start) || 0;
   const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
-  const sort = req.query.sort || 'name';
+  const sort = req.query.sort || '_id';
   const includeTotal = req.query.includeTotal === 'true';
 
   if (typeof req.query.status !== 'undefined') {
@@ -31,16 +29,17 @@ Router.get('/', (req, res, next) => {
     filters.description = new RegExp('^' + req.query.description, 'i');
   }
 
-  Product.list(start, limit, sort, includeTotal, filters, function (err, result) {
+  Notif.list(start, limit, sort, includeTotal, filters, function (err, result) {
     if (err) return next(err);
     res.json({ ok: true, result: result });
   });
+
 });
 
-// Get a product by owner and not deleted
+// Find notif by id
 
 Router.get('/:id', (req, res, next) => {
-
+  
   const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
   if (idOk == false ) return res
                         .status(422)
@@ -52,58 +51,47 @@ Router.get('/:id', (req, res, next) => {
                           }
                         });
 
-  // Find product by owner and not deleted
-  Product.findOne( { _id: req.params.id, professional: req.decoded.user._id, deleted: false }, function (err, product) {
+  Notif.findById(req.params.id).exec(function (err, notif) {
+
     if (err) return next(err);
 
-    if (!product) {
+    if (!notif) {
       return res
         .status(401)
         .json({
           ok: false,
           error: {
             code: 401,
-            message: res.__('product_not_found')
+            message: res.__('notification_not_found')
           }
         });
-    } else if (product) {
-      User.populate( product, { path: 'professional' }, function(err, productAndProfessional) {
-        res.json({ ok: true, result: productAndProfessional });
-      });
+    } else if (notif) {
+    User.populate( notif, { path: 'customer' }, function(err, notifsAndCustomer) {
+        User.populate( notifsAndCustomer, { path: 'professional' }, function(err, notifsAndCustomerAndProfessional) {
+        res.json({ ok: true, result: notifsAndCustomerAndProfessional });
+        });
+    });
     }
   });
 });
 
-// Create a Product
+// Create an notif
 
 Router.post('/', function (req, res, next) {
-  // Check owner
-  if ( (req.body.professional != null) && (req.body.professional != req.decoded.user._id) ) {
-    return res
-      .status(403)
-      .json({
-        ok: false,
-        error: {
-          code: 403,
-          message: res.__('forbidden_access')
-        }
-      });
-  }
-
-  Product.createRecord(req.body, function (err) {
+  Notif.createRecord(req.body, function (err) {
     if (err) return next(err);
 
-    // Product created
+    // Notif created
     return res
       .status(200)
       .json({
         ok: true,
-        result: res.__('product_created')
+        result: res.__('notification_created')
       });
   });
 });
 
-// Update a product by owner and not deleted
+// Update an notif
 
 Router.put('/:id', function (req, res, next) {
 
@@ -117,8 +105,8 @@ Router.put('/:id', function (req, res, next) {
                             message: res.__('unprocessable_entity')
                           }
                         });
-  
-  if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
+
+  if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
     return res
       .status(422)
       .json({
@@ -131,33 +119,33 @@ Router.put('/:id', function (req, res, next) {
   }
 
   if (req.body.professional != null) delete req.body.professional;
+  if (req.body.customer != null) delete req.body.customer;
 
-  Product.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id,  deleted: false }, req.body, function (err, product) {
+  Notif.findOneAndUpdate({ _id: req.params.id, deleted: false }, req.body, function (err, notif) {
     if (err) return next(err);
 
-    if (!product) {
+    if (!notif) {
       return res
         .status(401)
         .json({
           ok: false,
           error: {
             code: 401,
-            message: res.__('product_not_found')
+            message: res.__('notification_not_found')
           }
         });
-    } else if (product) {
+    } else if (notif) {
       return res
         .status(200)
         .json({
           ok: true,
-          result: res.__('product_updated')
+          result: res.__('notification_updated')
         });
     }
   });
-
 });
 
-// Remove a product by owner and not deleted
+// Remove an notif
 
 Router.delete('/:id', function (req, res, next) {
 
@@ -172,25 +160,25 @@ Router.delete('/:id', function (req, res, next) {
                           }
                         });
 
-  Product.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, { deleted: true }, function (err, product) {
+  Notif.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, { deleted: true }, function (err, notif) {
     if (err) return next(err);
 
-    if (!product) {
+    if (!notif) {
       return res
         .status(401)
         .json({
           ok: false,
           error: {
             code: 401,
-            message: res.__('product_not_found')
+            message: res.__('notification_not_found')
           }
         });
-    } else if (product) {
+    } else if (notif) {
       return res
         .status(200)
         .json({
           ok: true,
-          result: res.__('product_deleted')
+          result: res.__('notification_deleted')
         });
     }
   });

@@ -4,27 +4,79 @@ const mongoose = require('mongoose');
 const hash = require('hash.js');
 const validator = require('validator');
 
+const fs = require('fs');
+
 const userSchema = mongoose.Schema({
 
-  idUser: Number,
-  isProfessional: Boolean,
-  fellowshipNumber: Number,  // CollegiateNumber
-  gender: String,  // Boolean or String????????
-  name: { type: String, lowercase: true },
-  lastName: { type: String, lowercase: true },
-  email: { type: String, lowercase: true },
-  password: String,
-  address: String,  // [Address] ????  not sure how to do it
-  phone: String,
-  birthDate: Date,
-  nationalId: String,
-  registrationDate: Date,
-  lastLoginDate: Date
+  isProfessional    : Boolean,
+  fellowshipNumber  : Number,  // CollegiateNumber
+  gender            : { type: String, enum: ['female', 'male'] },
+  name              : { type: String, lowercase: true },
+  lastName          : { type: String, lowercase: true },
+  email             : { type: String, unique: true, lowercase: true },
+  password          : String,
+  address           : String,  // [Address] ????  not sure how to do it
+  phone             : String,
+  birthDate         : Date,
+  nationalId        : String,
+  registrationDate  : Date,
+  lastLoginDate     : Date,
+  
+  deleted           : { type: Boolean, default: false }
 
 });
+ 
+// Indexes
+userSchema.index( { isProfessional: 1 } );
+userSchema.index( { fellowshipNumber: 1 } );
+userSchema.index( { gender: 1 } );
+userSchema.index( { name: 1 } );
+userSchema.index( { lastName: 1 } );
+userSchema.index( { email: 1 } );
+userSchema.index( { address: 1 } );
+userSchema.index( { birthDate: 1 } );
+userSchema.index( { nationalId: 1 } );
+userSchema.index( { deleted: 1 } );
 
-userSchema.index({ idUser: 1 }, { unique: true });
-userSchema.index({ email: 1 }, { unique: true });
+//Indexes
+userSchema.index( { isProfessional: 1 } );
+userSchema.index( { fellowshipNumber: 1 } );
+userSchema.index( { gender: 1 } );
+userSchema.index( { name: 1 } );
+userSchema.index( { lastName: 1 } );
+userSchema.index( { email: 1 } );
+userSchema.index( { address: 1 } );
+userSchema.index( { birthDate: 1 } );
+userSchema.index( { nationalId: 1 } );
+userSchema.index( { deleted: 1 } );
+
+/**
+ * Load json - users
+ */
+userSchema.statics.loadJson = async function (file) {
+
+  const data = await new Promise((resolve, reject) => {
+    fs.readFile(file, { encoding: 'utf8' }, (err, data) => {
+      return err ? reject(err) : resolve(data);
+    });
+  });
+
+  console.log(file + ' readed.');
+
+  if (!data) {
+    throw new Error(file + ' is empty!');
+  }
+
+  const users = JSON.parse(data).users;
+  const numUsers = users.length;
+
+  for (let i = 0; i < users.length; i++) {
+    await (new User(users[i])).save();
+  }
+
+  return numUsers;
+
+};
 
 userSchema.statics.exists = function (idUser, cb) {
   User.findById(idUser, function (err, user) {
@@ -44,7 +96,7 @@ userSchema.statics.list = function (startRow, numRows, sortField, includeTotal, 
   return query.exec(function (err, rows) {
     if (err) return cb(err);
 
-    const result = { rows };
+    let result = { rows };
 
     if (!includeTotal) return cb(null, result);
 
@@ -60,7 +112,7 @@ userSchema.statics.list = function (startRow, numRows, sortField, includeTotal, 
 userSchema.statics.createRecord = function (user, cb) {
 
   // Validations
-  const valErrors = [];
+  let valErrors = [];
   if (!(validator.isAlpha(user.name) || validator.isLength(user.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
   }
@@ -80,14 +132,12 @@ userSchema.statics.createRecord = function (user, cb) {
   // Check duplicates
   // Search user
   User.findOne({ email: user.email }, function (err, exists) {
-    
     if (err) return cb(err);
 
     // user already exists
     if (exists) {
       return cb({ code: 409, message: __('user_email_duplicated') });
     } else {
-
       // Hash the password
       user.password = hash.sha256().update(user.password).digest('hex');
 
@@ -97,4 +147,4 @@ userSchema.statics.createRecord = function (user, cb) {
   });
 };
 
-var User = mongoose.model('User', userSchema);
+let User = mongoose.model('User', userSchema);

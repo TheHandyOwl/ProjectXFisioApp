@@ -7,12 +7,12 @@ const async = require('async');
 const db = require('./lib/connectMongoose');
 
 // Loading all models
-require('./models/Appointment');
-require('./models/Blog');
-require('./models/Notif');
-require('./models/Product');
-require('./models/Service');
 require('./models/User');
+require('./models/Service');
+require('./models/Product');
+require('./models/Notif');
+require('./models/Blog');
+require('./models/Appointment');
 require('./models/PushToken');
 
 db.once('open', function () {
@@ -42,7 +42,7 @@ function runInstallScript() {
       initPosts,
       initProducts,
       initServices,
-      initUsers
+      initUsersFromJson
     ], (err) => {
       if (err) {
         console.error('There was an error: ', err);
@@ -155,7 +155,7 @@ function initServices(cb) {
 
 }
 
-function initUsers(cb) {
+function initUsersFromJson(cb) {
   const User = mongoose.model('User');
 
   User.remove({}, ()=> {
@@ -163,8 +163,53 @@ function initUsers(cb) {
     console.log('Users deleted.');
     
     const users = [
-      { idUser: 1, name: 'fisio', email: 'fisio@invalid.com', password: '1234567' },
-      { idUser: 2, name: 'customer', email: 'customer@invalid.com', password: '1234568' }
+      { 
+        _id               : '5a9f054f602dd0e540c71bc6',
+        isProfessional    : 'yes',
+        fellowshipNumber  : 33,
+        gender            : 'male',
+        name              : 'fisio',
+        lastName          : 'lastname',
+        email             : 'fisio@invalid.com',
+        password          : '12345678',
+        address           : 'Fisio Address, 33',
+        phone             : '626626626',
+        birthDate         : '1970-12-30T12:30:00.000Z',
+        nationalId        : '12345678Z',
+        registrationDate  : '2018-01-01T01:01:00.000Z',
+        lastLoginDate     : '2018-03-07T16:00:00.000Z'
+      }, {
+        _id               : '5a9f054f602dd0e540c71bc7',
+        isProfessional    : 'yes',
+        fellowshipNumber  : 33,
+        gender            : 'female',
+        name              : 'customer',
+        lastName          : 'lastname',
+        email             : 'customer@invalid.com',
+        password          : '12345678',
+        address           : 'Customer Address, 44',
+        phone             : '626626626',
+        birthDate         : '1980-12-30T12:30:00.000Z',
+        nationalId        : '87654321Z',
+        registrationDate  : '2018-02-02T02:02:00.000Z',
+        lastLoginDate     : '2018-03-07T17:00:00.000Z'
+      }, {
+        _id               : '5a9f054f602dd0e540c71bc8',
+        isProfessional    : 'yes',
+        fellowshipNumber  : 33,
+        gender            : 'male',
+        name              : 'customerDeleted',
+        lastName          : 'lastname',
+        email             : 'customerDeleted@invalid.com',
+        password          : '12345678',
+        address           : 'Customer Address, 44',
+        phone             : '626626626',
+        birthDate         : '1980-12-30T12:30:00.000Z',
+        nationalId        : '87654321Z',
+        registrationDate  : '2018-02-02T02:02:00.000Z',
+        lastLoginDate     : '2018-03-07T17:00:00.000Z',
+        deleted           : false
+      }
     ];
 
     async.eachSeries(users, User.createRecord, (err)=> {

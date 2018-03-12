@@ -13,7 +13,7 @@ const pushTokenSchema = mongoose.Schema({
 pushTokenSchema.statics.createRecord = function (newItem, cb) {
 
   // Validations
-  const valErrors = [];
+  let valErrors = [];
   if (!newItem.token) {
     valErrors.push({ field: 'token', message: __('validation_invalid') });
   }
@@ -30,21 +30,21 @@ pushTokenSchema.statics.createRecord = function (newItem, cb) {
   if (valErrors.length > 0) return cb({ code: 422, errors: valErrors });
 
   // If I have no user, I create it directly without user
-  if (!newItem.user) return crear();
+  if (!newItem.user) return createItem();
 
   User.exists(newItem.user, function (err, exists) {
     if (err) return cb(err);
 
-    // si no exists devuelvo error
+    // if not exists returns an error
     if (!exists) return cb({ code: 404, message: __('users_user_not_found') });
 
-    return crear();
+    return createItem();
   });
 
-  function crear() {
+  function createItem() {
     newItem.createdAt = new Date();
     new PushToken(newItem).save(cb);
   }
 };
 
-var PushToken = mongoose.model('PushToken', pushTokenSchema);
+let PushToken = mongoose.model('PushToken', pushTokenSchema);

@@ -1,18 +1,24 @@
 {
   "posts": [
     {
-      "idBlog": 1,
-      "idProfessional": 1,
-      "idCustomer": 2,
-      "name": "Post 1",
-      "description": "Description post 1"
+      "_id": "5aa0146c74b0c22ce4832a26",
+      "professional": "5a9f054f602dd0e540c71bc6",
+      "customer": "5a9f054f602dd0e540c71bc7",
+      "name": "Blog 1",
+      "description": "Description blog 1" ,
+      "isvisible": true,
+      "creationDate": "2018-03-07T16:00:00.000Z",
+      "publicationDate": "2018-03-07T16:00:00.000Z"
     },
     {
-      "idBlog": 1,
-      "idProfessional": 1,
-      "idCustomer": 2,
-      "name": "Post 2",
-      "description": "Description post 2"
+      "_id": "5aa0146c74b0c22ce4832a27",
+      "professional": "5a9f054f602dd0e540c71bc6",
+      "customer": "5a9f054f602dd0e540c71bc7",
+      "name": "Blog 2",
+      "description": "Description blog 2" ,
+      "isVisible": true,
+      "creationDate": "2018-03-07T16:00:00.000Z",
+      "publicationDate": "2018-03-07T16:00:00.000Z"
     }
   ]
 }
