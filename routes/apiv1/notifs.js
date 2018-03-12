@@ -40,17 +40,31 @@ Router.get('/', (req, res, next) => {
 
 Router.get('/:id', (req, res, next) => {
   
+  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false ) return res
+                        .status(422)
+                        .json({
+                          ok: false,
+                          error: {
+                            code: 422,
+                            message: res.__('unprocessable_entity')
+                          }
+                        });
+
   Notif.findById(req.params.id).exec(function (err, notif) {
 
     if (err) return next(err);
 
     if (!notif) {
-      return res.json({
-        ok: false, error: {
-          code: 401,
-          message: res.__('notification_not_found')
-        }
-      });
+      return res
+        .status(401)
+        .json({
+          ok: false,
+          error: {
+            code: 401,
+            message: res.__('notification_not_found')
+          }
+        });
     } else if (notif) {
     User.populate( notif, { path: 'customer' }, function(err, notifsAndCustomer) {
         User.populate( notifsAndCustomer, { path: 'professional' }, function(err, notifsAndCustomerAndProfessional) {
@@ -68,7 +82,12 @@ Router.post('/', function (req, res, next) {
     if (err) return next(err);
 
     // Notif created
-    return res.json({ ok: true, message: res.__('notification_created') });
+    return res
+      .status(200)
+      .json({
+        ok: true,
+        result: res.__('notification_created')
+      });
   });
 });
 
@@ -76,8 +95,27 @@ Router.post('/', function (req, res, next) {
 
 Router.put('/:id', function (req, res, next) {
 
+  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false ) return res
+                        .status(422)
+                        .json({
+                          ok: false,
+                          error: {
+                            code: 422,
+                            message: res.__('unprocessable_entity')
+                          }
+                        });
+
   if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
-    return res.status(422).json({ ok: false, message: res.__('appointment_information_error') });
+    return res
+      .status(422)
+      .json({
+        ok: false,
+        error: {
+          code: 422,
+          message: res.__('unprocessable_entity')
+        }
+      });
   }
 
   if (req.body.professional != null) delete req.body.professional;
@@ -87,14 +125,22 @@ Router.put('/:id', function (req, res, next) {
     if (err) return next(err);
 
     if (!notif) {
-      return res.json({
-        ok: false, error: {
-          code: 401,
-          message: res.__('notification_not_found')
-        }
-      });
+      return res
+        .status(401)
+        .json({
+          ok: false,
+          error: {
+            code: 401,
+            message: res.__('notification_not_found')
+          }
+        });
     } else if (notif) {
-      return res.json({ ok: true, message: res.__('notification_updated') });
+      return res
+        .status(200)
+        .json({
+          ok: true,
+          result: res.__('notification_updated')
+        });
     }
   });
 });
@@ -102,22 +148,38 @@ Router.put('/:id', function (req, res, next) {
 // Remove an notif
 
 Router.delete('/:id', function (req, res, next) {
-  Notif.findById( req.params.id).exec( function (err, notif) {
+
+  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false ) return res
+                        .status(422)
+                        .json({
+                          ok: false,
+                          error: {
+                            code: 422,
+                            message: res.__('unprocessable_entity')
+                          }
+                        });
+
+  Notif.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, { deleted: true }, function (err, notif) {
     if (err) return next(err);
 
     if (!notif) {
-      return res.json({
-        ok: false, error: {
-          code: 401,
-          message: res.__('notification_not_found')
-        }
-      });
+      return res
+        .status(401)
+        .json({
+          ok: false,
+          error: {
+            code: 401,
+            message: res.__('notification_not_found')
+          }
+        });
     } else if (notif) {
-      Notif.deleteOne({idNotif: req.params.idNotif}, function (err){
-        if (err) return next(err);
-
-        return res.json({ ok: true, message: res.__('notification_deleted' )});
-      })
+      return res
+        .status(200)
+        .json({
+          ok: true,
+          result: res.__('notification_deleted')
+        });
     }
   });
 });

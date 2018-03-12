@@ -15,7 +15,7 @@ const notifSchema = mongoose.Schema({
   customer        : { type: mongoose.Schema.ObjectId, ref: User },
   name            : { type: String, lowercase: true, required: true },
   description     : { type: String, lowercase:true, required: true },
-  isSent          : { type: Boolean, required: true },
+  isSent          : { type: Boolean, default: false },
   creationDate    : { type : Date },
   sendingDate     : { type : Date },
   

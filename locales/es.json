@@ -3,12 +3,12 @@
 	"forbidden_access": "acceso prohibido",
 	"generic": "generic error: {{message}}",
 	"the_field": "el campo",
+	"unprocessable_entity": "entidad no procesable",
 	"validation_invalid": "el campo {{field}} no es válido",
 	"validation_minchars": "{{field}} debe tener al menos {{num}} caracteres",
 
 	"appointment_created": "cita creada",
 	"appointment_deleted": "cita eliminada",
-	"appointment_information_error": "error en la información de la cita",
 	"appointment_updated": "cita actualizada",
 	"appointment_id_duplicated": "id de cita ya existe",
 	"appointment_not_found": "cita no encontrada",
@@ -16,7 +16,6 @@
 
 	"product_created": "producto creado",
 	"product_deleted": "producto eliminado",
-	"product_information_error": "error en la información del producto",
 	"product_updated": "producto actualizado",
 	"product_id_duplicated": "el id del producto ya existe",
 	"product_name_duplicated": "el nombre de producto ya existe",
@@ -25,7 +24,6 @@
 	
 	"service_created": "servicio creado",
 	"service_deleted": "servicio eliminado y todas las citas asociadas",
-	"service_information_error": "error en la información del servicio",
 	"service_updated": "servicio actualizado",
 	"service_id_duplicated": "el id de servicio ya existe",
 	"service_name_duplicated": "el nombre de servicio ya existe",
@@ -44,7 +42,6 @@
 	"post_name_duplicated": "el post ya existe",
 
 	"user_email_duplicated": "el email del usuario ya existe",
-	"user_information_error": "error en la información del usuario",
 	"users_user_created": "usuario creado",
 	"users_user_not_found": "usuario no encontrado",
 	"user_deleted": "usuario eliminado",
