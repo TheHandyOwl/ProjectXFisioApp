@@ -77,6 +77,35 @@ Router.post('/', function (req, res, next) {
   });
 });
 
+// Update a service by owner and not deleted
+
+Router.put('/:id', function (req, res, next) {
+
+  if ( (req.params.id != req.decoded.user._id) ) {
+    return res.status(403).json({ ok: false, message: res.__('forbidden_access') });
+  }
+ 
+  if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
+    return res.status(422).json({ ok: false, message: res.__('service_information_error') });
+  }
+
+  Service.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, req.body, function (err, service) {
+    if (err) return next(err);
+
+    if (!service) {
+      return res.json({
+        ok: false, error: {
+          code: 401,
+          message: res.__('service_not_found')
+        }
+      });
+    } else if (service) {
+      return res.json({ ok: true, message: res.__('service_updated') });
+    }
+  });
+
+});
+
 // Remove a service by owner and not deleted
 
 Router.delete('/:id', function (req, res, next) {
@@ -114,35 +143,6 @@ Router.delete('/:id', function (req, res, next) {
     }
 
   });
-});
-
-// Update a service by owner and not deleted
-
-Router.put('/:id', function (req, res, next) {
-
-  if ( (req.params.id != req.decoded.user._id) ) {
-    return res.status(403).json({ ok: false, message: res.__('forbidden_access') });
-  }
- 
-  if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
-    return res.status(422).json({ ok: false, message: res.__('service_information_error') });
-  }
-
-  Service.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, req.body, function (err, service) {
-    if (err) return next(err);
-
-    if (!service) {
-      return res.json({
-        ok: false, error: {
-          code: 401,
-          message: res.__('service_not_found')
-        }
-      });
-    } else if (service) {
-      return res.json({ ok: true, message: res.__('service_updated') });
-    }
-  });
-
 });
 
 module.exports = Router;
