@@ -22,7 +22,7 @@
 	"product_name_duplicated": "product name already exists",
 	"product_not_found": "product not found",
 	"duplicate_product": "the product already exists",
-	
+
 	"service_created": "service created",
 	"service_deleted": "service removed and all associated appointments",
 	"service_information_error": "service information error",
@@ -32,22 +32,23 @@
 	"service_not_completed": "{{num}} appointment(s) are pending and confirmed",
 	"service_not_found": "service not found",
 	"duplicate_service": "the service already exists",
-	
+
 	"token_information_error": "failed to authenticate token.",
 	"token_not_provided": "No token provided.",
-	
+
 	"notification_created": "notification created",
 	"notification_deleted": "notification removed",
 	"notification_updated": "notification updated",
 	"notification_name_duplicated": "notification name already exists",
 	"notification_not_found": "notification not found",
 	"post_name_duplicated": "post name already exists",
-	
+
 	"user_email_duplicated": "user email already exists",
 	"user_information_error": "service information error",
 	"users_user_created": "user created",
+	"users_user_not_found": "user not found",
 	"user_deleted": "user deleted",
 	"user_updated": "user updated",
 	"user_or_password_incorrect": "incorrect authentication"
-
+	
 }

@@ -15,10 +15,7 @@ const productSchema = mongoose.Schema({
   name          : { type: String, lowercase: true, required: true },
   description   : { type: String, lowercase:true, required: true },
   price         : { type: Number, unique: false, required: true },
-<<<<<<< HEAD
-=======
   isActive      : { type: Boolean, unique: false, required: true, default: false },
->>>>>>> improve_gema_9march
   
   deleted       : { type: Boolean, default: false }
 

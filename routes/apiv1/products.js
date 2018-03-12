@@ -76,25 +76,6 @@ Router.post('/', function (req, res, next) {
   });
 });
 
-// Remove a product by owner and not deleted
-
-Router.delete('/:id', function (req, res, next) {
-  Product.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, { deleted: true }, function (err, product) {
-    if (err) return next(err);
-
-    if (!product) {
-      return res.json({
-        ok: false, error: {
-          code: 401,
-          message: res.__('product_not_found')
-        }
-      });
-    } else if (product) {
-      return res.json({ ok: true, message: res.__('product_deleted')});
-    }
-  });
-});
-
 // Update a product by owner and not deleted
 
 Router.put('/:id', function (req, res, next) {
@@ -124,6 +105,25 @@ Router.put('/:id', function (req, res, next) {
     }
   });
 
+});
+
+// Remove a product by owner and not deleted
+
+Router.delete('/:id', function (req, res, next) {
+  Product.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, { deleted: true }, function (err, product) {
+    if (err) return next(err);
+
+    if (!product) {
+      return res.json({
+        ok: false, error: {
+          code: 401,
+          message: res.__('product_not_found')
+        }
+      });
+    } else if (product) {
+      return res.json({ ok: true, message: res.__('product_deleted')});
+    }
+  });
 });
 
 module.exports = Router;

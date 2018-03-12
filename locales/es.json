@@ -46,8 +46,9 @@
 	"user_email_duplicated": "el email del usuario ya existe",
 	"user_information_error": "error en la información del usuario",
 	"users_user_created": "usuario creado",
+	"users_user_not_found": "usuario no encontrado",
 	"user_deleted": "usuario eliminado",
 	"user_updated": "usuario actualizado",
-	"user_or_password_incorrect": "Autenticación incorrecta"
+	"user_or_password_incorrect": "autenticación incorrecta"
 
 }
