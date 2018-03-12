@@ -24,12 +24,15 @@ Router.post('/authenticate', function (req, res, next) {
     if (err) return next(err);
 
     if (!user) {
-      return res.json({
-        ok: false, error: {
-          code: 401,
-          message: res.__('users_user_not_found')
-        }
-      });
+      return res
+        .status(401)
+        .json({
+          ok: false,
+          error: {
+            code: 401,
+            message: res.__('users_user_not_found')
+          }
+        });
     } else if (user) {
 
       // Hash password and compare
@@ -37,12 +40,15 @@ Router.post('/authenticate', function (req, res, next) {
 
       // It's the same password?
       if (user.password != passwordHash) {
-        return res.json({
-          ok: false, error: {
-            code: 401,
-            message: res.__('users_wrong_password')
-          }
-        });
+        return res
+          .status(401)
+          .json({
+            ok: false,
+            error: {
+              code: 401,
+              message: res.__('users_wrong_password')
+            }
+          });
       } else {
 
         // User found and same password
@@ -50,7 +56,12 @@ Router.post('/authenticate', function (req, res, next) {
         const token = jwt.sign({ user }, config.jwt.secret, config.jwt.options);
 
         // return the information including token as JSON
-        return res.json({ ok: true, token: token });
+        return res
+          .status(200)
+          .json({
+            ok: true,
+            token
+          });
       }
     }
   });
@@ -61,10 +72,17 @@ Router.post('/authenticate', function (req, res, next) {
 
 Router.post('/register', function (req, res, next) {
   User.createRecord(req.body, function (err) {
+    console.log("err");
+    console.log(err);
     if (err) return next(err);
 
     // User created
-    return res.json({ ok: true, message: res.__('users_user_created') });
+    return res
+      .status(200)
+      .json({
+        ok: true,
+        result: res.__('users_user_created')
+      });
   });
 });
 
@@ -72,8 +90,27 @@ Router.post('/register', function (req, res, next) {
 
 Router.delete('/:id', function (req, res, next) {
 
+  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false ) return res
+                        .status(422)
+                        .json({
+                          ok: false,
+                          error: {
+                            code: 422,
+                            message: res.__('unprocessable_entity')
+                          }
+                        });
+
   if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
-    return res.status(422).json({ ok: false, message: res.__('user_information_error') });
+    return res
+      .status(422)
+      .json({
+        ok: false,
+        error: {
+          code: 422,
+          message: res.__('unprocessable_entity')
+        }
+      });
   }
 
   const email = req.body.email;
@@ -83,13 +120,15 @@ Router.delete('/:id', function (req, res, next) {
     if (err) return next(err);
 
     if (!user) {
-      return res.json({
-        ok: false,
-        error: {
-          code: 401,
-          message: res.__('user_or_password_incorrect')
-        }
-      });
+      return res
+        .status(401)
+        .json({
+          ok: false,
+          error: {
+            code: 401,
+            message: res.__('user_or_password_incorrect')
+          }
+        });
     } else if (user) {
 
       // TODO Check the token
@@ -103,13 +142,15 @@ Router.delete('/:id', function (req, res, next) {
           return res.json({ ok: true, message: res.__('user_deleted') });
         })
       } else {
-        return res.json({
-          ok: false,
-          error: {
-            code: 401,
-            message: res.__('user_or_password_incorrect')
-          }
-        });
+        return res
+          .status(401)
+          .json({
+            ok: false,
+            error: {
+              code: 401,
+              message: res.__('user_or_password_incorrect')
+            }
+          });
       }
     }
   });
@@ -118,8 +159,27 @@ Router.delete('/:id', function (req, res, next) {
 // Update a user
 Router.put('/:id', function (req, res, next) {
 
+  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false ) return res
+                        .status(422)
+                        .json({
+                          ok: false,
+                          error: {
+                            code: 422,
+                            message: res.__('unprocessable_entity')
+                          }
+                        });
+
   if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
-    return res.status(422).json({ ok: false, message: res.__('product_information_error') });
+    return res
+      .status(422)
+      .json({
+        ok: false,
+        error: {
+          code: 422,
+          message: res.__('unprocessable_entity')
+        }
+      });
   }
 
   if (req.body.professional != null) delete req.body.professional;
@@ -128,19 +188,27 @@ Router.put('/:id', function (req, res, next) {
     if (err) return next(err);
 
     if (!user) {
-      return res.json({
-        ok: false, error: {
-          code: 401,
-          message: res.__('user_not_found')
-        }
-      });
-    } else if (service) {
+      return res
+        .status(401)
+        .json({
+          ok: false,
+          error: {
+            code: 401,
+            message: res.__('user_not_found')
+          }
+        });
+    } else if (user) {
 
       User.updateOne(req.body, function (err) {
         if (err) return next(err);
 
         // Service updated
-        return res.json({ ok: true, message: res.__('user_updated') });
+        return res
+          .status(200)
+          .json({
+            ok: true,
+            result: res.__('user_updated')
+          });
       });
     }
   });

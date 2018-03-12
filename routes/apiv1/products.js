@@ -41,17 +41,31 @@ Router.get('/', (req, res, next) => {
 
 Router.get('/:id', (req, res, next) => {
 
+  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false ) return res
+                        .status(422)
+                        .json({
+                          ok: false,
+                          error: {
+                            code: 422,
+                            message: res.__('unprocessable_entity')
+                          }
+                        });
+
   // Find product by owner and not deleted
   Product.findOne( { _id: req.params.id, professional: req.decoded.user._id, deleted: false }, function (err, product) {
     if (err) return next(err);
 
     if (!product) {
-      return res.json({
-        ok: false, error: {
-          code: 401,
-          message: res.__('product_not_found')
-        }
-      });
+      return res
+        .status(401)
+        .json({
+          ok: false,
+          error: {
+            code: 401,
+            message: res.__('product_not_found')
+          }
+        });
     } else if (product) {
       User.populate( product, { path: 'professional' }, function(err, productAndProfessional) {
         res.json({ ok: true, result: productAndProfessional });
@@ -65,14 +79,27 @@ Router.get('/:id', (req, res, next) => {
 Router.post('/', function (req, res, next) {
   // Check owner
   if ( (req.body.professional != null) && (req.body.professional != req.decoded.user._id) ) {
-    return res.status(403).json({ ok: false, message: res.__('forbidden_access') });
+    return res
+      .status(403)
+      .json({
+        ok: false,
+        error: {
+          code: 403,
+          message: res.__('forbidden_access')
+        }
+      });
   }
 
   Product.createRecord(req.body, function (err) {
     if (err) return next(err);
 
     // Product created
-    return res.json({ ok: true, message: res.__('product_created') });
+    return res
+      .status(200)
+      .json({
+        ok: true,
+        result: res.__('product_created')
+      });
   });
 });
 
@@ -80,12 +107,27 @@ Router.post('/', function (req, res, next) {
 
 Router.put('/:id', function (req, res, next) {
 
-  if ( (req.params.id != req.decoded.user._id) ) {
-    return res.status(403).json({ ok: false, message: res.__('forbidden_access') });
-  }
-
+  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false ) return res
+                        .status(422)
+                        .json({
+                          ok: false,
+                          error: {
+                            code: 422,
+                            message: res.__('unprocessable_entity')
+                          }
+                        });
+  
   if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
-    return res.status(422).json({ ok: false, message: res.__('product_information_error') });
+    return res
+      .status(422)
+      .json({
+        ok: false,
+        error: {
+          code: 422,
+          message: res.__('unprocessable_entity')
+        }
+      });
   }
 
   if (req.body.professional != null) delete req.body.professional;
@@ -94,14 +136,22 @@ Router.put('/:id', function (req, res, next) {
     if (err) return next(err);
 
     if (!product) {
-      return res.json({
-        ok: false, error: {
-          code: 401,
-          message: res.__('product_not_found')
-        }
-      });
+      return res
+        .status(401)
+        .json({
+          ok: false,
+          error: {
+            code: 401,
+            message: res.__('product_not_found')
+          }
+        });
     } else if (product) {
-      return res.json({ ok: true, message: res.__('product_updated') });
+      return res
+        .status(200)
+        .json({
+          ok: true,
+          result: res.__('product_updated')
+        });
     }
   });
 
@@ -110,18 +160,38 @@ Router.put('/:id', function (req, res, next) {
 // Remove a product by owner and not deleted
 
 Router.delete('/:id', function (req, res, next) {
+
+  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false ) return res
+                        .status(422)
+                        .json({
+                          ok: false,
+                          error: {
+                            code: 422,
+                            message: res.__('unprocessable_entity')
+                          }
+                        });
+
   Product.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, { deleted: true }, function (err, product) {
     if (err) return next(err);
 
     if (!product) {
-      return res.json({
-        ok: false, error: {
-          code: 401,
-          message: res.__('product_not_found')
-        }
-      });
+      return res
+        .status(401)
+        .json({
+          ok: false,
+          error: {
+            code: 401,
+            message: res.__('product_not_found')
+          }
+        });
     } else if (product) {
-      return res.json({ ok: true, message: res.__('product_deleted')});
+      return res
+        .status(200)
+        .json({
+          ok: true,
+          result: res.__('product_deleted')
+        });
     }
   });
 });
