@@ -16,6 +16,21 @@ Router.use(jwtAuth());
 Router.get('/', (req, res, next) => {
 
   let filters = {};
+  let priceFrom = req.query.pricefrom;
+  let priceTo = req.query.priceto;
+
+  if (priceFrom && priceTo){
+    filters.price = { $gte: priceFrom, $lte: priceTo } 
+  }
+
+  if (priceFrom && !priceTo){
+    filters.price = { $gte: priceFrom } 
+  }
+
+  if (!priceFrom && priceTo){
+    filters.price = { $lte: priceTo } 
+  }
+
   filters.professional = req.decoded.user._id; // Check owner
   filters.deleted = false; // Not deleted
 
