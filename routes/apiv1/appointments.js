@@ -168,34 +168,6 @@ Router.get('/customer', (req, res, next) => {
 
 });
 
-// Find all the appointments from a CUSTOMER
-Router.get('/customer', (req, res, next) => {
-  
-  Appointment.find({ customer: req.decoded.user._id, deleted: false }).exec(function (err, appointment) {
-    if (err) return next(err);
-
-    if (!appointment) {
-      return res
-        .status(401)
-        .json({
-          ok: false,
-          error: {
-            code: 401,
-            message: res.__('appointment_not_found')
-          }
-        });
-    } else if (appointment) {
-      Service.populate( appointment, { path: 'service' }, function(err, appointmentsAndService) {
-        User.populate( appointmentsAndService, { path: 'customer' }, function(err, appointmentsAndServiceAndCustomer) {
-          User.populate( appointmentsAndServiceAndCustomer, { path: 'professional' }, function(err, appointmentsAndServiceAndCustomerAndProfessional) {
-            res.json({ ok: true, result: appointmentsAndServiceAndCustomerAndProfessional});
-          });
-        });
-      });
-    }
-  });
-});
-
 // Create an appointment
 Router.post('/', function (req, res, next) {
   
