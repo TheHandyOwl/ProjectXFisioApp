@@ -73,43 +73,6 @@ Router.get('/', (req, res, next) => {
   });
 });
 
-// Get a service by owner and not deleted
-
-Router.get('/:id', (req, res, next) => {
-
-  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
-  if (idOk == false ) return res
-                        .status(422)
-                        .json({
-                          ok: false,
-                          error: {
-                            code: 422,
-                            message: res.__('unprocessable_entity')
-                          }
-                        });
-
-  // Find service by owner and not deleted
-  Service.findOne( { _id: req.params.id, professional: req.decoded.user._id, deleted: false }, function (err, service) {
-    if (err) return next(err);
-
-    if (!service) {
-      return res
-        .status(401)
-        .json({
-          ok: false,
-          error: {
-            code: 401,
-            message: res.__('service_not_found')
-          }
-        });
-    } else if (service) {
-      User.populate( service, { path: 'professional' }, function(err, serviceAndProfessional) {
-        res.json({ ok: true, result: serviceAndProfessional });
-      });
-    }
-  });
-});
-
 // Create a service by owner and not deleted
 
 Router.post('/', function (req, res, next) {
