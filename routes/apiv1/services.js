@@ -18,6 +18,27 @@ Router.get('/', (req, res, next) => {
   let filters = {};
   let priceFrom = req.query.pricefrom;
   let priceTo = req.query.priceto;
+  let professional = req.query.professional;
+  let id = req.query.id;
+
+  if (id) {
+    filters._id = req.query.id;
+
+    const idOk = Mongoose.Types.ObjectId.isValid(req.params.id);
+    if (idOk == false) return res
+      .status(422)
+      .json({
+        ok: false,
+        error: {
+          code: 422,
+          message: res.__('unprocessable_entity')
+        }
+      });
+  }
+
+  if (professional) {
+    filters.professional = req.query.professional;
+  }
 
   if (priceFrom && priceTo){
     filters.price = { $gte: priceFrom, $lte: priceTo } 
@@ -31,7 +52,6 @@ Router.get('/', (req, res, next) => {
     filters.price = { $lte: priceTo } 
   }
 
-  filters.professional = req.decoded.user._id; // Check owner
   filters.deleted = false; // Not deleted
 
   const start = parseInt(req.query.start) || 0;

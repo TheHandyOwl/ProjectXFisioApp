@@ -17,21 +17,40 @@ Router.get('/', (req, res, next) => {
   let filters = {};
   let priceFrom = req.query.pricefrom;
   let priceTo = req.query.priceto;
+  let professional = req.query.professional;
+  let id = req.query.id;
 
-  if (priceFrom && priceTo){
-    filters.price = { $gte: priceFrom, $lte: priceTo } 
+  if (id) {
+    filters._id = req.query.id;
+
+    const idOk = Mongoose.Types.ObjectId.isValid(req.params.id);
+    if (idOk == false) return res
+      .status(422)
+      .json({
+        ok: false,
+        error: {
+          code: 422,
+          message: res.__('unprocessable_entity')
+        }
+      });
   }
 
-  if (priceFrom && !priceTo){
-    filters.price = { $gte: priceFrom } 
+  if (professional) {
+    filters.professional = req.query.professional;
   }
 
-  if (!priceFrom && priceTo){
-    filters.price = { $lte: priceTo } 
+  if (priceFrom && priceTo) {
+    filters.price = { $gte: priceFrom, $lte: priceTo }
   }
 
+  if (priceFrom && !priceTo) {
+    filters.price = { $gte: priceFrom }
+  }
 
-  filters.professional = req.decoded.user._id; // Check owner
+  if (!priceFrom && priceTo) {
+    filters.price = { $lte: priceTo }
+  }
+
   filters.deleted = false; // Not deleted
 
   const start = parseInt(req.query.start) || 0;
@@ -53,48 +72,10 @@ Router.get('/', (req, res, next) => {
   });
 });
 
-// Get a product by owner and not deleted
-
-Router.get('/:id', (req, res, next) => {
-
-  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
-  if (idOk == false ) return res
-                        .status(422)
-                        .json({
-                          ok: false,
-                          error: {
-                            code: 422,
-                            message: res.__('unprocessable_entity')
-                          }
-                        });
-
-  // Find product by owner and not deleted
-  Product.findOne( { _id: req.params.id, professional: req.decoded.user._id, deleted: false }, function (err, product) {
-    if (err) return next(err);
-
-    if (!product) {
-      return res
-        .status(401)
-        .json({
-          ok: false,
-          error: {
-            code: 401,
-            message: res.__('product_not_found')
-          }
-        });
-    } else if (product) {
-      User.populate( product, { path: 'professional' }, function(err, productAndProfessional) {
-        res.json({ ok: true, result: productAndProfessional });
-      });
-    }
-  });
-});
-
 // Create a Product
-
 Router.post('/', function (req, res, next) {
   // Check owner
-  if ( (req.body.professional != null) && (req.body.professional != req.decoded.user._id) ) {
+  if ((req.body.professional != null) && (req.body.professional != req.decoded.user._id))  {
     return res
       .status(403)
       .json({
@@ -120,21 +101,20 @@ Router.post('/', function (req, res, next) {
 });
 
 // Update a product by owner and not deleted
-
 Router.put('/:id', function (req, res, next) {
 
-  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
-  if (idOk == false ) return res
-                        .status(422)
-                        .json({
-                          ok: false,
-                          error: {
-                            code: 422,
-                            message: res.__('unprocessable_entity')
-                          }
-                        });
-  
-  if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
+  const idOk = Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false) return res
+    .status(422)
+    .json({
+      ok: false,
+      error: {
+        code: 422,
+        message: res.__('unprocessable_entity')
+      }
+    });
+
+  if ((req.body.id != null) && (req.body.id != req.params.id))  {
     return res
       .status(422)
       .json({
@@ -148,7 +128,7 @@ Router.put('/:id', function (req, res, next) {
 
   if (req.body.professional != null) delete req.body.professional;
 
-  Product.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id,  deleted: false }, req.body, function (err, product) {
+  Product.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, req.body, function (err, product) {
     if (err) return next(err);
 
     if (!product) {
@@ -174,19 +154,18 @@ Router.put('/:id', function (req, res, next) {
 });
 
 // Remove a product by owner and not deleted
-
 Router.delete('/:id', function (req, res, next) {
 
-  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
-  if (idOk == false ) return res
-                        .status(422)
-                        .json({
-                          ok: false,
-                          error: {
-                            code: 422,
-                            message: res.__('unprocessable_entity')
-                          }
-                        });
+  const idOk = Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false) return res
+    .status(422)
+    .json({
+      ok: false,
+      error: {
+        code: 422,
+        message: res.__('unprocessable_entity')
+      }
+    });
 
   Product.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, { deleted: true }, function (err, product) {
     if (err) return next(err);
