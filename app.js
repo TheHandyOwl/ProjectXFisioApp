@@ -35,9 +35,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Languages
 i18n.configure({
-  directory: __dirname + '/locales',
-  defaultLocale: 'en',
-  register: global
+    directory: __dirname + '/locales',
+    defaultLocale: 'en',
+    register: global
 });
 app.use(i18n.init);
 
@@ -50,13 +50,14 @@ app.use('/apiv1/notifs', require('./routes/apiv1/notifs'));
 app.use('/apiv1/products', require('./routes/apiv1/products'));
 app.use('/apiv1/services', require('./routes/apiv1/services'));
 app.use('/apiv1/users', require('./routes/apiv1/users'));
+app.use('/apiv1/uploads', require('./routes/apiv1/uploads'));
 app.use('/apiv1/pushtokens', require('./routes/apiv1/pushtokens'));
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  const err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+app.use(function(req, res, next) {
+    const err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
 // error handlers
@@ -64,53 +65,53 @@ app.use(function (req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  /*jshint unused: false*/
-  app.use(function (err, req, res, next) {
-    if (err.status && err.status >= 500) console.error(err);
-    res.status(err.status || err.code || 500);
-    if (isAPI(req)) { // If it's API, JSON is returned
-      return res
-        .status(500)
-        .json({
-          ok: false,
-          error: {
-            code: err.code || err.status || 500,
-            message: err.message,
-            err: err
-          }
-        });
-    }
+    /*jshint unused: false*/
+    app.use(function(err, req, res, next) {
+        if (err.status && err.status >= 500) console.error(err);
+        res.status(err.status || err.code || 500);
+        if (isAPI(req)) { // If it's API, JSON is returned
+            return res
+                .status(500)
+                .json({
+                    ok: false,
+                    error: {
+                        code: err.code || err.status || 500,
+                        message: err.message,
+                        err: err
+                    }
+                });
+        }
 
-    res.render('error', { message: err.message, error: err });
-  });
-  /*jshint unused: true*/
+        res.render('error', { message: err.message, error: err });
+    });
+    /*jshint unused: true*/
 }
 
 // production error handler
 // no stacktraces leaked to user
 /*jshint unused: false*/
-app.use(function (err, req, res, next) {
-  if (err.status && err.status >= 500) console.error(err);
-  res.status(err.status || err.code || 500);
-  if (isAPI(req)) { //  If it's API, JSON is returned
-    return res
-      .status(500)
-      .json({
-        ok: false,
-        error: {
-          code: err.code || err.status || 500,
-          message: err.message,
-          err: err
-        }
-      });
-  }
+app.use(function(err, req, res, next) {
+    if (err.status && err.status >= 500) console.error(err);
+    res.status(err.status || err.code || 500);
+    if (isAPI(req)) { //  If it's API, JSON is returned
+        return res
+            .status(500)
+            .json({
+                ok: false,
+                error: {
+                    code: err.code || err.status || 500,
+                    message: err.message,
+                    err: err
+                }
+            });
+    }
 
-  res.render('error', { message: err.message, error: {} });
+    res.render('error', { message: err.message, error: {} });
 });
 /*jshint unused: true*/
 
 function isAPI(req) {
-  return req.originalUrl.indexOf('/api') === 0;
+    return req.originalUrl.indexOf('/api') === 0;
 }
 
 module.exports = app;
