@@ -29,7 +29,14 @@ const appointmentSchema = mongoose.Schema({
  
 });
 
+// Indexes
 appointmentSchema.index( { service: 1, customer: 1, professional: 1, date: 1 } );
+appointmentSchema.index( { isConfirmed: 1 } );
+appointmentSchema.index( { isCancelled: 1 } );
+appointmentSchema.index( { deleted: 1 } );
+appointmentSchema.index( { isConfirmed: 1 } );
+appointmentSchema.index( { isConfirmed: 1 } );
+
 
 /**
  * Load json - appointments
@@ -108,9 +115,6 @@ appointmentSchema.statics.exists = function (idAppointment, cb) {
 appointmentSchema.statics.createRecord = function (appointment, cb) {
   // Validations
   let valErrors = [];
-  if (!(v.isAlpha(appointment.name) && v.isLength(appointment.name, 2))) {
-    valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
-  }
 
   let date = new Date();
   date.setDate(date.getDate() + 1);

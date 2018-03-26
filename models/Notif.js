@@ -31,13 +31,6 @@ notifSchema.index( { isSent: 1 } );
 notifSchema.index( { deleted: 1 } );
 
 
-//Indexes
-notifSchema.index( { professional: 1 } );
-notifSchema.index( { customer: 1 } );
-notifSchema.index( { name: 1 } );
-notifSchema.index( { isSent: 1 } );
-notifSchema.index( { deleted: 1 } );
-
 /**
  * Load json - notifs
  */

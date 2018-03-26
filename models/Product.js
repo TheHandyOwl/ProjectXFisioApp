@@ -12,14 +12,11 @@ const flow = require('../lib/flowControl');
 const productSchema = mongoose.Schema({
   
   professional  : { type: mongoose.Schema.ObjectId, ref: User, required: true },
-  name          : { type: String, lowercase: true, required: true },
+  name          : { type: String, lowercase: true, required: true, unique: true },
   description   : { type: String, lowercase:true, required: true },
-  price         : { type: Number, unique: false, required: true },
-<<<<<<< HEAD
-=======
-  isActive      : { type: Boolean, unique: false, required: true, default: false },
->>>>>>> improve_gema_9march
-  
+  price         : { type: Number, required: true },
+  isActive      : { type: Boolean, required: true, default: false },
+
   deleted       : { type: Boolean, default: false }
 
 });
