@@ -13,7 +13,7 @@ var Product = require('../../models/Product');
 app.use(fileUpload());
 
 // app.get('/image/:type/:id', (req, res, next) => {
-app.get('/', (req, res, next) => {
+app.get('/image/:type/:id', (req, res, next) => {
 
     console.log(req);
     var type = req.params.type;
