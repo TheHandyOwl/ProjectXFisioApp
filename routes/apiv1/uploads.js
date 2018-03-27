@@ -13,7 +13,7 @@ var Product = require('../../models/Product');
 app.use(fileUpload());
 
 // app.get('/image/:type/:id', (req, res, next) => {
-app.get('/image/:type/:id', (req, res, next) => {
+app.put('/:type/:id', (req, res, next) => {
 
     console.log(req);
     var type = req.params.type;
@@ -65,7 +65,7 @@ app.get('/image/:type/:id', (req, res, next) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
-                message: 'Error al mover file',
+                message: 'Error al mover el archivo',
                 errors: err
             });
         }
@@ -85,8 +85,8 @@ function uploadByType(type, id, fileName, res) {
             if (!User) {
                 return res.status(400).json({
                     ok: true,
-                    message: 'User no existe',
-                    errors: { message: 'User no existe' }
+                    message: 'Usuario no existe',
+                    errors: { message: 'Usuario no existe' }
                 });
             }
 
@@ -105,7 +105,7 @@ function uploadByType(type, id, fileName, res) {
 
                 return res.status(200).json({
                     ok: true,
-                    message: 'Image de User actualizada',
+                    message: 'Imagen del usuario ha sido actualizada',
                     User: updatedUser
                 });
 
@@ -156,8 +156,8 @@ function uploadByType(type, id, fileName, res) {
             if (!product) {
                 return res.status(400).json({
                     ok: true,
-                    message: 'product no existe',
-                    errors: { message: 'product no existe' }
+                    message: 'producto no existe',
+                    errors: { message: 'producto no existe' }
                 });
             }
 
@@ -174,7 +174,7 @@ function uploadByType(type, id, fileName, res) {
 
                 return res.status(200).json({
                     ok: true,
-                    message: 'Image de product actualizada',
+                    message: 'Image de producto actualizada',
                     product: updatedProduct
                 });
 
