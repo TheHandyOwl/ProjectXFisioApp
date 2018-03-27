@@ -10,6 +10,7 @@ const fs = require('fs');
 const flow = require('../lib/flowControl');
 
 const postSchema = mongoose.Schema({
+<<<<<<< HEAD
 
     professional: { type: mongoose.Schema.ObjectId, ref: User },
     customer: { type: mongoose.Schema.ObjectId, ref: User },
@@ -20,6 +21,18 @@ const postSchema = mongoose.Schema({
     publicationDate: Date,
     image: { type: String, required: false },
     deleted: { type: Boolean, default: false }
+=======
+  
+  professional    : { type: mongoose.Schema.ObjectId, ref: User },
+  customer        : { type: mongoose.Schema.ObjectId, ref: User },
+  name            : { type: String, index: true, lowercase: true, required: true },
+  description     : { type: String, index: true, lowercase: true, required: true },
+  isVisible       : Boolean,
+  creationDate    : Date,
+  publicationDate : Date,
+  
+  deleted         : { type: Boolean, default: false }
+>>>>>>> CarlosPR
 
 });
 

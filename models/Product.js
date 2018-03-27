@@ -10,6 +10,7 @@ const fs = require('fs');
 const flow = require('../lib/flowControl');
 
 const productSchema = mongoose.Schema({
+<<<<<<< HEAD
 
     professional: { type: mongoose.Schema.ObjectId, ref: User, required: true },
     name: { type: String, lowercase: true, required: true },
@@ -18,6 +19,16 @@ const productSchema = mongoose.Schema({
     isActive: { type: Boolean, unique: false, required: true, default: false },
     image: { type: String, required: false },
     deleted: { type: Boolean, default: false }
+=======
+  
+  professional  : { type: mongoose.Schema.ObjectId, ref: User, required: true },
+  name          : { type: String, lowercase: true, required: true, unique: true },
+  description   : { type: String, lowercase: true, required: true },
+  price         : { type: Number, required: true },
+  isActive      : { type: Boolean, required: true, default: false },
+
+  deleted       : { type: Boolean, default: false }
+>>>>>>> CarlosPR
 
 });
 
