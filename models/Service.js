@@ -13,7 +13,7 @@ const serviceSchema = mongoose.Schema({
   
   professional  : { type: mongoose.Schema.ObjectId, ref: User, required: true },
   name          : { type: String, lowercase: true, required: true, unique: true },
-  description   : { type: String, lowercase:true, required: true },
+  description   : { type: String, lowercase: true, required: true },
   price         : { type: Number, required: true },
   isActive      : { type: Boolean, required: true, default: false },
 
