@@ -34,8 +34,6 @@ appointmentSchema.index( { service: 1, customer: 1, professional: 1, date: 1 } )
 appointmentSchema.index( { isConfirmed: 1 } );
 appointmentSchema.index( { isCancelled: 1 } );
 appointmentSchema.index( { deleted: 1 } );
-appointmentSchema.index( { isConfirmed: 1 } );
-appointmentSchema.index( { isConfirmed: 1 } );
 
 
 /**
