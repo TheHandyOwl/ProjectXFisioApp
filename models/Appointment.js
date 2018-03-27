@@ -17,14 +17,13 @@ const appointmentSchema = mongoose.Schema({
   service         : { type: mongoose.Schema.ObjectId, ref: Service },
   customer        : { type: mongoose.Schema.ObjectId, ref: User },
   professional    : { type: mongoose.Schema.ObjectId, ref: User },
-  isConfirmed     : Boolean,
-  isCancelled     : Boolean,
+  isConfirmed     : { type: Boolean, default: false },
+  isCancelled     : { type: Boolean, default: false },
   date            : Date,
   latitude        : Number,
   longitude       : Number,
   address         : String, // TODO: [Address] ????  not sure how to do it
   extraInfo       : String,
-  
   deleted         : { type: Boolean, default: false }
  
 });
