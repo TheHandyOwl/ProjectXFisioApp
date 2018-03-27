@@ -16,7 +16,42 @@ Router.use(jwtAuth());
 Router.get('/', (req, res, next) => {
 
   let filters = {};
-  filters.professional = req.decoded.user._id; // Check owner
+  let priceFrom = req.query.pricefrom;
+  let priceTo = req.query.priceto;
+  let professional = req.query.professional;
+  let id = req.query.id;
+
+  if (id) {
+    filters._id = req.query.id;
+
+    const idOk = Mongoose.Types.ObjectId.isValid(req.params.id);
+    if (idOk == false) return res
+      .status(422)
+      .json({
+        ok: false,
+        error: {
+          code: 422,
+          message: res.__('unprocessable_entity')
+        }
+      });
+  }
+
+  if (professional) {
+    filters.professional = req.query.professional;
+  }
+
+  if (priceFrom && priceTo){
+    filters.price = { $gte: priceFrom, $lte: priceTo } 
+  }
+
+  if (priceFrom && !priceTo){
+    filters.price = { $gte: priceFrom } 
+  }
+
+  if (!priceFrom && priceTo){
+    filters.price = { $lte: priceTo } 
+  }
+
   filters.deleted = false; // Not deleted
 
   const start = parseInt(req.query.start) || 0;
@@ -35,43 +70,6 @@ Router.get('/', (req, res, next) => {
   Service.list(start, limit, sort, includeTotal, filters, function (err, result) {
     if (err) return next(err);
     res.json({ ok: true, result: result });
-  });
-});
-
-// Get a service by owner and not deleted
-
-Router.get('/:id', (req, res, next) => {
-
-  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
-  if (idOk == false ) return res
-                        .status(422)
-                        .json({
-                          ok: false,
-                          error: {
-                            code: 422,
-                            message: res.__('unprocessable_entity')
-                          }
-                        });
-
-  // Find service by owner and not deleted
-  Service.findOne( { _id: req.params.id, professional: req.decoded.user._id, deleted: false }, function (err, service) {
-    if (err) return next(err);
-
-    if (!service) {
-      return res
-        .status(401)
-        .json({
-          ok: false,
-          error: {
-            code: 401,
-            message: res.__('service_not_found')
-          }
-        });
-    } else if (service) {
-      User.populate( service, { path: 'professional' }, function(err, serviceAndProfessional) {
-        res.json({ ok: true, result: serviceAndProfessional });
-      });
-    }
   });
 });
 
