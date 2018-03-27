@@ -14,7 +14,7 @@ const postSchema = mongoose.Schema({
   professional    : { type: mongoose.Schema.ObjectId, ref: User },
   customer        : { type: mongoose.Schema.ObjectId, ref: User },
   name            : { type: String, index: true, lowercase: true, required: true },
-  description     : { type: String, index:true, lowercase:true, required: true },
+  description     : { type: String, index: true, lowercase: true, required: true },
   isVisible       : Boolean,
   creationDate    : Date,
   publicationDate : Date,

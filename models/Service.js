@@ -12,26 +12,20 @@ const flow = require('../lib/flowControl');
 const serviceSchema = mongoose.Schema({
   
   professional  : { type: mongoose.Schema.ObjectId, ref: User, required: true },
-  name          : { type: String, lowercase: true, required: true },
-  description   : { type: String, lowercase:true, required: true },
-  price         : { type: Number, unique: false, required: true },
-  isActive      : { type: Boolean, unique: false, required: true, default: false },
-  
+  name          : { type: String, lowercase: true, required: true, unique: true },
+  description   : { type: String, lowercase: true, required: true },
+  price         : { type: Number, required: true },
+  isActive      : { type: Boolean, required: true, default: false },
+
   deleted       : { type: Boolean, default: false }
 
 });
- 
+
 // Indexes
 serviceSchema.index( { professional: 1 } );
 serviceSchema.index( { name: 1 } );
 serviceSchema.index( { price: 1 } );
 serviceSchema.index( { isActive: 1 } );
-serviceSchema.index( { deleted: 1 } );
-
-//Indexes
-serviceSchema.index( { professional: 1 } );
-serviceSchema.index( { name: 1 } );
-serviceSchema.index( { price: 1 } );
 serviceSchema.index( { deleted: 1 } );
 
 /**
