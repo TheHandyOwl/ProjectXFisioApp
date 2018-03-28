@@ -13,6 +13,31 @@ Api for the iOS/Android/Web apps.
 
 Review models/db.js to set database configuration
 
+Create a new config/config.js with your custom information
+
+```json
+'use strict';
+
+module.exports = {
+    jwt: {
+      secret: 'yoursecretkey',
+      options: {
+        expiresIn: '2 days'
+      }
+    },
+    app: {
+      imagesURLBasePath: '/images/app/',
+      imageLogoDate: "icons8-calendar-50.png"
+    }
+};
+
+module.exports.SEED = 'yourcustomseed';
+
+// Google
+module.exports.GOOGLE_CLIENT_ID = 'YourCustomClientId.apps.googleusercontent.com';
+module.exports.GOOGLE_SECRET = 'YourCustomSecret';
+```
+
 ### Init database
 
     npm run installDB
