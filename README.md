@@ -49,9 +49,9 @@ The API can be used with the path:
 
 ### Security
 
-The API uses JSON Web Token to handle users. First you will need to call /users/register to create a user.  
+The API uses JSON Web Token to handle users. First you will need to call /register to create a user.  
 
-Then call /users/authenticate to obtain a token.
+Then call /authenticate to obtain a token.
   
 Next calls will need to have the token in:  
 
@@ -75,18 +75,8 @@ i.e. Accept-Language: es
       }
     }
 
-### POST /users/register
 
-**Input Body**: { name, email, password }
-
-**Result:**
-
-    {
-      "ok": true, 
-      "message": "user created!"
-    }
-
-### POST /users/authenticate
+### POST /authenticate
 
 **Input Body**: { email, password }
 
@@ -95,29 +85,6 @@ i.e. Accept-Language: es
     {
       "ok": true, 
       "token": "..."
-    }
-
-### DELETE /users
-
-**Input Body**: { email, password }
-
-**Result:**
-
-    {
-      "ok": true, 
-      "message": "user deleted!"
-    }
-
-
-### PUT /users
-
-**Input Body**: { email, password, gender, address, phone, birthDate, nationalId }
-
-**Result:**
-
-    {
-      "ok": true, 
-      "message": "user updated!"
     }
 
 ### GET /appointments/professional
@@ -622,6 +589,17 @@ Delete an existing product.
         "message": "product deleted"
     }
 
+### POST /register
+
+**Input Body**: { name, email, password }
+
+**Result:**
+
+    {
+      "ok": true, 
+      "message": "user created!"
+    }
+
 ### GET /services
 
 **Input Query**: 
@@ -739,6 +717,56 @@ Delete an existing service.
         "message": "service deleted"
     }
 
+### DELETE /users
+
+**Input Body**: { email, password }
+
+**Result:**
+
+    {
+      "ok": true, 
+      "message": "user deleted!"
+    }
+
+
+### GET /users/{id}
+
+**Input Query**: { id }
+
+**Result:**
+
+    {
+        "ok": true,
+        "result": {
+            "_id": "5a9f054f602dd0e540c71bc6",
+            "isProfessional": true,
+            "fellowshipNumber": 33,
+            "gender": "male",
+            "name": "fisio",
+            "lastName": "lastname",
+            "email": "fisio@invalid.com",
+            "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
+            "address": "Fisio Address, 33",
+            "phone": "626626626",
+            "birthDate": "1970-12-30T12:30:00.000Z",
+            "nationalId": "12345678Z",
+            "registrationDate": "2018-01-01T01:01:00.000Z",
+            "lastLoginDate": "2018-03-07T16:00:00.000Z",
+            "__v": 0,
+            "deleted": false
+        }
+    }
+
+### PUT /users
+
+**Input Body**: { email, password, gender, address, phone, birthDate, nationalId }
+
+**Result:**
+
+    {
+      "ok": true, 
+      "message": "user updated!"
+    }
 
 ### POST /pushtokens
 

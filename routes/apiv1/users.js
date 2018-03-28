@@ -10,17 +10,65 @@ const jwt = require('jsonwebtoken');
 const config = require('../../local_config');
 const hash = require('hash.js');
 
+// Auth con JWT
+const jwtAuth = require('../../lib/jwtAuth');
+Router.use(jwtAuth());
 
-// User authentication for known users
 
-Router.post('/authenticate', function (req, res, next) {
+/*** AUX, it will be removed ***/
+Router.get('/', (req, res, next) => {
 
-  const email = req.body.email;
-  const password = req.body.password;
-  const deleted = false;
+  const filters = {};
+  filters.deleted = false; // Not deleted
 
-  // Search user
-  User.findOne({ email, deleted }, function (err, user) {
+  const start = parseInt(req.query.start) || 0;
+  const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
+  const sort = req.query.sort || '_id';
+  const includeTotal = req.query.includeTotal === 'true';
+
+  if (typeof req.query.status !== 'undefined') {
+    filters.status = req.query.status;
+  }
+
+  if (typeof req.query.description !== 'undefined') {
+    filters.description = new RegExp('^' + req.query.description, 'i');
+  }
+
+  User.list(start, limit, sort, includeTotal, filters, function (err, result) {
+    if (err) return next(err);
+    res.json({ ok: true, result: result });
+  });
+});
+
+// Find user by id
+
+Router.get('/:id', (req, res, next) => {
+  
+  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false ) return res
+                        .status(422)
+                        .json({
+                          ok: false,
+                          error: {
+                            code: 422,
+                            message: res.__('unprocessable_entity')
+                          }
+                        });
+
+  if ( req.params.id != req.decoded.user._id ) {
+    return res
+      .status(422)
+      .json({
+        ok: false,
+        error: {
+          code: 422,
+          message: res.__('unprocessable_entity')
+        }
+      });
+  }
+
+  User.findById(req.params.id).exec(function (err, user) {
+
     if (err) return next(err);
 
     if (!user) {
@@ -34,55 +82,13 @@ Router.post('/authenticate', function (req, res, next) {
           }
         });
     } else if (user) {
-
-      // Hash password and compare
-      const passwordHash = hash.sha256().update(password).digest('hex');
-
-      // It's the same password?
-      if (user.password != passwordHash) {
-        return res
-          .status(401)
-          .json({
-            ok: false,
-            error: {
-              code: 401,
-              message: res.__('users_wrong_password')
-            }
-          });
-      } else {
-
-        // User found and same password
-        // Make token
-        const token = jwt.sign({ user }, config.jwt.secret, config.jwt.options);
-
-        // return the information including token as JSON
-        return res
-          .status(200)
-          .json({
-            ok: true,
-            token
-          });
-      }
-    }
-  });
-
-});
-
-// User registration for new users
-
-Router.post('/register', function (req, res, next) {
-  User.createRecord(req.body, function (err) {
-    console.log("err");
-    console.log(err);
-    if (err) return next(err);
-
-    // User created
-    return res
+      return res
       .status(200)
       .json({
         ok: true,
-        result: res.__('users_user_created')
+        result: user
       });
+    }
   });
 });
 
@@ -211,32 +217,6 @@ Router.put('/:id', function (req, res, next) {
           });
       });
     }
-  });
-
-});
-
-/*** AUX, it will be removed ***/
-Router.get('/', (req, res, next) => {
-
-  const filters = {};
-  filters.deleted = false; // Not deleted
-
-  const start = parseInt(req.query.start) || 0;
-  const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
-  const sort = req.query.sort || '_id';
-  const includeTotal = req.query.includeTotal === 'true';
-
-  if (typeof req.query.status !== 'undefined') {
-    filters.status = req.query.status;
-  }
-
-  if (typeof req.query.description !== 'undefined') {
-    filters.description = new RegExp('^' + req.query.description, 'i');
-  }
-
-  User.list(start, limit, sort, includeTotal, filters, function (err, result) {
-    if (err) return next(err);
-    res.json({ ok: true, result: result });
   });
 });
 
