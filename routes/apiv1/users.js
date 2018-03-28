@@ -7,7 +7,7 @@ const Mongoose = require('mongoose');
 const User = Mongoose.model('User');
 
 const jwt = require('jsonwebtoken');
-const config = require('../../local_config');
+const config = require('../../config/config');
 const hash = require('hash.js');
 
 // Auth con JWT

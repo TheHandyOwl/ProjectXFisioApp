@@ -10,7 +10,7 @@ const v = require('validator');
 const fs = require('fs');
 const flow = require('../lib/flowControl');
 
-const configApp = require('./../local_config').app;
+const configApp = require('./../config/config').app;
 
 const appointmentSchema = mongoose.Schema({
   
