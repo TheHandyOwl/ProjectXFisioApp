@@ -82,14 +82,34 @@ userSchema.statics.list = function (startRow, numRows, sortField, includeTotal, 
   query.skip(startRow);
   query.limit(numRows);
 
-  return query.exec(function (err, rows) {
+  return query.exec(function (err, uncheckedRows) {
     if (err) return cb(err);
 
+    
+    // Unprotected copy of user information
+    let rows = [];
+    
+    for (var row = 0; row < uncheckedRows.length; row++) {
+      
+      // Password always removed
+      uncheckedRows[row].password = undefined;
+      
+      // Public info
+      let newRow = {}
+      newRow.isProfessional = uncheckedRows[row].isProfessional;
+      newRow.fellowshipNumber = uncheckedRows[row].fellowshipNumber;
+      newRow.name = uncheckedRows[row].name;
+      newRow.lastName = uncheckedRows[row].lastName;
+      newRow.nationalId = uncheckedRows[row].nationalId;
+      rows.push(newRow);
+      
+    }
+    
     let result = { rows };
 
     if (!includeTotal) return cb(null, result);
 
-    // incluir propiedad total
+    // Includes total property
     User.count({}, (err, total) => {
       if (err) return cb(err);
       result.total = total;

@@ -20,6 +20,7 @@ Router.get('/', (req, res, next) => {
 
   const filters = {};
   filters.deleted = false; // Not deleted
+  filters.isProfessional = true; // Only professionals
 
   const start = parseInt(req.query.start) || 0;
   const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
@@ -55,18 +56,6 @@ Router.get('/:id', (req, res, next) => {
                           }
                         });
 
-  if ( req.params.id != req.decoded.user._id ) {
-    return res
-      .status(422)
-      .json({
-        ok: false,
-        error: {
-          code: 422,
-          message: res.__('unprocessable_entity')
-        }
-      });
-  }
-
   User.findById(req.params.id).exec(function (err, user) {
 
     if (err) return next(err);
@@ -82,11 +71,39 @@ Router.get('/:id', (req, res, next) => {
           }
         });
     } else if (user) {
+      // Password always removed
+      user.password = undefined;
+
+      // Unprotected copy of user information
+      let userChecked = {};
+
+      if ( req.params.id != req.decoded.user._id ) {
+        // Public info
+        userChecked.isProfessional = user.isProfessional
+        userChecked.fellowshipNumber = user.fellowshipNumber
+        userChecked.name = user.name
+        userChecked.lastName = user.lastName
+        userChecked.nationalId = user.nationalId
+      } else {
+        // Personal info
+        userChecked.isProfessional = user.isProfessional
+        userChecked.fellowshipNumber = user.fellowshipNumber
+        userChecked.gender = user.gender
+        userChecked.name = user.name
+        userChecked.lastName = user.lastName
+        userChecked.email = user.email
+        userChecked.address = user.address
+        userChecked.phone = user.phone
+        userChecked.birthDate = user.birthDate
+        userChecked.nationalId = user.nationalId
+        userChecked.registrationDate = user.registrationDate
+        userChecked.lastLoginDate = user.lastLoginDate
+      }
       return res
       .status(200)
       .json({
         ok: true,
-        result: user
+        result: userChecked
       });
     }
   });

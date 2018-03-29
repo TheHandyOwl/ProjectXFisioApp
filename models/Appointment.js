@@ -46,7 +46,7 @@ appointmentSchema.statics.loadJson = async function (file) {
     });
   });
 
-  console.log(file + ' read.');
+  console.log(file + ' readed.');
 
   if (!data) {
     throw new Error(file + ' is empty!');

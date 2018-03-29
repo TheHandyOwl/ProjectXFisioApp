@@ -32,9 +32,6 @@ Router.get('/', (req, res, next) => {
     filters.description = new RegExp('^' + req.query.description, 'i');
   }
 
-  filters.customer = req.decoded.user._id;
-  filters.deleted = false;
-
   Appointment.list(start, limit, sort, includeTotal, filters, function (err, result) {
     if (err) return next(err);
     res.json({ ok: true, result: result });
