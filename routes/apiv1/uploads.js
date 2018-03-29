@@ -56,7 +56,7 @@ app.put('/:type/:id', (req, res, next) => {
     var fileName = `${ id }-${ new Date().getMilliseconds() }.${ fileExtension }`;
 
     // Mover el file del temporal a un path
-    var path = `./uploads/${ type }/${ fileName }`;
+    var path = `./../../uploads/${ type }/${ fileName }`;
 
     // console.log('El path es:');
     // console.log(path);
@@ -97,7 +97,7 @@ function uploadByType(type, id, fileName, res) {
             }
 
             console.log('Fallamos aqui path');
-            var oldPath = './uploads/users/' + user.img;
+            var oldPath = './../../uploads/users/' + user.img;
 
             // Si existe, elimina la image anterior
             if (fs.existsSync(oldPath)) {
@@ -137,7 +137,7 @@ function uploadByType(type, id, fileName, res) {
                 });
             }
 
-            var oldPath = './uploads/products/' + product.img;
+            var oldPath = './../../uploads/products/' + product.img;
 
             // Si existe, elimina la image anterior
             if (fs.existsSync(oldPath)) {
@@ -171,7 +171,7 @@ function uploadByType(type, id, fileName, res) {
                 });
             }
 
-            var oldPath = './uploads/blogs/' + blog.img;
+            var oldPath = './../../uploads/blogs/' + blog.img;
 
             // Si existe, elimina la image anterior
             if (fs.existsSync(oldPath)) {

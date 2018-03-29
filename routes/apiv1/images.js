@@ -9,7 +9,7 @@ app.get('/:type/:img', (req, res, next) => {
     var img = req.params.img;
     console.log(req.params);
 
-    var path = `./uploads/${ type }/${ img }`;
+    var path = `./../../uploads/${ type }/${ img }`;
 
     fs.exists(path, exists => {
 
