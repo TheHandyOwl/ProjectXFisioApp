@@ -4,13 +4,11 @@
 	"generic": "generic error: {{message}}",
 	"the_field": "el campo",
 	"unprocessable_entity": "entidad no procesable",
-	"validation_invalid": "el campo {{field}} no es válido",
-	"validation_minchars": "{{field}} debe tener al menos {{num}} caracteres",
 
 	"appointment_created": "cita creada",
 	"appointment_deleted": "cita eliminada",
+	"appointment_duplicated": "id de cita ya existe",
 	"appointment_updated": "cita actualizada",
-	"appointment_id_duplicated": "id de cita ya existe",
 	"appointment_not_found": "cita no encontrada",
 	"duplicate_appointment": "la cita ya existe",
 
@@ -46,6 +44,13 @@
 	"users_user_not_found": "usuario no encontrado",
 	"user_deleted": "usuario eliminado",
 	"user_updated": "usuario actualizado",
-	"user_or_password_incorrect": "autenticación incorrecta"
+	"user_or_password_incorrect": "autenticación incorrecta",
+
+	"validation_invalid": "el campo {{field}} no es válido",
+	"validation_invalid_appointment_date": "La cita {{date}} debería ser posterior a {{now}}",
+	"validation_invalid_customer_hexadecimal": "cliente no válido",
+	"validation_invalid_professional_hexadecimal": "profesional no valido",
+	"validation_invalid_service_hexadecimal": "servicio no válido",
+	"validation_minchars": "{{field}} debe tener al menos {{num}} caracteres"
 
 }

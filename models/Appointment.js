@@ -113,10 +113,21 @@ appointmentSchema.statics.createRecord = function (appointment, cb) {
   // Validations
   let valErrors = [];
 
+  if ( !v.isHexadecimal(appointment.service)) {
+    valErrors.push({ field: 'service', message: __('validation_invalid_service_hexadecimal') });
+  }
+
+  if (!v.isHexadecimal(appointment.customer)) {
+    valErrors.push({ field: 'customer', message: __('validation_invalid_customer_hexadecimal') });
+  }
+
+  if (!v.isHexadecimal(appointment.professional)) {
+    valErrors.push({ field: 'professional', message: __('validation_invalid_professional_hexadecimal') });
+  }
+
   let date = new Date();
-  date.setDate(date.getDate() + 1);
   if (!v.isAfter(appointment.date, date)) {
-    valErrors.push({ field: 'date', message: __('validation_invalid', { field: 'date' }) });
+    valErrors.push({ field: 'date', message: __('validation_invalid_appointment_date', { date: appointment.date, now: date }) });
   }
 
   if (valErrors.length > 0) {
@@ -132,7 +143,7 @@ appointmentSchema.statics.createRecord = function (appointment, cb) {
 
     // appointment already exists
     if (foundAppointment) {
-      return cb({ code: 409, message: __('appointment_id_duplicated') });
+      return cb({ code: 409, message: __('appointment_duplicated') });
     } else {
 
       // Add new appointment

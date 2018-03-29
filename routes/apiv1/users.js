@@ -23,7 +23,7 @@ Router.get('/', (req, res, next) => {
 
   const start = parseInt(req.query.start) || 0;
   const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
-  const sort = req.query.sort || '_id';
+  const sort = req.query.sort || 'name';
   const includeTotal = req.query.includeTotal === 'true';
 
   if (typeof req.query.status !== 'undefined') {
@@ -176,7 +176,7 @@ Router.put('/:id', function (req, res, next) {
                           }
                         });
 
-  if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
+  if ( ((req.body.id != null) && (req.body.id != req.params.id)) || (req.decoded.user._id != req.params.id) ) {
     return res
       .status(422)
       .json({

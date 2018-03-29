@@ -24,7 +24,7 @@ Router.get('/', (req, res, next) => {
   if (id) {
     filters._id = req.query.id;
 
-    const idOk = Mongoose.Types.ObjectId.isValid(req.params.id);
+    const idOk = Mongoose.Types.ObjectId.isValid(req.query.id);
     if (idOk == false) return res
       .status(422)
       .json({

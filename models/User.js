@@ -111,7 +111,7 @@ userSchema.statics.createRecord = function (user, cb) {
   }
 
   if (!validator.isLength(user.password, 6)) {
-    valErrors.push({ field: 'password', message: __('validation_minchars', { num: '6' }) });
+    valErrors.push({ field: 'password', message: __('validation_minchars', { field: 'password', num: '6' }) });
   }
 
   if (valErrors.length > 0) {

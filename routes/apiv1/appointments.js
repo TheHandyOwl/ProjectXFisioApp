@@ -45,57 +45,30 @@ Router.get('/', (req, res, next) => {
 Router.get('/professional', (req, res, next) => {
   
   let filters = {};
-  let dateFrom = req.body.dateFrom;
-  let dateTo = req.body.dateTo;
+  let id = req.query.id;
+  let dateFrom = new Date(req.query.dateFrom);
+  let dateTo = new Date(req.query.dateTo);
+  dateTo = addDaysToDate(dateTo, 1);
   let customer = req.query.customer;
   let isConfirmed = req.query.confirmed;
   let isCancelled = req.query.cancelled;
   
-
   filters.professional = req.decoded.user._id;
   filters.deleted = false;
 
-  if (customer){
-
-    filters.customer = req.query.customer;
-  }
-
-  if (isConfirmed){
-
-    filters.isConfirmed = req.query.confirmed;
-  }
-
-  if (isCancelled){
-
-    filters.isCancelled = req.query.cancelled;
-  }
-
-  if (dateFrom && dateTo) { 
-   
-    filters.date= { $gte: dateFrom, $lte: dateTo } 
-  }
-
-  if (dateFrom && !dateTo ) { 
-
-    filters.date= { $gte: dateFrom } 
-  }
-
-  if (!dateFrom && dateTo ) { 
-
-    filters.date= { $lte: dateTo } 
-  }
-
-  if (typeof req.query.status !== 'undefined') {
-    filters.status = req.query.status;
-  }
-
-  if (typeof req.query.description !== 'undefined') {
-    filters.description = new RegExp('^' + req.query.description, 'i');
-  }
+  if (id) filters._id = id;
+  if (customer) filters.customer = customer;
+  if (isConfirmed) filters.isConfirmed = req.query.confirmed;
+  if (isCancelled) filters.isCancelled = req.query.cancelled;
+  if ( !isNaN( dateFrom.getTime() ) && !isNaN( dateTo.getTime() ) ) filters.date = { $gte: dateFrom, $lt: dateTo };
+  if ( !isNaN( dateFrom.getTime() ) && isNaN( dateTo.getTime() ) ) filters.date = { $gte: dateFrom };
+  if ( isNaN( dateFrom.getTime() ) && !isNaN( dateTo.getTime() ) ) filters.date = { $lt: dateTo };
+  if (typeof req.query.status !== 'undefined') filters.status = req.query.status;
+  if (typeof req.query.description !== 'undefined')  filters.description = new RegExp('^' + req.query.description, 'i');
 
   const start = parseInt(req.query.start) || 0;
   const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
-  const sort = req.query.sort || '_id';
+  const sort = req.query.sort || 'date';
   const includeTotal = req.query.includeTotal === 'true';
 
   Appointment.list(start, limit, sort, includeTotal, filters, function (err, result) {
@@ -108,57 +81,30 @@ Router.get('/professional', (req, res, next) => {
 Router.get('/customer', (req, res, next) => {
   
   let filters = {};
-  let dateFrom = req.body.dateFrom;
-  let dateTo = req.body.dateTo;
+  let id = req.query.id;
+  let dateFrom = new Date(req.query.dateFrom);
+  let dateTo = new Date(req.query.dateTo);
+  dateTo = addDaysToDate(dateTo, 1);
   let professional = req.query.professional;
   let isConfirmed = req.query.confirmed;
   let isCancelled = req.query.cancelled;
   
-
   filters.customer = req.decoded.user._id;
   filters.deleted = false;
 
-  if (professional){
-
-    filters.professional = req.query.professional;
-  }
-
-  if (isConfirmed){
-
-    filters.isConfirmed = req.query.confirmed;
-  }
-
-  if (isCancelled){
-
-    filters.isCancelled = req.query.cancelled;
-  }
-
-  if (dateFrom && dateTo) { 
-   
-    filters.date= { $gte: dateFrom, $lte: dateTo } 
-  }
-
-  if (dateFrom && !dateTo ) { 
-
-    filters.date= { $gte: dateFrom } 
-  }
-
-  if (!dateFrom && dateTo ) { 
-
-    filters.date= { $lte: dateTo } 
-  }
-
-  if (typeof req.query.status !== 'undefined') {
-    filters.status = req.query.status;
-  }
-
-  if (typeof req.query.description !== 'undefined') {
-    filters.description = new RegExp('^' + req.query.description, 'i');
-  }
+  if (id) filters._id = id;
+  if (professional) filters.professional = req.query.professional;
+  if (isConfirmed) filters.isConfirmed = req.query.confirmed;
+  if (isCancelled) filters.isCancelled = req.query.cancelled;
+  if ( !isNaN( dateFrom.getTime() ) && !isNaN( dateTo.getTime() ) ) filters.date = { $gte: dateFrom, $lt: dateTo };
+  if ( !isNaN( dateFrom.getTime() ) && isNaN( dateTo.getTime() ) ) filters.date = { $gte: dateFrom };
+  if ( isNaN( dateFrom.getTime() ) && !isNaN( dateTo.getTime() ) ) filters.date = { $lt: dateTo };
+  if (typeof req.query.status !== 'undefined') filters.status = req.query.status;
+  if (typeof req.query.description !== 'undefined') filters.description = new RegExp('^' + req.query.description, 'i');
 
   const start = parseInt(req.query.start) || 0;
   const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
-  const sort = req.query.sort || '_id';
+  const sort = req.query.sort || 'date';
   const includeTotal = req.query.includeTotal === 'true';
 
   Appointment.list(start, limit, sort, includeTotal, filters, function (err, result) {
@@ -170,6 +116,20 @@ Router.get('/customer', (req, res, next) => {
 
 // Create an appointment
 Router.post('/', function (req, res, next) {
+
+  const idOk =
+    Mongoose.Types.ObjectId.isValid(req.body.customer) &&
+    Mongoose.Types.ObjectId.isValid(req.body.professional) &&
+    Mongoose.Types.ObjectId.isValid(req.body.service);
+  if (idOk == false ) return res
+                        .status(422)
+                        .json({
+                          ok: false,
+                          error: {
+                            code: 422,
+                            message: res.__('unprocessable_entity')
+                          }
+                        });
   
   if ( (req.body.customer != null) && (req.body.customer != req.decoded.user._id) ) {
     return res
@@ -287,5 +247,11 @@ Router.delete('/:id', function (req, res, next) {
     }
   });
 });
+
+// Utils: add days to a date
+function addDaysToDate(date, days) {
+  date.setDate(date.getDate() + days);
+  return date;
+}
 
 module.exports = Router;
