@@ -4,15 +4,19 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
 const hash = require('hash.js');
-const v = require('validator');
+const validator = require('validator');
 
 const fs = require('fs');
 const flow = require('../lib/flowControl');
 
+const configDBServicesFields = require('./../config/config').db.services;
+const configDBUsersFields = require('./../config/config').db.users;
+
+
 const serviceSchema = mongoose.Schema({
   
   professional  : { type: mongoose.Schema.ObjectId, ref: User, required: true },
-  name          : { type: String, lowercase: true, required: true, unique: true },
+  name          : { type: String, lowercase: true, required: true },
   description   : { type: String, lowercase: true, required: true },
   price         : { type: Number, required: true },
   isActive      : { type: Boolean, required: true, default: false },
@@ -39,7 +43,7 @@ serviceSchema.statics.loadJson = async function (file) {
     });
   });
 
-  console.log(file + ' read.');
+  console.log(file + ' readed.');
 
   if (!data) {
     throw new Error(file + ' is empty!');
@@ -65,7 +69,9 @@ serviceSchema.statics.exists = function (idService, cb) {
 
 serviceSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
 
-  const query = Service.find(filters);
+  const query = Service
+    .find(filters)
+    .select( configDBServicesFields.servicesListPublicFields || '_id' );
 
   query.sort(sortField);
   query.skip(startRow);
@@ -80,7 +86,10 @@ serviceSchema.statics.list = function (startRow, numRows, sortField, includeTota
     });
 
     // Populate
-    User.populate( rows, { path: 'professional' }, function(err, serviceAndProfessional) {
+    User.populate( rows,
+      { path: 'professional', select: configDBUsersFields.userPublicFields || '_id' },
+      function(err, serviceAndProfessional) {
+
       let result = { rows: serviceAndProfessional };
 
       if (!includeTotal) return cb(null, result);
@@ -100,8 +109,16 @@ serviceSchema.statics.list = function (startRow, numRows, sortField, includeTota
 serviceSchema.statics.createRecord = function (service, cb) {
   // Validations
   let valErrors = [];
-  if (!(v.isAlpha(service.name) && v.isLength(service.name, 2))) {
+  if (!(validator.isAlphanumeric(validator.blacklist(service.name, ' ')) && validator.isLength(service.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
+  }
+
+  if (!(validator.isAlphanumeric(validator.blacklist(service.description, ' ')) && validator.isLength(service.description, 2))) {
+    valErrors.push({ field: 'description', message: __('validation_invalid', { field: 'description' }) });
+  }
+
+  if (!(validator.isHexadecimal(service.professional))) {
+    valErrors.push({ field: 'professional', message: __('validation_invalid', { field: 'professional' }) });
   }
 
   if (valErrors.length > 0) {

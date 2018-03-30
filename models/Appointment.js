@@ -5,12 +5,16 @@ const User = mongoose.model('User');
 const Service = mongoose.model('Service');
 
 const hash = require('hash.js');
-const v = require('validator');
+const validator = require('validator');
 
 const fs = require('fs');
 const flow = require('../lib/flowControl');
 
-const configApp = require('./../local_config').app;
+const configApp = require('./../config/config').app;
+const configDBAppointmentsFields = require('./../config/config').db.appointments;
+const configDBServicesFields = require('./../config/config').db.services;
+const configDBUsersFields = require('./../config/config').db.users;
+
 
 const appointmentSchema = mongoose.Schema({
   
@@ -46,7 +50,7 @@ appointmentSchema.statics.loadJson = async function (file) {
     });
   });
 
-  console.log(file + ' read.');
+  console.log(file + ' readed.');
 
   if (!data) {
     throw new Error(file + ' is empty!');
@@ -65,7 +69,9 @@ appointmentSchema.statics.loadJson = async function (file) {
 
 appointmentSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
 
-  const query = Appointment.find(filters);
+  const query = Appointment
+    .find(filters)
+    .select( configDBAppointmentsFields.appointmentsListPublicFields || '_id' );
 
   query.sort(sortField);
   query.skip(startRow);
@@ -80,12 +86,19 @@ appointmentSchema.statics.list = function (startRow, numRows, sortField, include
     });
 
     // Populate
-    Service.populate( rows, { path: 'service' }, function(err, appointmentsAndService) {
-      User.populate( appointmentsAndService, { path: 'customer' }, function(err, appointmentsAndServiceAndCustomer) {
-        User.populate( appointmentsAndServiceAndCustomer, { path: 'professional' }, function(err, appointmentsAndServiceAndCustomerAndProfessional) {
+    Service.populate( rows,
+      { path: 'service', select: configDBServicesFields.servicePublicFields || '_id' },
+      function(err, appointmentsAndService) {
+      
+      User.populate( appointmentsAndService,
+        { path: 'customer', select: configDBUsersFields.userPublicFields || '_id' },
+        function(err, appointmentsAndServiceAndCustomer) {
+
+        User.populate( appointmentsAndServiceAndCustomer,
+          { path: 'professional', select: configDBUsersFields.userPublicFields || '_id' },
+          function(err, appointmentsAndServiceAndCustomerAndProfessional) {
 
           let result = { rows: appointmentsAndServiceAndCustomerAndProfessional };
-
           if (!includeTotal) return cb(null, result);
 
           // Includes total property
@@ -113,10 +126,21 @@ appointmentSchema.statics.createRecord = function (appointment, cb) {
   // Validations
   let valErrors = [];
 
+  if ( !validator.isHexadecimal(appointment.service)) {
+    valErrors.push({ field: 'service', message: __('validation_invalid_service_hexadecimal') });
+  }
+
+  if (!validator.isHexadecimal(appointment.customer)) {
+    valErrors.push({ field: 'customer', message: __('validation_invalid_customer_hexadecimal') });
+  }
+
+  if (!validator.isHexadecimal(appointment.professional)) {
+    valErrors.push({ field: 'professional', message: __('validation_invalid_professional_hexadecimal') });
+  }
+
   let date = new Date();
-  date.setDate(date.getDate() + 1);
-  if (!v.isAfter(appointment.date, date)) {
-    valErrors.push({ field: 'date', message: __('validation_invalid', { field: 'date' }) });
+  if (!validator.isAfter(appointment.date, date)) {
+    valErrors.push({ field: 'date', message: __('validation_invalid_appointment_date', { date: appointment.date, now: date }) });
   }
 
   if (valErrors.length > 0) {
@@ -132,7 +156,7 @@ appointmentSchema.statics.createRecord = function (appointment, cb) {
 
     // appointment already exists
     if (foundAppointment) {
-      return cb({ code: 409, message: __('appointment_id_duplicated') });
+      return cb({ code: 409, message: __('appointment_duplicated') });
     } else {
 
       // Add new appointment

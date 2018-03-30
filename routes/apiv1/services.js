@@ -7,6 +7,10 @@ const User = Mongoose.model('User');
 const Service = Mongoose.model('Service');
 const Appointment = Mongoose.model('Appointment');
 
+const configDBServicesFields = require('./../../config/config').db.services;
+const configDBUsersFields = require('./../../config/config').db.users;
+
+
 // Auth con JWT
 const jwtAuth = require('../../lib/jwtAuth');
 Router.use(jwtAuth());
@@ -24,7 +28,7 @@ Router.get('/', (req, res, next) => {
   if (id) {
     filters._id = req.query.id;
 
-    const idOk = Mongoose.Types.ObjectId.isValid(req.params.id);
+    const idOk = Mongoose.Types.ObjectId.isValid(req.query.id);
     if (idOk == false) return res
       .status(422)
       .json({
@@ -134,11 +138,11 @@ Router.put('/:id', function (req, res, next) {
 
     if (!service) {
       return res
-        .status(401)
+        .status(404)
         .json({
           ok: false,
           error: {
-            code: 401,
+            code: 404,
             message: res.__('service_not_found')
           }
         });
@@ -155,7 +159,6 @@ Router.put('/:id', function (req, res, next) {
 });
 
 // Remove a service by owner and not deleted
-
 Router.delete('/:id', function (req, res, next) {
 
   const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
@@ -169,21 +172,36 @@ Router.delete('/:id', function (req, res, next) {
                           }
                         });
 
-  Service.findOne( { _id: req.params.id, professional: req.decoded.user._id, deleted: false }, function (err, service) {
+  Service.findOne( { _id: req.params.id, deleted: false }, function (err, service) {
     if (err) return next(err);
 
     if (!service) {
       return res
-        .status(401)
+        .status(404)
         .json({
           ok: false,
           error: {
-            code: 401,
+            code: 404,
             message: res.__('service_not_found')
           }
         });
     } else if (service) {
-      const now = new Date().toISOString();
+
+      // Check owner
+      if (service.professional != req.decoded.user._id)  {
+        return res
+          .status(403)
+          .json({
+            ok: false,
+            error: {
+              code: 403,
+              message: res.__('forbidden_access')
+            }
+          });
+      }
+
+      // Pending appointments?
+      const now = new Date();
       Appointment.find( { service: service._id, isConfirmed: true, date: { $gte:  now }, deleted: false } ,function (err, appointmentsPending) {
         if (err) return next(err);
 
@@ -205,15 +223,16 @@ Router.delete('/:id', function (req, res, next) {
 
         } else {
           return res
-            .status(200)
+            .status(409)
             .json({
-              ok: true,
+              ok: false,
               result: res.__('service_not_completed', { num: numAppointmentsPending })
             });
         }
 
       });
-    }
+
+    };
 
   });
 });
