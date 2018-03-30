@@ -7,6 +7,8 @@ const User = Mongoose.model('User');
 const Service = Mongoose.model('Service');
 const Appointment = Mongoose.model('Appointment');
 
+const configDBUserFields = require('./../../config/config').db.users;
+
 // Auth con JWT
 const jwtAuth = require('../../lib/jwtAuth');
 Router.use(jwtAuth());
@@ -187,11 +189,11 @@ Router.put('/:id', function (req, res, next) {
 
     if (!appointment) {
       return res
-        .status(401)
+        .status(404)
         .json({
           ok: false,
           error: {
-            code: 401,
+            code: 404,
             message: res.__('appointment_not_found')
           }
         });
@@ -207,7 +209,7 @@ Router.put('/:id', function (req, res, next) {
 });
 
 
-// Remove an appointment
+// Remove an appointment by owner and not deleted
 Router.delete('/:id', function (req, res, next) {
 
   const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
@@ -221,27 +223,65 @@ Router.delete('/:id', function (req, res, next) {
                           }
                         });
 
-  Appointment.findOneAndUpdate({ _id: req.params.id, deleted: false }, { deleted: true }, function (err, appointment) {
+  Appointment.findOne({ _id: req.params.id, deleted: false }, function (err, appointment) {
     if (err) return next(err);
 
     if (!appointment) {
       return res
-        .status(401)
+        .status(404)
         .json({
           ok: false,
           error: {
-            code: 401,
+            code: 404,
             message: res.__('appointment_not_found')
           }
         });
     } else if (appointment) {
-      return res
-        .status(200)
-        .json({
-          ok: true,
-          result: res.__('appointment_deleted')
-        });
-    }
+
+      // Check owner
+      if (appointment.professional != req.decoded.user._id)  {
+        return res
+          .status(403)
+          .json({
+            ok: false,
+            error: {
+              code: 403,
+              message: res.__('forbidden_access')
+            }
+          });
+      }
+
+      // Pending appointment?
+      const now = new Date();
+      Appointment.find( { _id: appointment._id, isConfirmed: true, date: { $gte:  now }, deleted: false } ,function (err, appointmentsPending) {
+        if (err) return next(err);
+
+        const numAppointmentsPending = appointmentsPending.length;
+        if (!appointmentsPending || numAppointmentsPending == 0) {
+            Appointment.findOneAndUpdate( { _id: appointment._id }, { deleted: true }, function (err, appointmentToDelete) {
+              if (err) return next(err);
+
+              return res
+                .status(200)
+                .json({
+                  ok: true,
+                  result: res.__('appointment_deleted')
+                });
+          });
+
+        } else {
+          return res
+            .status(409)
+            .json({
+              ok: false,
+              result: res.__('appointment_not_completed', { num: numAppointmentsPending })
+            });
+        }
+
+      });
+
+    };
+
   });
 });
 

@@ -28,6 +28,38 @@ module.exports = {
     app: {
       imagesURLBasePath: '/images/app/',
       imageLogoDate: "icons8-calendar-50.png"
+    },
+    db: {
+      appointments: {
+        appointmentsListPublicFields: '_id service customer professional isConfirmed isCancelled date latitude longitude address extraInfo',
+        appointmentPublicFields: '_id service customer professional isConfirmed isCancelled date latitude longitude address extraInfo',
+        appointmentPrivateFields: '_id service customer professional isConfirmed isCancelled date latitude longitude address extraInfo'
+      },
+      blogs: {
+        blogsListPublicFields: '_id professional customer name description creationDate',
+        blogPublicFields: '_id professional customer name description creationDate',
+        blogPrivateFields: '_id professional customer name description isVisible creationDate publicationDate'
+      },
+      notifs: {
+        notifsListPublicFields: '_id professional customer name description sendingDate',
+        notifPublicFields: '_id professional customer name description sendingDate',
+        notifPrivateFields: '_id professional customer name description isSent creationDate sendingDate'
+      },
+      products: {
+        productsListPublicFields: '_id professional name description price',
+        productPublicFields: '_id professional name description price',
+        productPrivateFields: '_id professional name description price isActive'
+      },
+      services: {
+        servicesListPublicFields: '_id professional name description price',
+        servicePublicFields: '_id professional name description price',
+        servicePrivateFields: '_id professional name description price isActive'
+      },
+      users: {
+        usersListPublicFields: '_id isProfessional name lastName registrationDate',
+        userPublicFields: '_id isProfessional name lastName registrationDate',
+        userPrivateFields: '_id isProfessional fellowshipNumber gender name lastName email address phone birthDate nationalId registrationDate lastLoginDate'
+      }
     }
 };
 

@@ -4,10 +4,14 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
 const hash = require('hash.js');
-const v = require('validator');
+const validator = require('validator');
 
 const fs = require('fs');
 const flow = require('../lib/flowControl');
+
+const configDBBlogsFields = require('./../config/config').db.blogs;
+const configDBUsersFields = require('./../config/config').db.users;
+
 
 const postSchema = mongoose.Schema({
   
@@ -68,7 +72,7 @@ postSchema.statics.loadJson = async function (file) {
 postSchema.statics.createRecord = function (post, cb) {
   // Validations
   let valErrors = [];
-  if (!(v.isAlpha(post.name) && v.isLength(post.name, 2))) {
+  if (!(validator.isAlphanumeric(validator.blacklist(post.name, ' ')) && validator.isLength(post.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
   }
 

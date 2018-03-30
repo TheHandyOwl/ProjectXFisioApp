@@ -198,7 +198,7 @@ function initUsersFromJson(cb) {
         isProfessional    : 'yes',
         fellowshipNumber  : 33,
         gender            : 'male',
-        name              : 'customerDeleted',
+        name              : 'Other Fisio',
         lastName          : 'lastname',
         email             : 'customerDeleted@invalid.com',
         password          : '12345678',

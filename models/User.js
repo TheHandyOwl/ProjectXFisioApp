@@ -6,6 +6,9 @@ const validator = require('validator');
 
 const fs = require('fs');
 
+const configDBUsersFields = require('./../config/config').db.users;
+
+
 const userSchema = mongoose.Schema({
 
   isProfessional    : Boolean,
@@ -76,35 +79,15 @@ userSchema.statics.exists = function (idUser, cb) {
 
 userSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
 
-  const query = User.find(filters);
+  const query = User.find(filters).select( configDBUsersFields.usersListPublicFields || '_id' );
 
   query.sort(sortField);
   query.skip(startRow);
   query.limit(numRows);
 
-  return query.exec(function (err, uncheckedRows) {
+  return query.exec(function (err, rows) {
     if (err) return cb(err);
 
-    
-    // Unprotected copy of user information
-    let rows = [];
-    
-    for (var row = 0; row < uncheckedRows.length; row++) {
-      
-      // Password always removed
-      uncheckedRows[row].password = undefined;
-      
-      // Public info
-      let newRow = {}
-      newRow.isProfessional = uncheckedRows[row].isProfessional;
-      newRow.fellowshipNumber = uncheckedRows[row].fellowshipNumber;
-      newRow.name = uncheckedRows[row].name;
-      newRow.lastName = uncheckedRows[row].lastName;
-      newRow.nationalId = uncheckedRows[row].nationalId;
-      rows.push(newRow);
-      
-    }
-    
     let result = { rows };
 
     if (!includeTotal) return cb(null, result);
@@ -122,7 +105,7 @@ userSchema.statics.createRecord = function (user, cb) {
 
   // Validations
   let valErrors = [];
-  if (!(validator.isAlpha(user.name) || validator.isLength(user.name, 2))) {
+  if (!(validator.isAlphanumeric(validator.blacklist(user.name, ' ')) && validator.isLength(user.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
   }
 

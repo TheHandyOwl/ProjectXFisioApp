@@ -4,19 +4,23 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
 const hash = require('hash.js');
-const v = require('validator');
+const validator = require('validator');
 
 const fs = require('fs');
 const flow = require('../lib/flowControl');
+
+const configDBNotifsFields = require('./../config/config').db.notifs;
+const configDBUsersFields = require('./../config/config').db.users;
+
 
 const notifSchema = mongoose.Schema({
   
   professional    : { type: mongoose.Schema.ObjectId, ref: User },
   customer        : { type: mongoose.Schema.ObjectId, ref: User },
   name            : { type: String, lowercase: true, required: true },
-  description     : { type: String, lowercase:true, required: true },
+  description     : { type: String, lowercase: true, required: true },
   isSent          : { type: Boolean, default: false },
-  creationDate    : { type : Date },
+  creationDate    : { type : Date, default: new Date() },
   sendingDate     : { type : Date },
   
   deleted         : { type: Boolean, default: false }
@@ -61,7 +65,9 @@ notifSchema.statics.loadJson = async function (file) {
 
 notifSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
 
-  const query = Notif.find(filters);
+  const query = Notif
+    .find(filters)
+    .select( configDBNotifsFields.notifsListPublicFields || '_id' );
 
   query.sort(sortField);
   query.skip(startRow);
@@ -71,10 +77,15 @@ notifSchema.statics.list = function (startRow, numRows, sortField, includeTotal,
     if (err) return cb(err);
 
     // Populate
-    User.populate( rows, { path: 'customer' }, function(err, notifsAndCustomer) {
-      User.populate( notifsAndCustomer, { path: 'professional' }, function(err, notifsAndCustomerAndProfessional) {
+    User.populate( rows,
+      { path: 'customer', select: configDBUsersFields.userPublicFields || '_id' },
+      function(err, notifsAndCustomer) {
+      
+      User.populate( notifsAndCustomer,
+        { path: 'professional', select: configDBUsersFields.userPublicFields || '_id' },
+        function(err, notifsAndCustomerAndProfessional) {
+      
         let result = { rows: notifsAndCustomerAndProfessional };
-
         if (!includeTotal) return cb(null, result);
 
         // Includes total property
@@ -100,8 +111,12 @@ notifSchema.statics.exists = function (idNotification, cb) {
 notifSchema.statics.createRecord = function (notif, cb) {
   // Validations
   let valErrors = [];
-  if (!(v.isAlpha(notif.name) && v.isLength(notif.name, 2))) {
+  if (!(validator.isAlphanumeric(validator.blacklist(notif.name, ' ')) && validator.isLength(notif.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
+  }
+
+  if (!(validator.isAlphanumeric(validator.blacklist(notif.description, ' ')) && validator.isLength(notif.name, 2))) {
+    valErrors.push({ field: 'description', message: __('validation_invalid', { field: 'description' }) });
   }
 
   if (valErrors.length > 0) {

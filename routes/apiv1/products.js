@@ -6,6 +6,10 @@ const Mongoose = require('mongoose');
 const User = Mongoose.model('User');
 const Product = Mongoose.model('Product');
 
+const configDBProductsFields = require('./../../config/config').db.products;
+const configDBUsersFields = require('./../../config/config').db.users;
+
+
 // Auth con JWT
 const jwtAuth = require('../../lib/jwtAuth');
 Router.use(jwtAuth());
@@ -133,11 +137,11 @@ Router.put('/:id', function (req, res, next) {
 
     if (!product) {
       return res
-        .status(401)
+        .status(404)
         .json({
           ok: false,
           error: {
-            code: 401,
+            code: 404,
             message: res.__('product_not_found')
           }
         });
@@ -167,28 +171,50 @@ Router.delete('/:id', function (req, res, next) {
       }
     });
 
-  Product.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, { deleted: true }, function (err, product) {
+  Product.findOne({ _id: req.params.id, deleted: false }, function (err, product) {
     if (err) return next(err);
 
     if (!product) {
       return res
-        .status(401)
+        .status(404)
         .json({
           ok: false,
           error: {
-            code: 401,
+            code: 404,
             message: res.__('product_not_found')
           }
         });
     } else if (product) {
-      return res
-        .status(200)
-        .json({
-          ok: true,
-          result: res.__('product_deleted')
-        });
-    }
+
+      // Check owner
+      if (product.professional != req.decoded.user._id)  {
+        return res
+          .status(403)
+          .json({
+            ok: false,
+            error: {
+              code: 403,
+              message: res.__('forbidden_access')
+            }
+          });
+      }
+
+      Product.findOneAndUpdate({ _id: req.params.id, deleted: false },
+        { deleted: true },
+        function (err, product) {
+
+        return res
+          .status(200)
+          .json({
+            ok: true,
+            result: res.__('product_deleted')
+          });
+      })
+
+    };
+
   });
+
 });
 
 module.exports = Router;

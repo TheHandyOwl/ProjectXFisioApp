@@ -9,7 +9,7 @@
 	"appointment_deleted": "appointment deleted",
 	"appointment_duplicated": "appointment id already exists",
 	"appointment_updated": "appointment updated",
-	"appointment_not_found": "appointment not found",
+	"appointment_not_completed": "{{num}} appointment are pending and confirmed","appointment_not_found": "appointment not found",
 	"duplicate_appointment": "the date already exists",
 
 	"product_created": "product created",

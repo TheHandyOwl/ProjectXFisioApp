@@ -9,6 +9,7 @@
 	"appointment_deleted": "cita eliminada",
 	"appointment_duplicated": "id de cita ya existe",
 	"appointment_updated": "cita actualizada",
+	"appointment_not_completed": "queda {{num}} cita pendiente y confirmada",
 	"appointment_not_found": "cita no encontrada",
 	"duplicate_appointment": "la cita ya existe",
 

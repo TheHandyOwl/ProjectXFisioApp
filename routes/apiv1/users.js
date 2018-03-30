@@ -10,6 +10,9 @@ const jwt = require('jsonwebtoken');
 const config = require('../../config/config');
 const hash = require('hash.js');
 
+const configDBUsersFields = require('./../../config/config').db.users;
+
+
 // Auth con JWT
 const jwtAuth = require('../../lib/jwtAuth');
 Router.use(jwtAuth());
@@ -19,8 +22,16 @@ Router.use(jwtAuth());
 Router.get('/', (req, res, next) => {
 
   const filters = {};
+  let id = req.query.id;
+  let name = req.query.name;
+  let lastName = req.query.lastName;
+
   filters.deleted = false; // Not deleted
   filters.isProfessional = true; // Only professionals
+
+  if (id) filters._id = id;
+  if (name) filters.name = name;
+  if (lastName) filters.lastName = lastName;
 
   const start = parseInt(req.query.start) || 0;
   const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
@@ -56,65 +67,45 @@ Router.get('/:id', (req, res, next) => {
                           }
                         });
 
-  User.findById(req.params.id).exec(function (err, user) {
+  // Custom fields on query
+  let queryFields = "";
+  if ( req.params.id != req.decoded.user._id ) {
+    // Public information fields - All people
+    queryFields = configDBUsersFields.userPublicFields || '_id';
+  } else {
+    // Private information fields - Owner
+    queryFields = configDBUsersFields.userPrivateFields || '_id';
+  }
 
+  User.findOne( { _id: req.params.id, deleted: false }, queryFields, function (err, user) {
     if (err) return next(err);
 
     if (!user) {
       return res
-        .status(401)
+        .status(404)
         .json({
           ok: false,
           error: {
-            code: 401,
+            code: 404,
             message: res.__('users_user_not_found')
           }
         });
     } else if (user) {
-      // Password always removed
-      user.password = undefined;
-
-      // Unprotected copy of user information
-      let userChecked = {};
-
-      if ( req.params.id != req.decoded.user._id ) {
-        // Public info
-        userChecked.isProfessional = user.isProfessional
-        userChecked.fellowshipNumber = user.fellowshipNumber
-        userChecked.name = user.name
-        userChecked.lastName = user.lastName
-        userChecked.nationalId = user.nationalId
-      } else {
-        // Personal info
-        userChecked.isProfessional = user.isProfessional
-        userChecked.fellowshipNumber = user.fellowshipNumber
-        userChecked.gender = user.gender
-        userChecked.name = user.name
-        userChecked.lastName = user.lastName
-        userChecked.email = user.email
-        userChecked.address = user.address
-        userChecked.phone = user.phone
-        userChecked.birthDate = user.birthDate
-        userChecked.nationalId = user.nationalId
-        userChecked.registrationDate = user.registrationDate
-        userChecked.lastLoginDate = user.lastLoginDate
-      }
       return res
       .status(200)
       .json({
         ok: true,
-        result: userChecked
+        result: user
       });
     }
   });
 });
 
-// Remove user
-
+// Remove user by owner and not deleted
 Router.delete('/:id', function (req, res, next) {
 
   const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
-  if (idOk == false ) return res
+  if ( idOk == false ) return res
                         .status(422)
                         .json({
                           ok: false,
@@ -124,40 +115,36 @@ Router.delete('/:id', function (req, res, next) {
                           }
                         });
 
-  if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
+  // Check owner
+  if (req.params.id != req.decoded.user._id)  {
     return res
-      .status(422)
+      .status(403)
       .json({
         ok: false,
         error: {
-          code: 422,
-          message: res.__('unprocessable_entity')
+          code: 403,
+          message: res.__('forbidden_access')
         }
       });
   }
 
-  const email = req.body.email;
-  const password = req.body.password;
-
-  User.findOne({ _id: req.params.id, email, deleted: false }, function (err, user) {
+  User.findOne({ _id: req.params.id, deleted: false }, function (err, user) {
     if (err) return next(err);
 
     if (!user) {
       return res
-        .status(401)
+        .status(404)
         .json({
           ok: false,
           error: {
-            code: 401,
-            message: res.__('user_or_password_incorrect')
+            code: 404,
+            message: res.__('user_not_found')
           }
         });
     } else if (user) {
 
-      // TODO Check the token
-
       // if the password and the token are correct, we can remove the user information
-      const hashedPassword = hash.sha256().update(password).digest('hex');
+      const hashedPassword = hash.sha256().update(req.body.password).digest('hex');
       if (hashedPassword === user.password) {
         User.findOneAndUpdate({ _id: user._id }, { deleted: true } , function (err) {
           if (err) return next(err);
@@ -212,11 +199,11 @@ Router.put('/:id', function (req, res, next) {
 
     if (!user) {
       return res
-        .status(401)
+        .status(404)
         .json({
           ok: false,
           error: {
-            code: 401,
+            code: 404,
             message: res.__('user_not_found')
           }
         });

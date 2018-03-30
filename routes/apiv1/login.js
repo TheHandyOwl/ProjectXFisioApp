@@ -25,11 +25,11 @@ Router.post('/', function (req, res, next) {
 
     if (!user) {
       return res
-        .status(401)
+        .status(404)
         .json({
           ok: false,
           error: {
-            code: 401,
+            code: 404,
             message: res.__('users_user_not_found')
           }
         });
