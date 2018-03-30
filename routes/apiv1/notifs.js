@@ -17,7 +17,6 @@ Router.use(jwtAuth());
 // Get all notifs
 
 Router.get('/', (req, res, next) => {
-  console.log("/");
 
   let filters = {};
 
@@ -46,7 +45,6 @@ Router.get('/', (req, res, next) => {
 // Find notif by id
 
 Router.get('/:id', (req, res, next) => {
-  console.log("/id");
 
   const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
   if (idOk == false ) return res

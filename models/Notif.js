@@ -80,11 +80,11 @@ notifSchema.statics.list = function (startRow, numRows, sortField, includeTotal,
     User.populate( rows,
       { path: 'customer', select: configDBUsersFields.userPublicFields || '_id' },
       function(err, notifsAndCustomer) {
-      
+
       User.populate( notifsAndCustomer,
         { path: 'professional', select: configDBUsersFields.userPublicFields || '_id' },
         function(err, notifsAndCustomerAndProfessional) {
-      
+
         let result = { rows: notifsAndCustomerAndProfessional };
         if (!includeTotal) return cb(null, result);
 

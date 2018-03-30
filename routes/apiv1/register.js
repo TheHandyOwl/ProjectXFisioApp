@@ -19,7 +19,7 @@ Router.post('/', function (req, res, next) {
     if (!user) {
       User.createRecord(req.body, function (err) {
         if (err) return next(err);
-    
+
         // User created
         return res
           .status(200)

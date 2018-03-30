@@ -106,7 +106,7 @@ The API can be used with the path:
 
 ### Security
 
-The API uses JSON Web Token to handle users. First you will need to call /register to create a user.  
+The API uses JSON Web Token to handle users. First you will need to call /register to create a user.
 
 Then call /authenticate to obtain a token.
   
@@ -140,7 +140,7 @@ i.e. Accept-Language: es
 **Result:**
 
     {
-      "ok": true, 
+      "ok": true,
       "token": "..."
     }
 
@@ -653,7 +653,7 @@ Delete an existing product.
 **Result:**
 
     {
-      "ok": true, 
+      "ok": true,
       "message": "user created!"
     }
 
@@ -781,7 +781,7 @@ Delete an existing service.
 **Result:**
 
     {
-      "ok": true, 
+      "ok": true,
       "message": "user deleted!"
     }
 
@@ -821,7 +821,7 @@ Delete an existing service.
 **Result:**
 
     {
-      "ok": true, 
+      "ok": true,
       "message": "user updated!"
     }
 
