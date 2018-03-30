@@ -14,30 +14,16 @@ const configDBUsersFields = require('./../config/config').db.users;
 
 
 const notifSchema = mongoose.Schema({
-<<<<<<< HEAD
 
     professional: { type: mongoose.Schema.ObjectId, ref: User },
     customer: { type: mongoose.Schema.ObjectId, ref: User },
     name: { type: String, lowercase: true, required: true },
     description: { type: String, lowercase: true, required: true },
     isSent: { type: Boolean, default: false },
-    creationDate: { type: Date },
+    creationDate: { type: Date, default: new Date() },
     sendingDate: { type: Date },
-    img: { type: String, required: false },
 
     deleted: { type: Boolean, default: false }
-=======
-  
-  professional    : { type: mongoose.Schema.ObjectId, ref: User },
-  customer        : { type: mongoose.Schema.ObjectId, ref: User },
-  name            : { type: String, lowercase: true, required: true },
-  description     : { type: String, lowercase: true, required: true },
-  isSent          : { type: Boolean, default: false },
-  creationDate    : { type : Date, default: new Date() },
-  sendingDate     : { type : Date },
-  
-  deleted         : { type: Boolean, default: false }
->>>>>>> 9fdbe607c16531170250fd2972cd868b3ee63c80
 
 });
 
@@ -60,11 +46,7 @@ notifSchema.statics.loadJson = async function(file) {
         });
     });
 
-<<<<<<< HEAD
-    console.log(file + ' read.');
-=======
-  console.log(file + ' readed.');
->>>>>>> 9fdbe607c16531170250fd2972cd868b3ee63c80
+    console.log(file + ' readed.');
 
     if (!data) {
         throw new Error(file + ' is empty!');
@@ -83,13 +65,9 @@ notifSchema.statics.loadJson = async function(file) {
 
 notifSchema.statics.list = function(startRow, numRows, sortField, includeTotal, filters, cb) {
 
-<<<<<<< HEAD
-    const query = Notif.find(filters);
-=======
-  const query = Notif
-    .find(filters)
-    .select( configDBNotifsFields.notifsListPublicFields || '_id' );
->>>>>>> 9fdbe607c16531170250fd2972cd868b3ee63c80
+    const query = Notif
+        .find(filters)
+        .select(configDBNotifsFields.notifsListPublicFields || '_id');
 
     query.sort(sortField);
     query.skip(startRow);
@@ -98,36 +76,25 @@ notifSchema.statics.list = function(startRow, numRows, sortField, includeTotal, 
     return query.exec(function(err, rows) {
         if (err) return cb(err);
 
-<<<<<<< HEAD
         // Populate
-        User.populate(rows, { path: 'customer' }, function(err, notifsAndCustomer) {
-            User.populate(notifsAndCustomer, { path: 'professional' }, function(err, notifsAndCustomerAndProfessional) {
-                let result = { rows: notifsAndCustomerAndProfessional };
+        User.populate(rows, { path: 'customer', select: configDBUsersFields.userPublicFields || '_id' },
+            function(err, notifsAndCustomer) {
 
-                if (!includeTotal) return cb(null, result);
-=======
-    // Populate
-    User.populate( rows,
-      { path: 'customer', select: configDBUsersFields.userPublicFields || '_id' },
-      function(err, notifsAndCustomer) {
-      
-      User.populate( notifsAndCustomer,
-        { path: 'professional', select: configDBUsersFields.userPublicFields || '_id' },
-        function(err, notifsAndCustomerAndProfessional) {
-      
-        let result = { rows: notifsAndCustomerAndProfessional };
-        if (!includeTotal) return cb(null, result);
->>>>>>> 9fdbe607c16531170250fd2972cd868b3ee63c80
+                User.populate(notifsAndCustomer, { path: 'professional', select: configDBUsersFields.userPublicFields || '_id' },
+                    function(err, notifsAndCustomerAndProfessional) {
 
-                // Includes total property
-                Notif.count({}, (err, total) => {
-                    if (err) return cb(err);
-                    result.total = total;
-                    return cb(null, result);
-                });
+                        let result = { rows: notifsAndCustomerAndProfessional };
+                        if (!includeTotal) return cb(null, result);
 
+                        // Includes total property
+                        Notif.count({}, (err, total) => {
+                            if (err) return cb(err);
+                            result.total = total;
+                            return cb(null, result);
+                        });
+
+                    });
             });
-        });
 
     });
 };
@@ -139,34 +106,15 @@ notifSchema.statics.exists = function(idNotification, cb) {
     });
 };
 
-<<<<<<< HEAD
 notifSchema.statics.createRecord = function(notif, cb) {
     // Validations
     let valErrors = [];
-    if (!(v.isAlpha(notif.name) && v.isLength(notif.name, 2))) {
+    if (!(validator.isAlphanumeric(validator.blacklist(notif.name, ' ')) && validator.isLength(notif.name, 2))) {
         valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
-=======
-notifSchema.statics.createRecord = function (notif, cb) {
-  // Validations
-  let valErrors = [];
-  if (!(validator.isAlphanumeric(validator.blacklist(notif.name, ' ')) && validator.isLength(notif.name, 2))) {
-    valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
-  }
+    }
 
-  if (!(validator.isAlphanumeric(validator.blacklist(notif.description, ' ')) && validator.isLength(notif.name, 2))) {
-    valErrors.push({ field: 'description', message: __('validation_invalid', { field: 'description' }) });
-  }
-
-  if (valErrors.length > 0) {
-    return cb({ code: 422, errors: valErrors });
-  }
-
-  // Check duplicates
-  // Search notification
-  Notif.findOne({ name: notif.name.toLowerCase() }, function (err, exists) {
-    if (err) {
-      return cb(err);
->>>>>>> 9fdbe607c16531170250fd2972cd868b3ee63c80
+    if (!(validator.isAlphanumeric(validator.blacklist(notif.description, ' ')) && validator.isLength(notif.name, 2))) {
+        valErrors.push({ field: 'description', message: __('validation_invalid', { field: 'description' }) });
     }
 
     if (valErrors.length > 0) {

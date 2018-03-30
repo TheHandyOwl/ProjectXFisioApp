@@ -13,18 +13,9 @@ const configDBProductsFields = require('./../config/config').db.products;
 const configDBUsersFields = require('./../config/config').db.users;
 
 const productSchema = mongoose.Schema({
-<<<<<<< HEAD
-=======
-  
-  professional  : { type: mongoose.Schema.ObjectId, ref: User, required: true },
-  name          : { type: String, lowercase: true, required: true },
-  description   : { type: String, lowercase: true, required: true },
-  price         : { type: Number, required: true },
-  isActive      : { type: Boolean, required: true, default: false },
->>>>>>> 9fdbe607c16531170250fd2972cd868b3ee63c80
 
     professional: { type: mongoose.Schema.ObjectId, ref: User, required: true },
-    name: { type: String, lowercase: true, required: true, unique: true },
+    name: { type: String, lowercase: true, required: true },
     description: { type: String, lowercase: true, required: true },
     price: { type: Number, required: true },
     isActive: { type: Boolean, required: true, default: false },
@@ -52,11 +43,7 @@ productSchema.statics.loadJson = async function(file) {
         });
     });
 
-<<<<<<< HEAD
-    console.log(file + ' read.');
-=======
-  console.log(file + ' readed.');
->>>>>>> 9fdbe607c16531170250fd2972cd868b3ee63c80
+    console.log(file + ' readed.');
 
     if (!data) {
         throw new Error(file + ' is empty!');
@@ -82,13 +69,9 @@ productSchema.statics.exists = function(idProduct, cb) {
 
 productSchema.statics.list = function(startRow, numRows, sortField, includeTotal, filters, cb) {
 
-<<<<<<< HEAD
-    const query = Product.find(filters);
-=======
-  const query = Product
-    .find(filters)
-    .select( configDBProductsFields.productsListPublicFields || '_id' );
->>>>>>> 9fdbe607c16531170250fd2972cd868b3ee63c80
+    const query = Product
+        .find(filters)
+        .select(configDBProductsFields.productsListPublicFields || '_id');
 
     query.sort(sortField);
     query.skip(startRow);
@@ -102,64 +85,38 @@ productSchema.statics.list = function(startRow, numRows, sortField, includeTotal
             //row.foto = configApp.appURLBasePath + configApp.imageLogoDate;
         });
 
-<<<<<<< HEAD
         // Populate
-        User.populate(rows, { path: 'professional' }, function(err, productAndProfessional) {
-            let result = { rows: productAndProfessional };
-=======
-    // Populate
-    User.populate( rows,
-      { path: 'professional', select: configDBUsersFields.userPublicFields || '_id' },
-      function(err, productAndProfessional) {
-      let result = { rows: productAndProfessional };
->>>>>>> 9fdbe607c16531170250fd2972cd868b3ee63c80
+        User.populate(rows, { path: 'professional', select: configDBUsersFields.userPublicFields || '_id' },
+            function(err, productAndProfessional) {
+                let result = { rows: productAndProfessional };
 
-            if (!includeTotal) return cb(null, result);
+                if (!includeTotal) return cb(null, result);
 
-            // Includes total property
-            Service.count({}, (err, total) => {
-                if (err) return cb(err);
-                result.total = total;
-                return cb(null, result);
+                // Includes total property
+                Service.count({}, (err, total) => {
+                    if (err) return cb(err);
+                    result.total = total;
+                    return cb(null, result);
+                });
+
             });
-
-        });
 
     });
 };
 
-<<<<<<< HEAD
 productSchema.statics.createRecord = function(product, cb) {
     // Validations
     let valErrors = [];
-    if (!(v.isAlpha(product.name) && v.isLength(product.name, 2))) {
+    if (!(validator.isAlphanumeric(validator.blacklist(product.name, ' ')) && validator.isLength(product.name, 2))) {
         valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
-=======
-productSchema.statics.createRecord = function (product, cb) {
-  // Validations
-  let valErrors = [];
-  if (!(validator.isAlphanumeric(validator.blacklist(product.name, ' ')) && validator.isLength(product.name, 2))) {
-    valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
-  }
+    }
 
-  if (!(validator.isAlphanumeric(validator.blacklist(product.description, ' ')) && validator.isLength(product.description, 2))) {
-    valErrors.push({ field: 'description', message: __('validation_invalid', { field: 'description' }) });
-  }
+    if (!(validator.isAlphanumeric(validator.blacklist(product.description, ' ')) && validator.isLength(product.description, 2))) {
+        valErrors.push({ field: 'description', message: __('validation_invalid', { field: 'description' }) });
+    }
 
-  if (!(validator.isHexadecimal(product.professional))) {
-    valErrors.push({ field: 'professional', message: __('validation_invalid', { field: 'professional' }) });
-  }
-
-  if (valErrors.length > 0) {
-    return cb({ code: 422, errors: valErrors });
-  }
-
-  // Check duplicates
-  // Search product
-  Product.findOne({ professional: product.professional, name: product.name.toLowerCase() }, function (err, exists) {
-    if (err) {
-      return cb(err);
->>>>>>> 9fdbe607c16531170250fd2972cd868b3ee63c80
+    if (!(validator.isHexadecimal(product.professional))) {
+        valErrors.push({ field: 'professional', message: __('validation_invalid', { field: 'professional' }) });
     }
 
     if (valErrors.length > 0) {

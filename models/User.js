@@ -6,12 +6,11 @@ const validator = require('validator');
 
 const fs = require('fs');
 
-const configDBUsersFields = require('./../config/config').db.users;
-
+const configDBUsersFields = require('../config/config')
 
 const userSchema = mongoose.Schema({
 
-    isProfessional: { type: Boolean, required: true, default: false },
+    isProfessional: Boolean,
     fellowshipNumber: Number, // CollegiateNumber
     gender: { type: String, enum: ['female', 'male'] },
     name: { type: String, lowercase: true },
@@ -80,11 +79,7 @@ userSchema.statics.exists = function(idUser, cb) {
 
 userSchema.statics.list = function(startRow, numRows, sortField, includeTotal, filters, cb) {
 
-<<<<<<< HEAD
-    const query = User.find(filters);
-=======
-  const query = User.find(filters).select( configDBUsersFields.usersListPublicFields || '_id' );
->>>>>>> 9fdbe607c16531170250fd2972cd868b3ee63c80
+    const query = User.find(filters).select(configDBUsersFields.usersListPublicFields || '_id');
 
     query.sort(sortField);
     query.skip(startRow);
@@ -97,59 +92,29 @@ userSchema.statics.list = function(startRow, numRows, sortField, includeTotal, f
 
         if (!includeTotal) return cb(null, result);
 
-<<<<<<< HEAD
-        // incluir propiedad total
+        // Includes total property
         User.count({}, (err, total) => {
             if (err) return cb(err);
             result.total = total;
             return cb(null, result);
         });
-=======
-    // Includes total property
-    User.count({}, (err, total) => {
-      if (err) return cb(err);
-      result.total = total;
-      return cb(null, result);
->>>>>>> 9fdbe607c16531170250fd2972cd868b3ee63c80
     });
 };
 
-<<<<<<< HEAD
 userSchema.statics.createRecord = function(user, cb) {
 
     // Validations
     let valErrors = [];
-    if (!(validator.isAlpha(user.name) || validator.isLength(user.name, 2))) {
+    if (!(validator.isAlphanumeric(validator.blacklist(user.name, ' ')) && validator.isLength(user.name, 2))) {
         valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
     }
-=======
-userSchema.statics.createRecord = function (user, cb) {
-
-  // Validations
-  let valErrors = [];
-  if (!(validator.isAlphanumeric(validator.blacklist(user.name, ' ')) && validator.isLength(user.name, 2))) {
-    valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
-  }
-
-  if (!validator.isEmail(user.email)) {
-    valErrors.push({ field: 'email', message: __('validation_invalid', { field: 'email' }) });
-  }
-
-  if (!validator.isLength(user.password, 6)) {
-    valErrors.push({ field: 'password', message: __('validation_minchars', { field: 'password', num: '6' }) });
-  }
-
-  if (valErrors.length > 0) {
-    return cb({ code: 422, errors: valErrors });
-  }
->>>>>>> 9fdbe607c16531170250fd2972cd868b3ee63c80
 
     if (!validator.isEmail(user.email)) {
         valErrors.push({ field: 'email', message: __('validation_invalid', { field: 'email' }) });
     }
 
     if (!validator.isLength(user.password, 6)) {
-        valErrors.push({ field: 'password', message: __('validation_minchars', { num: '6' }) });
+        valErrors.push({ field: 'password', message: __('validation_minchars', { field: 'password', num: '6' }) });
     }
 
     if (valErrors.length > 0) {

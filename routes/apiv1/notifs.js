@@ -17,7 +17,6 @@ Router.use(jwtAuth());
 // Get all notifs
 
 Router.get('/', (req, res, next) => {
-  console.log("/");
 
   let filters = {};
 
@@ -46,7 +45,6 @@ Router.get('/', (req, res, next) => {
 // Find notif by id
 
 Router.get('/:id', (req, res, next) => {
-  console.log("/id");
 
   const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
   if (idOk == false ) return res
@@ -110,7 +108,7 @@ Router.post('/', function (req, res, next) {
       .status(200)
       .json({
         ok: true,
-        result: res.__('notification_created')
+        message: res.__('notification_created')
       });
   });
 });
@@ -163,7 +161,7 @@ Router.put('/:id', function (req, res, next) {
         .status(200)
         .json({
           ok: true,
-          result: res.__('notification_updated')
+          message: res.__('notification_updated')
         });
     }
   });
@@ -202,7 +200,7 @@ Router.delete('/:id', function (req, res, next) {
         .status(200)
         .json({
           ok: true,
-          result: res.__('notification_deleted')
+          message: res.__('notification_deleted')
         });
     }
   });

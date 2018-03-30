@@ -101,7 +101,7 @@ Router.post('/', function (req, res, next) {
       .status(200)
       .json({
         ok: true,
-        result: res.__('service_created')
+        message: res.__('service_created')
       });
   });
 });
@@ -151,7 +151,7 @@ Router.put('/:id', function (req, res, next) {
         .status(200)
         .json({
           ok: true,
-          result: res.__('service_updated')
+          message: res.__('service_updated')
         });
     }
   });
@@ -216,7 +216,7 @@ Router.delete('/:id', function (req, res, next) {
                 .status(200)
                 .json({
                   ok: true,
-                  result: res.__('service_deleted')
+                  message: res.__('service_deleted')
                 });
             });
           });
@@ -226,7 +226,7 @@ Router.delete('/:id', function (req, res, next) {
             .status(409)
             .json({
               ok: false,
-              result: res.__('service_not_completed', { num: numAppointmentsPending })
+              message: res.__('service_not_completed', { num: numAppointmentsPending })
             });
         }
 
