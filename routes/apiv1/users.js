@@ -55,7 +55,7 @@ Router.get('/', (req, res, next) => {
 // Find user by id
 
 Router.get('/:id', (req, res, next) => {
-  
+
   const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
   if (idOk == false ) return res
                         .status(422)
@@ -217,7 +217,7 @@ Router.put('/:id', function (req, res, next) {
           .status(200)
           .json({
             ok: true,
-            result: res.__('user_updated')
+            message: res.__('user_updated')
           });
       });
     }

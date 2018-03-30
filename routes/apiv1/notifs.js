@@ -108,7 +108,7 @@ Router.post('/', function (req, res, next) {
       .status(200)
       .json({
         ok: true,
-        result: res.__('notification_created')
+        message: res.__('notification_created')
       });
   });
 });
@@ -161,7 +161,7 @@ Router.put('/:id', function (req, res, next) {
         .status(200)
         .json({
           ok: true,
-          result: res.__('notification_updated')
+          message: res.__('notification_updated')
         });
     }
   });
@@ -200,7 +200,7 @@ Router.delete('/:id', function (req, res, next) {
         .status(200)
         .json({
           ok: true,
-          result: res.__('notification_deleted')
+          message: res.__('notification_deleted')
         });
     }
   });

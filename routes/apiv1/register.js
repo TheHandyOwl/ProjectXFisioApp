@@ -25,7 +25,7 @@ Router.post('/', function (req, res, next) {
           .status(200)
           .json({
             ok: true,
-            result: res.__('users_user_created')
+            message: res.__('users_user_created')
           });
       });
     } else if (user) {

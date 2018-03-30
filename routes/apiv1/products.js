@@ -99,7 +99,7 @@ Router.post('/', function (req, res, next) {
       .status(200)
       .json({
         ok: true,
-        result: res.__('product_created')
+        message: res.__('product_created')
       });
   });
 });
@@ -150,7 +150,7 @@ Router.put('/:id', function (req, res, next) {
         .status(200)
         .json({
           ok: true,
-          result: res.__('product_updated')
+          message: res.__('product_updated')
         });
     }
   });
@@ -207,7 +207,7 @@ Router.delete('/:id', function (req, res, next) {
           .status(200)
           .json({
             ok: true,
-            result: res.__('product_deleted')
+            message: res.__('product_deleted')
           });
       })
 
