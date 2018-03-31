@@ -115,9 +115,9 @@ Router.get('/customer', (req, res, next) => {
 
 // Create an appointment
 Router.post('/', function (req, res, next) {
-
+  req.body.customer = req.decoded.user._id;
+  
   const idOk =
-    Mongoose.Types.ObjectId.isValid(req.body.customer) &&
     Mongoose.Types.ObjectId.isValid(req.body.professional) &&
     Mongoose.Types.ObjectId.isValid(req.body.service);
   if (idOk == false ) return res
@@ -130,6 +130,7 @@ Router.post('/', function (req, res, next) {
                           }
                         });
   
+  /*
   if ( (req.body.customer != null) && (req.body.customer != req.decoded.user._id) ) {
     return res
       .status(422)
@@ -141,6 +142,7 @@ Router.post('/', function (req, res, next) {
         }
       });
   }
+  */
 
   Appointment.createRecord(req.body, function (err) {
     if (err) return next(err);
@@ -157,6 +159,22 @@ Router.post('/', function (req, res, next) {
 
 // Update an appointment
 Router.put('/:id', function (req, res, next) {
+  req.body.id = req.params.id;
+  if (req.body.professional != null) delete req.body.professional;
+  if (req.body.customer != null) delete req.body.customer;
+  /*
+  if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
+    return res
+    .status(422)
+    .json({
+      ok: false,
+      error: {
+        code: 422,
+        message: res.__('unprocessable_entity')
+      }
+    });
+  }
+  */
 
   const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
   if (idOk == false ) return res
@@ -169,22 +187,7 @@ Router.put('/:id', function (req, res, next) {
                           }
                         });
 
-  if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
-    return res
-      .status(422)
-      .json({
-        ok: false,
-        error: {
-          code: 422,
-          message: res.__('unprocessable_entity')
-        }
-      });
-  }
-
-  if (req.body.professional != null) delete req.body.professional;
-  if (req.body.customer != null) delete req.body.customer;
-
-  Appointment.findOneAndUpdate({ _id: req.params.id, deleted: false }, req.body, function (err, appointment) {
+  Appointment.findOne({ _id: req.params.id, deleted: false }, function (err, appointment) {
     if (err) return next(err);
 
     if (!appointment) {
@@ -198,19 +201,37 @@ Router.put('/:id', function (req, res, next) {
           }
         });
     } else if (appointment) {
+      // Check owner
+      if ( (appointment.customer != req.decoded.user._id) && (appointment.professional != req.decoded.user._id) )  {
         return res
-          .status(200)
+          .status(403)
           .json({
-            ok: true,
-            message: res.__('appointment_updated')
+            ok: false,
+            error: {
+              code: 403,
+              message: res.__('forbidden_access')
+            }
           });
+      } else {
+        Appointment.findOneAndUpdate( { _id: req.params.id, deleted: false }, req.body, function (err, appointment) {
+          if (err) return next(err);
+
+          return res
+            .status(200)
+            .json({
+              ok: true,
+              message: res.__('appointment_updated')
+            });
+          })
+      }
     }
   });
 });
 
-
 // Remove an appointment by owner and not deleted
 Router.delete('/:id', function (req, res, next) {
+  req.body.id = req.params.id;
+  req.body.customer = req.decoded.user._id;
 
   const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
   if (idOk == false ) return res
@@ -239,7 +260,7 @@ Router.delete('/:id', function (req, res, next) {
     } else if (appointment) {
 
       // Check owner
-      if (appointment.professional != req.decoded.user._id)  {
+      if (appointment.customer != req.decoded.user._id)  {
         return res
           .status(403)
           .json({

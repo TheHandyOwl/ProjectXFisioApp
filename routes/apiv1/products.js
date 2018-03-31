@@ -78,7 +78,9 @@ Router.get('/', (req, res, next) => {
 
 // Create a Product
 Router.post('/', function (req, res, next) {
+  req.body.professional = req.decoded.user._id;
   // Check owner
+  /*
   if ((req.body.professional != null) && (req.body.professional != req.decoded.user._id))  {
     return res
       .status(403)
@@ -90,6 +92,7 @@ Router.post('/', function (req, res, next) {
         }
       });
   }
+  */
 
   Product.createRecord(req.body, function (err) {
     if (err) return next(err);
@@ -106,18 +109,9 @@ Router.post('/', function (req, res, next) {
 
 // Update a product by owner and not deleted
 Router.put('/:id', function (req, res, next) {
-
-  const idOk = Mongoose.Types.ObjectId.isValid(req.params.id);
-  if (idOk == false) return res
-    .status(422)
-    .json({
-      ok: false,
-      error: {
-        code: 422,
-        message: res.__('unprocessable_entity')
-      }
-    });
-
+  req.body.id = req.params.id;
+  req.body.professional = req.decoded.user._id;
+  /*
   if ((req.body.id != null) && (req.body.id != req.params.id))  {
     return res
       .status(422)
@@ -129,8 +123,20 @@ Router.put('/:id', function (req, res, next) {
         }
       });
   }
-
+  
   if (req.body.professional != null) delete req.body.professional;
+  */
+
+  const idOk = Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false) return res
+    .status(422)
+    .json({
+      ok: false,
+      error: {
+        code: 422,
+        message: res.__('unprocessable_entity')
+      }
+    });
 
   Product.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, req.body, function (err, product) {
     if (err) return next(err);
@@ -159,6 +165,8 @@ Router.put('/:id', function (req, res, next) {
 
 // Remove a product by owner and not deleted
 Router.delete('/:id', function (req, res, next) {
+  req.body.id = req.params.id;
+  req.body.professional = req.decoded.user._id;
 
   const idOk = Mongoose.Types.ObjectId.isValid(req.params.id);
   if (idOk == false) return res
