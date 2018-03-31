@@ -6,11 +6,13 @@ const validator = require('validator');
 
 const fs = require('fs');
 
-const configDBUsersFields = require('../config/config')
+const configDBUsersFields = require('../config/config').db.users;
+// const c = require('../config/config')
+
 
 const userSchema = mongoose.Schema({
 
-    isProfessional: Boolean,
+    isProfessional: { type: Boolean, default: false },
     fellowshipNumber: Number, // CollegiateNumber
     gender: { type: String, enum: ['female', 'male'] },
     name: { type: String, lowercase: true },
@@ -23,7 +25,7 @@ const userSchema = mongoose.Schema({
     nationalId: String,
     registrationDate: Date,
     lastLoginDate: Date,
-    img: { type: String, required: false },
+    img: { type: String, require: false },
 
     deleted: { type: Boolean, default: false }
 
