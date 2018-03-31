@@ -80,8 +80,8 @@ function getMenu(user) {
             icon: "mdi mdi-folder-lock-open",
             submenu: [
                 // { title: 'Usuarios', url: '/users' },
-                { title: "Producto", url: "/products" },
-                { title: "Servicio", url: "/services" },
+                { title: "Productos", url: "/products" },
+                { title: "Servicios", url: "/services" },
                 { title: "Blogs", url: "/blogs" },
                 { title: "Citas", url: "/appointments" }
             ]
