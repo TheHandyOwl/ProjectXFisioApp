@@ -96,7 +96,7 @@ Router.post('/', function (req, res, next) {
   }
   */
 
-  Service.createRecord(req.body, function (err) {
+  Service.createRecord(req.body, function (err, service) {
     if (err) return next(err);
 
     // Service created
@@ -104,6 +104,7 @@ Router.post('/', function (req, res, next) {
       .status(200)
       .json({
         ok: true,
+        result: service,
         message: res.__('service_created')
       });
   });
@@ -142,7 +143,10 @@ Router.put('/:id', function (req, res, next) {
                         });
 
 
-  Service.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, req.body, function (err, service) {
+  Service.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false },
+    req.body,
+    {new: true},
+    function (err, service) {
     if (err) return next(err);
 
     if (!service) {
@@ -160,6 +164,7 @@ Router.put('/:id', function (req, res, next) {
         .status(200)
         .json({
           ok: true,
+          result: service,
           message: res.__('service_updated')
         });
     }
@@ -220,13 +225,17 @@ Router.delete('/:id', function (req, res, next) {
         if (!appointmentsPending || numAppointmentsPending == 0) {
           Appointment.where( { service: service._id } ).setOptions({ multi: true }).update( { deleted: true }, function (err, allAppointmentsToDelete) {
             if (err) return next(err);
-            Service.findOneAndUpdate( { _id: service._id }, { deleted: true }, function (err, serviceToDelete) {
+            Service.findOneAndUpdate( { _id: service._id },
+              { deleted: true },
+              {new: true},
+              function (err, service) {
               if (err) return next(err);
 
               return res
                 .status(200)
                 .json({
                   ok: true,
+                  result: service,
                   message: res.__('service_deleted')
                 });
             });

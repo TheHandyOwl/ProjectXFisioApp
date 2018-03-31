@@ -144,7 +144,7 @@ Router.post('/', function (req, res, next) {
   }
   */
 
-  Appointment.createRecord(req.body, function (err) {
+  Appointment.createRecord(req.body, function (err, appointment) {
     if (err) return next(err);
 
     // Appointment created
@@ -152,6 +152,7 @@ Router.post('/', function (req, res, next) {
       .status(200)
       .json({
         ok: true,
+        result: appointment,
         message: res.__('appointment_created')
       });
   });
@@ -213,13 +214,17 @@ Router.put('/:id', function (req, res, next) {
             }
           });
       } else {
-        Appointment.findOneAndUpdate( { _id: req.params.id, deleted: false }, req.body, function (err, appointment) {
+        Appointment.findOneAndUpdate( { _id: req.params.id, deleted: false },
+          req.body,
+          {new: true},
+          function (err, appointment) {
           if (err) return next(err);
 
           return res
             .status(200)
             .json({
               ok: true,
+              result: appointment,
               message: res.__('appointment_updated')
             });
           })
@@ -279,13 +284,17 @@ Router.delete('/:id', function (req, res, next) {
 
         const numAppointmentsPending = appointmentsPending.length;
         if (!appointmentsPending || numAppointmentsPending == 0) {
-            Appointment.findOneAndUpdate( { _id: appointment._id }, { deleted: true }, function (err, appointmentToDelete) {
+            Appointment.findOneAndUpdate( { _id: appointment._id },
+              { deleted: true },
+              {new: true},
+              function (err, appointment) {
               if (err) return next(err);
 
               return res
                 .status(200)
                 .json({
                   ok: true,
+                  result: appointment,
                   message: res.__('appointment_deleted')
                 });
           });

@@ -17,7 +17,7 @@ Router.post('/', function (req, res, next) {
     if (err) return next(err);
 
     if (!user) {
-      User.createRecord(req.body, function (err) {
+      User.createRecord(req.body, function (err, user) {
         if (err) return next(err);
 
         // User created
@@ -25,6 +25,7 @@ Router.post('/', function (req, res, next) {
           .status(200)
           .json({
             ok: true,
+            result: user,
             message: res.__('users_user_created')
           });
       });
