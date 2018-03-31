@@ -94,7 +94,7 @@ Router.post('/', function (req, res, next) {
   }
   */
 
-  Product.createRecord(req.body, function (err) {
+  Product.createRecord(req.body, function (err, product) {
     if (err) return next(err);
 
     // Product created
@@ -102,6 +102,7 @@ Router.post('/', function (req, res, next) {
       .status(200)
       .json({
         ok: true,
+        result: product,
         message: res.__('product_created')
       });
   });
@@ -138,7 +139,10 @@ Router.put('/:id', function (req, res, next) {
       }
     });
 
-  Product.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, req.body, function (err, product) {
+  Product.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false },
+    req.body,
+    {new: true},
+    function (err, product) {
     if (err) return next(err);
 
     if (!product) {
@@ -156,6 +160,7 @@ Router.put('/:id', function (req, res, next) {
         .status(200)
         .json({
           ok: true,
+          result: product,
           message: res.__('product_updated')
         });
     }
@@ -209,12 +214,15 @@ Router.delete('/:id', function (req, res, next) {
 
       Product.findOneAndUpdate({ _id: req.params.id, deleted: false },
         { deleted: true },
+        {new: true},
         function (err, product) {
-
+        if (err) return next(err);
+        
         return res
           .status(200)
           .json({
             ok: true,
+            result: product,
             message: res.__('product_deleted')
           });
       })

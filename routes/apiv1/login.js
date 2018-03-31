@@ -48,13 +48,8 @@ Router.post("/", function(req, res, next) {
             } else {
                 // User found and same password
                 // Make token
-                const token = jwt.sign({ user }, config.jwt.secret, config.jwt.options);
-
-                // return the information including token as JSON
-
                 user.password = "🤔 👻 😜";
                 console.log("Menu para:");
-                console.log(user.role);
                 console.log(getMenu(user.isProfessional));
 
                 return res.status(200).json({
@@ -68,6 +63,8 @@ Router.post("/", function(req, res, next) {
         }
     });
 });
+
+module.exports = Router;
 
 function getMenu(user) {
     var menu = [{

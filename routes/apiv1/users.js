@@ -27,8 +27,7 @@ Router.get('/', (req, res, next) => {
     let lastName = req.query.lastName;
 
     filters.deleted = false; // Not deleted
-    // This filter is used to filter by professionals 
-    // filters.isProfessional = true; // Only professionals
+    filters.isProfessional = true; // Only professionals
 
     if (id) filters._id = id;
     if (name) filters.name = name;
@@ -70,7 +69,7 @@ Router.get('/:id', (req, res, next) => {
 
     // Custom fields on query
     let queryFields = "";
-    if (req.params.id != req.decoded.user._id)  {
+    if (req.params.id != req.decoded.user._id) {
         // Public information fields - All people
         queryFields = configDBUsersFields.userPublicFields || '_id';
     } else {
@@ -117,7 +116,7 @@ Router.delete('/:id', function(req, res, next) {
         });
 
     // Check owner
-    if (req.params.id != req.decoded.user._id)  {
+    if (req.params.id != req.decoded.user._id) {
         return res
             .status(403)
             .json({
@@ -147,11 +146,18 @@ Router.delete('/:id', function(req, res, next) {
             // if the password and the token are correct, we can remove the user information
             const hashedPassword = hash.sha256().update(req.body.password).digest('hex');
             if (hashedPassword === user.password) {
-                User.findOneAndUpdate({ _id: user._id }, { deleted: true }, function(err) {
-                    if (err) return next(err);
+                User.findOneAndUpdate({ _id: user._id }, { deleted: true }, { new: true },
+                    function(err, user) {
+                        if (err) return next(err);
 
-                    return res.json({ ok: true, message: res.__('user_deleted') });
-                })
+                        return res
+                            .status(200)
+                            .json({
+                                ok: true,
+                                result: user,
+                                message: res.__('user_deleted')
+                            });
+                    })
             } else {
                 return res
                     .status(401)
@@ -169,6 +175,7 @@ Router.delete('/:id', function(req, res, next) {
 
 // Update a user
 Router.put('/:id', function(req, res, next) {
+    req.body.id = req.params.id;
 
     const idOk = Mongoose.Types.ObjectId.isValid(req.params.id);
     if (idOk == false) return res
@@ -181,48 +188,45 @@ Router.put('/:id', function(req, res, next) {
             }
         });
 
-    if (((req.body.id != null) && (req.body.id != req.params.id)) || (req.decoded.user._id != req.params.id))  {
+    if (req.params.id != req.decoded.user._id) {
         return res
-            .status(422)
+            .status(403)
             .json({
                 ok: false,
                 error: {
-                    code: 422,
-                    message: res.__('unprocessable_entity')
+                    code: 403,
+                    message: res.__('forbidden_access')
                 }
             });
     }
 
     if (req.body.professional != null) delete req.body.professional;
 
-    User.findOne({ _id: req.params.id, deleted: false }, function(err, user) {
-        if (err) return next(err);
+    User.findOneAndUpdate({ _id: req.params.id, deleted: false },
+        req.body, { new: true },
+        function(err, user) {
+            if (err) return next(err);
 
-        if (!user) {
-            return res
-                .status(404)
-                .json({
-                    ok: false,
-                    error: {
-                        code: 404,
-                        message: res.__('user_not_found')
-                    }
-                });
-        } else if (user) {
-
-            User.updateOne(req.body, function(err) {
-                if (err) return next(err);
-
-                // Service updated
+            if (!user) {
+                return res
+                    .status(404)
+                    .json({
+                        ok: false,
+                        error: {
+                            code: 404,
+                            message: res.__('user_not_found')
+                        }
+                    });
+            } else if (user) {
                 return res
                     .status(200)
                     .json({
                         ok: true,
+                        result: user,
                         message: res.__('user_updated')
                     });
-            });
-        }
-    });
+            }
+        });
 });
 
 module.exports = Router;
