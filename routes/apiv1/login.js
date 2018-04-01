@@ -49,14 +49,17 @@ Router.post("/", function(req, res, next) {
                 // User found and same password
                 // Make token
                 user.password = "🤔 👻 😜";
+
+                const token = jwt.sign({ user: user }, config.jwt.secret, config.jwt.options);
+
                 console.log("Menu para:");
                 console.log(getMenu(user.isProfessional));
 
                 return res.status(200).json({
                     ok: true,
-                    token: token,
                     user: user,
                     id: user._id,
+                    token: token,
                     menu: getMenu(user)
                 });
             }

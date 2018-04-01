@@ -27,7 +27,7 @@ Router.get('/', (req, res, next) => {
     let lastName = req.query.lastName;
 
     filters.deleted = false; // Not deleted
-    filters.isProfessional = true; // Only professionals
+    // filters.isProfessional = true; // Only professionals
 
     if (id) filters._id = id;
     if (name) filters.name = name;
