@@ -100,7 +100,7 @@ Router.get('/:id', (req, res, next) => {
 // Create an notif
 
 Router.post('/', function (req, res, next) {
-  Notif.createRecord(req.body, function (err) {
+  Notif.createRecord(req.body, function (err, notif) {
     if (err) return next(err);
 
     // Notif created
@@ -108,6 +108,7 @@ Router.post('/', function (req, res, next) {
       .status(200)
       .json({
         ok: true,
+        result: notif,
         message: res.__('notification_created')
       });
   });
@@ -143,7 +144,10 @@ Router.put('/:id', function (req, res, next) {
   if (req.body.professional != null) delete req.body.professional;
   if (req.body.customer != null) delete req.body.customer;
 
-  Notif.findOneAndUpdate({ _id: req.params.id, deleted: false }, req.body, function (err, notif) {
+  Notif.findOneAndUpdate({ _id: req.params.id, deleted: false },
+    req.body,
+    {new: true},
+    function (err, notif) {
     if (err) return next(err);
 
     if (!notif) {
@@ -161,6 +165,7 @@ Router.put('/:id', function (req, res, next) {
         .status(200)
         .json({
           ok: true,
+          result: notif,
           message: res.__('notification_updated')
         });
     }
@@ -182,7 +187,10 @@ Router.delete('/:id', function (req, res, next) {
                           }
                         });
 
-  Notif.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, { deleted: true }, function (err, notif) {
+  Notif.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false },
+    { deleted: true },
+    {new: true},
+    function (err, notif) {
     if (err) return next(err);
 
     if (!notif) {
@@ -200,6 +208,7 @@ Router.delete('/:id', function (req, res, next) {
         .status(200)
         .json({
           ok: true,
+          result: notif,
           message: res.__('notification_deleted')
         });
     }

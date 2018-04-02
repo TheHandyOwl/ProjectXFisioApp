@@ -146,10 +146,19 @@ Router.delete('/:id', function (req, res, next) {
       // if the password and the token are correct, we can remove the user information
       const hashedPassword = hash.sha256().update(req.body.password).digest('hex');
       if (hashedPassword === user.password) {
-        User.findOneAndUpdate({ _id: user._id }, { deleted: true } , function (err) {
+        User.findOneAndUpdate({ _id: user._id },
+          { deleted: true } ,
+          {new: true},
+          function (err, user) {
           if (err) return next(err);
-  
-          return res.json({ ok: true, message: res.__('user_deleted') });
+
+          return res
+          .status(200)
+          .json({
+            ok: true,
+            result: user,
+            message: res.__('user_deleted')
+          });
         })
       } else {
         return res
@@ -168,33 +177,37 @@ Router.delete('/:id', function (req, res, next) {
 
 // Update a user
 Router.put('/:id', function (req, res, next) {
-
+  req.body.id = req.params.id;
+  
   const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
   if (idOk == false ) return res
-                        .status(422)
-                        .json({
-                          ok: false,
-                          error: {
-                            code: 422,
-                            message: res.__('unprocessable_entity')
-                          }
-                        });
-
-  if ( ((req.body.id != null) && (req.body.id != req.params.id)) || (req.decoded.user._id != req.params.id) ) {
+  .status(422)
+  .json({
+    ok: false,
+    error: {
+      code: 422,
+      message: res.__('unprocessable_entity')
+    }
+  });
+  
+  if (req.params.id != req.decoded.user._id) {
     return res
-      .status(422)
+      .status(403)
       .json({
         ok: false,
         error: {
-          code: 422,
-          message: res.__('unprocessable_entity')
+          code: 403,
+          message: res.__('forbidden_access')
         }
       });
   }
-
+  
   if (req.body.professional != null) delete req.body.professional;
-
-  User.findOne({ _id: req.params.id, deleted: false }, function (err, user) {
+  
+  User.findOneAndUpdate({ _id: req.params.id, deleted: false },
+    req.body,
+    {new: true},
+    function (err, user) {
     if (err) return next(err);
 
     if (!user) {
@@ -208,18 +221,13 @@ Router.put('/:id', function (req, res, next) {
           }
         });
     } else if (user) {
-
-      User.updateOne(req.body, function (err) {
-        if (err) return next(err);
-
-        // Service updated
         return res
           .status(200)
           .json({
             ok: true,
+            result: user,
             message: res.__('user_updated')
           });
-      });
     }
   });
 });

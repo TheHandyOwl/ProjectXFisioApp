@@ -60,6 +60,7 @@ Router.post('/', function (req, res, next) {
           .status(200)
           .json({
             ok: true,
+            result: user,
             token
           });
       }

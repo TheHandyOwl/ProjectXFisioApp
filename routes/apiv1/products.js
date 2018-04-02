@@ -78,7 +78,9 @@ Router.get('/', (req, res, next) => {
 
 // Create a Product
 Router.post('/', function (req, res, next) {
+  req.body.professional = req.decoded.user._id;
   // Check owner
+  /*
   if ((req.body.professional != null) && (req.body.professional != req.decoded.user._id))  {
     return res
       .status(403)
@@ -90,8 +92,9 @@ Router.post('/', function (req, res, next) {
         }
       });
   }
+  */
 
-  Product.createRecord(req.body, function (err) {
+  Product.createRecord(req.body, function (err, product) {
     if (err) return next(err);
 
     // Product created
@@ -99,6 +102,7 @@ Router.post('/', function (req, res, next) {
       .status(200)
       .json({
         ok: true,
+        result: product,
         message: res.__('product_created')
       });
   });
@@ -106,6 +110,23 @@ Router.post('/', function (req, res, next) {
 
 // Update a product by owner and not deleted
 Router.put('/:id', function (req, res, next) {
+  req.body.id = req.params.id;
+  req.body.professional = req.decoded.user._id;
+  /*
+  if ((req.body.id != null) && (req.body.id != req.params.id))  {
+    return res
+      .status(422)
+      .json({
+        ok: false,
+        error: {
+          code: 422,
+          message: res.__('unprocessable_entity')
+        }
+      });
+  }
+  
+  if (req.body.professional != null) delete req.body.professional;
+  */
 
   const idOk = Mongoose.Types.ObjectId.isValid(req.params.id);
   if (idOk == false) return res
@@ -118,21 +139,10 @@ Router.put('/:id', function (req, res, next) {
       }
     });
 
-  if ((req.body.id != null) && (req.body.id != req.params.id))  {
-    return res
-      .status(422)
-      .json({
-        ok: false,
-        error: {
-          code: 422,
-          message: res.__('unprocessable_entity')
-        }
-      });
-  }
-
-  if (req.body.professional != null) delete req.body.professional;
-
-  Product.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, req.body, function (err, product) {
+  Product.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false },
+    req.body,
+    {new: true},
+    function (err, product) {
     if (err) return next(err);
 
     if (!product) {
@@ -150,6 +160,7 @@ Router.put('/:id', function (req, res, next) {
         .status(200)
         .json({
           ok: true,
+          result: product,
           message: res.__('product_updated')
         });
     }
@@ -159,6 +170,8 @@ Router.put('/:id', function (req, res, next) {
 
 // Remove a product by owner and not deleted
 Router.delete('/:id', function (req, res, next) {
+  req.body.id = req.params.id;
+  req.body.professional = req.decoded.user._id;
 
   const idOk = Mongoose.Types.ObjectId.isValid(req.params.id);
   if (idOk == false) return res
@@ -201,12 +214,15 @@ Router.delete('/:id', function (req, res, next) {
 
       Product.findOneAndUpdate({ _id: req.params.id, deleted: false },
         { deleted: true },
+        {new: true},
         function (err, product) {
-
+        if (err) return next(err);
+        
         return res
           .status(200)
           .json({
             ok: true,
+            result: product,
             message: res.__('product_deleted')
           });
       })
