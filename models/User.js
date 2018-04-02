@@ -6,6 +6,9 @@ const validator = require('validator');
 
 const fs = require('fs');
 
+const configDBUsersFields = require('./../config/config').db.users;
+
+
 const userSchema = mongoose.Schema({
 
   isProfessional    : Boolean,
@@ -76,7 +79,7 @@ userSchema.statics.exists = function (idUser, cb) {
 
 userSchema.statics.list = function (startRow, numRows, sortField, includeTotal, filters, cb) {
 
-  const query = User.find(filters);
+  const query = User.find(filters).select( configDBUsersFields.usersListPublicFields || '_id' );
 
   query.sort(sortField);
   query.skip(startRow);
@@ -89,7 +92,7 @@ userSchema.statics.list = function (startRow, numRows, sortField, includeTotal, 
 
     if (!includeTotal) return cb(null, result);
 
-    // incluir propiedad total
+    // Includes total property
     User.count({}, (err, total) => {
       if (err) return cb(err);
       result.total = total;
@@ -102,7 +105,7 @@ userSchema.statics.createRecord = function (user, cb) {
 
   // Validations
   let valErrors = [];
-  if (!(validator.isAlpha(user.name) || validator.isLength(user.name, 2))) {
+  if (!(validator.isAlphanumeric(validator.blacklist(user.name, ' ')) && validator.isLength(user.name, 2))) {
     valErrors.push({ field: 'name', message: __('validation_invalid', { field: 'name' }) });
   }
 
@@ -111,7 +114,7 @@ userSchema.statics.createRecord = function (user, cb) {
   }
 
   if (!validator.isLength(user.password, 6)) {
-    valErrors.push({ field: 'password', message: __('validation_minchars', { num: '6' }) });
+    valErrors.push({ field: 'password', message: __('validation_minchars', { field: 'password', num: '6' }) });
   }
 
   if (valErrors.length > 0) {

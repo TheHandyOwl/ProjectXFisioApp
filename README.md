@@ -13,6 +13,63 @@ Api for the iOS/Android/Web apps.
 
 Review models/db.js to set database configuration
 
+Create a new config/config.js with your custom information
+
+```json
+'use strict';
+
+module.exports = {
+    jwt: {
+      secret: 'yoursecretkey',
+      options: {
+        expiresIn: '2 days'
+      }
+    },
+    app: {
+      imagesURLBasePath: '/images/app/',
+      imageLogoDate: "icons8-calendar-50.png"
+    },
+    db: {
+      appointments: {
+        appointmentsListPublicFields: '_id service customer professional isConfirmed isCancelled date latitude longitude address extraInfo',
+        appointmentPublicFields: '_id service customer professional isConfirmed isCancelled date latitude longitude address extraInfo',
+        appointmentPrivateFields: '_id service customer professional isConfirmed isCancelled date latitude longitude address extraInfo'
+      },
+      blogs: {
+        blogsListPublicFields: '_id professional customer name description creationDate',
+        blogPublicFields: '_id professional customer name description creationDate',
+        blogPrivateFields: '_id professional customer name description isVisible creationDate publicationDate'
+      },
+      notifs: {
+        notifsListPublicFields: '_id professional customer name description sendingDate',
+        notifPublicFields: '_id professional customer name description sendingDate',
+        notifPrivateFields: '_id professional customer name description isSent creationDate sendingDate'
+      },
+      products: {
+        productsListPublicFields: '_id professional name description price',
+        productPublicFields: '_id professional name description price',
+        productPrivateFields: '_id professional name description price isActive'
+      },
+      services: {
+        servicesListPublicFields: '_id professional name description price',
+        servicePublicFields: '_id professional name description price',
+        servicePrivateFields: '_id professional name description price isActive'
+      },
+      users: {
+        usersListPublicFields: '_id isProfessional name lastName registrationDate',
+        userPublicFields: '_id isProfessional name lastName registrationDate',
+        userPrivateFields: '_id isProfessional fellowshipNumber gender name lastName email address phone birthDate nationalId registrationDate lastLoginDate'
+      }
+    }
+};
+
+module.exports.SEED = 'yourcustomseed';
+
+// Google
+module.exports.GOOGLE_CLIENT_ID = 'YourCustomClientId.apps.googleusercontent.com';
+module.exports.GOOGLE_SECRET = 'YourCustomSecret';
+```
+
 ### Init database
 
     npm run installDB
@@ -49,9 +106,9 @@ The API can be used with the path:
 
 ### Security
 
-The API uses JSON Web Token to handle users. First you will need to call /users/register to create a user.  
+The API uses JSON Web Token to handle users. First you will need to call /register to create a user.
 
-Then call /users/authenticate to obtain a token.
+Then call /authenticate to obtain a token.
   
 Next calls will need to have the token in:  
 
@@ -75,49 +132,16 @@ i.e. Accept-Language: es
       }
     }
 
-### POST /users/register
 
-**Input Body**: { name, email, password }
-
-**Result:**
-
-    {
-      "ok": true, 
-      "message": "user created!"
-    }
-
-### POST /users/authenticate
+### POST /login
 
 **Input Body**: { email, password }
 
 **Result:**
 
     {
-      "ok": true, 
+      "ok": true,
       "token": "..."
-    }
-
-### DELETE /users
-
-**Input Body**: { email, password }
-
-**Result:**
-
-    {
-      "ok": true, 
-      "message": "user deleted!"
-    }
-
-
-### PUT /users
-
-**Input Body**: { email, password, gender, address, phone, birthDate, nationalId }
-
-**Result:**
-
-    {
-      "ok": true, 
-      "message": "user updated!"
     }
 
 ### GET /appointments/professional
@@ -137,55 +161,38 @@ Possible filters:
     {
         "ok": true,
         "result": {
-            "_id": "5aa106e46750320b606db6ce",
-            "service": {
-                "_id": "5aa00e386281ea2d347d4732",
-                "name": "service 1",
-                "description": "1 hour session",
-                "price": 30,
-                "__v": 0
-            },
-            "customer": {
-                "_id": "5a9f054f602dd0e540c71bc7",
-                "isProfessional": true,
-                "fellowshipNumber": 33,
-                "gender": "Female",
-                "name": "thecustomer",
-                "lastName": "lastname",
-                "email": "customer@invalid.com",
-                "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
-                "address": "Customer Address, 44",
-                "phone": "626626626",
-                "birthDate": "1980-12-30T12:30:00.000Z",
-                "nationalId": "87654321Z",
-                "registrationDate": "2018-02-02T02:02:00.000Z",
-                "lastLoginDate": "2018-03-07T17:00:00.000Z",
-                "__v": 0
-            },
-            "professional": {
-                "_id": "5a9f054f602dd0e540c71bc6",
-                "isProfessional": true,
-                "fellowshipNumber": 33,
-                "gender": "Male",
-                "name": "fisio",
-                "lastName": "lastname",
-                "email": "fisio@invalid.com",
-                "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
-                "address": "Fisio Address, 33",
-                "phone": "626626626",
-                "birthDate": "1970-12-30T12:30:00.000Z",
-                "nationalId": "12345678Z",
-                "registrationDate": "2018-01-01T01:01:00.000Z",
-                "lastLoginDate": "2018-03-07T16:00:00.000Z",
-                "__v": 0
-            },
-            "isConfirmed": false,
-            "isCancelled": false,
-            "date": "1976-05-24T16:23:31.700Z",
-            "latitude": 40.4166159,
-            "longitude": -3.703788,
-            "extraInfo": "Tercero izquierda",
-            "__v": 0
+            "rows": [
+                {
+                    "_id": "5aa444978f1844370be55512",
+                    "service": {
+                        "_id": "5aa00e386281ea2d347d4733",
+                        "professional": "5a9f054f602dd0e540c71bc6",
+                        "name": "service 2",
+                        "description": "2 hour session",
+                        "price": 50
+                    },
+                    "customer": {
+                        "_id": "5a9f054f602dd0e540c71bc7",
+                        "isProfessional": true,
+                        "name": "customer",
+                        "lastName": "lastname",
+                        "registrationDate": "2018-02-02T02:02:00.000Z"
+                    },
+                    "professional": {
+                        "_id": "5a9f054f602dd0e540c71bc6",
+                        "isProfessional": true,
+                        "name": "fisio",
+                        "lastName": "lastname",
+                        "registrationDate": "2018-01-01T01:01:00.000Z"
+                    },
+                    "date": "2018-04-04T12:00:00.000Z",
+                    "latitude": 40.4166159,
+                    "longitude": -3.703788,
+                    "extraInfo": "false",
+                    "isCancelled": false,
+                    "isConfirmed": true
+                }
+            ]
         }
     }
 
@@ -206,55 +213,35 @@ Possible filters:
 {
     "ok": true,
     "result": {
-        "_id": "5aa106e46750320b606db6ce",
-        "service": {
-            "_id": "5aa00e386281ea2d347d4732",
-            "name": "service 1",
-            "description": "1 hour session",
-            "price": 30,
-            "__v": 0
-        },
-        "customer": {
-            "_id": "5a9f054f602dd0e540c71bc7",
-            "isProfessional": true,
-            "fellowshipNumber": 33,
-            "gender": "Female",
-            "name": "thecustomer",
-            "lastName": "lastname",
-            "email": "customer@invalid.com",
-            "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
-            "address": "Customer Address, 44",
-            "phone": "626626626",
-            "birthDate": "1980-12-30T12:30:00.000Z",
-            "nationalId": "87654321Z",
-            "registrationDate": "2018-02-02T02:02:00.000Z",
-            "lastLoginDate": "2018-03-07T17:00:00.000Z",
-            "__v": 0
-        },
-        "professional": {
-            "_id": "5a9f054f602dd0e540c71bc6",
-            "isProfessional": true,
-            "fellowshipNumber": 33,
-            "gender": "Male",
-            "name": "fisio",
-            "lastName": "lastname",
-            "email": "fisio@invalid.com",
-            "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
-            "address": "Fisio Address, 33",
-            "phone": "626626626",
-            "birthDate": "1970-12-30T12:30:00.000Z",
-            "nationalId": "12345678Z",
-            "registrationDate": "2018-01-01T01:01:00.000Z",
-            "lastLoginDate": "2018-03-07T16:00:00.000Z",
-            "__v": 0
-        },
-        "isConfirmed": false,
-        "isCancelled": false,
-        "date": "1976-05-24T16:23:31.700Z",
-        "latitude": 40.4166159,
-        "longitude": -3.703788,
-        "extraInfo": "Tercero izquierda",
-        "__v": 0
+        "rows": [
+            {
+                "_id": "5abe4562f67bfb207a474d25",
+                "service": {
+                    "_id": "5aa00e386281ea2d347d4733",
+                    "professional": "5a9f054f602dd0e540c71bc6",
+                    "name": "service 2",
+                    "description": "2 hour session",
+                    "price": 50
+                },
+                "customer": {
+                    "_id": "5a9f054f602dd0e540c71bc6",
+                    "isProfessional": true,
+                    "name": "fisio",
+                    "lastName": "lastname",
+                    "registrationDate": "2018-01-01T01:01:00.000Z"
+                },
+                "professional": {
+                    "_id": "5a9f054f602dd0e540c71bc6",
+                    "isProfessional": true,
+                    "name": "fisio",
+                    "lastName": "lastname",
+                    "registrationDate": "2018-01-01T01:01:00.000Z"
+                },
+                "date": "2018-05-05T15:00:00.000Z",
+                "isCancelled": false,
+                "isConfirmed": false
+            }
+        ]
     }
 }
 
@@ -269,11 +256,8 @@ Save a new appointment.
 **Result:**
 
     {
-      "ok": true,
-      "created": {
-        "__v": 0,
-        ...
-      }
+        "ok": true,
+        "message": "appointment created"
     }
 
 ### PUT /appointments/{id}
@@ -320,86 +304,20 @@ Delete an existing appointment.
                     "professional": {
                         "_id": "5a9f054f602dd0e540c71bc6",
                         "isProfessional": true,
-                        "fellowshipNumber": 33,
-                        "gender": "Male",
                         "name": "fisio",
                         "lastName": "lastname",
-                        "email": "fisio@invalid.com",
-                        "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
-                        "address": "Fisio Address, 33",
-                        "phone": "626626626",
-                        "birthDate": "1970-12-30T12:30:00.000Z",
-                        "nationalId": "12345678Z",
-                        "registrationDate": "2018-01-01T01:01:00.000Z",
-                        "lastLoginDate": "2018-03-07T16:00:00.000Z",
-                        "__v": 0
+                        "registrationDate": "2018-01-01T01:01:00.000Z"
                     },
                     "customer": {
                         "_id": "5a9f054f602dd0e540c71bc7",
                         "isProfessional": true,
-                        "fellowshipNumber": 33,
-                        "gender": "Female",
-                        "name": "thecustomer",
+                        "name": "customer",
                         "lastName": "lastname",
-                        "email": "customer@invalid.com",
-                        "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
-                        "address": "Customer Address, 44",
-                        "phone": "626626626",
-                        "birthDate": "1980-12-30T12:30:00.000Z",
-                        "nationalId": "87654321Z",
-                        "registrationDate": "2018-02-02T02:02:00.000Z",
-                        "lastLoginDate": "2018-03-07T17:00:00.000Z",
-                        "__v": 0
+                        "registrationDate": "2018-02-02T02:02:00.000Z"
                     },
                     "name": "message 1",
                     "description": "description message 1",
-                    "isSent": false,
-                    "creationDate": "2018-03-07T16:00:00.000Z",
-                    "sendingDate": null,
-                    "__v": 0
-                },
-                {
-                    "_id": "5aa01386f056e02c7ce13f1f",
-                    "professional": {
-                        "_id": "5a9f054f602dd0e540c71bc6",
-                        "isProfessional": true,
-                        "fellowshipNumber": 33,
-                        "gender": "Male",
-                        "name": "fisio",
-                        "lastName": "lastname",
-                        "email": "fisio@invalid.com",
-                        "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
-                        "address": "Fisio Address, 33",
-                        "phone": "626626626",
-                        "birthDate": "1970-12-30T12:30:00.000Z",
-                        "nationalId": "12345678Z",
-                        "registrationDate": "2018-01-01T01:01:00.000Z",
-                        "lastLoginDate": "2018-03-07T16:00:00.000Z",
-                        "__v": 0
-                    },
-                    "customer": {
-                        "_id": "5a9f054f602dd0e540c71bc7",
-                        "isProfessional": true,
-                        "fellowshipNumber": 33,
-                        "gender": "Female",
-                        "name": "thecustomer",
-                        "lastName": "lastname",
-                        "email": "customer@invalid.com",
-                        "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
-                        "address": "Customer Address, 44",
-                        "phone": "626626626",
-                        "birthDate": "1980-12-30T12:30:00.000Z",
-                        "nationalId": "87654321Z",
-                        "registrationDate": "2018-02-02T02:02:00.000Z",
-                        "lastLoginDate": "2018-03-07T17:00:00.000Z",
-                        "__v": 0
-                    },
-                    "name": "message 2",
-                    "description": "description message 2",
-                    "isSent": false,
-                    "creationDate": "2018-03-07T16:00:00.000Z",
-                    "sendingDate": null,
-                    "__v": 0
+                    "sendingDate": null
                 }
             ]
         }
@@ -418,43 +336,20 @@ Delete an existing appointment.
             "professional": {
                 "_id": "5a9f054f602dd0e540c71bc6",
                 "isProfessional": true,
-                "fellowshipNumber": 33,
-                "gender": "Male",
                 "name": "fisio",
                 "lastName": "lastname",
-                "email": "fisio@invalid.com",
-                "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
-                "address": "Fisio Address, 33",
-                "phone": "626626626",
-                "birthDate": "1970-12-30T12:30:00.000Z",
-                "nationalId": "12345678Z",
-                "registrationDate": "2018-01-01T01:01:00.000Z",
-                "lastLoginDate": "2018-03-07T16:00:00.000Z",
-                "__v": 0
+                "registrationDate": "2018-01-01T01:01:00.000Z"
             },
             "customer": {
                 "_id": "5a9f054f602dd0e540c71bc7",
                 "isProfessional": true,
-                "fellowshipNumber": 33,
-                "gender": "Female",
-                "name": "thecustomer",
+                "name": "customer",
                 "lastName": "lastname",
-                "email": "customer@invalid.com",
-                "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
-                "address": "Customer Address, 44",
-                "phone": "626626626",
-                "birthDate": "1980-12-30T12:30:00.000Z",
-                "nationalId": "87654321Z",
-                "registrationDate": "2018-02-02T02:02:00.000Z",
-                "lastLoginDate": "2018-03-07T17:00:00.000Z",
-                "__v": 0
+                "registrationDate": "2018-02-02T02:02:00.000Z"
             },
             "name": "message 1",
             "description": "description message 1",
-            "isSent": false,
-            "creationDate": "2018-03-07T16:00:00.000Z",
-            "sendingDate": null,
-            "__v": 0
+            "sendingDate": null
         }
     }
 
@@ -469,11 +364,8 @@ Save a new notifs.
 **Result:**
 
     {
-      "ok": true,
-      "created": {
-        "__v": 0,
-        ...
-      }
+        "ok": true,
+        "message": "notification created"
     }
 
 ### PUT /notifs/{id}
@@ -489,7 +381,7 @@ In the body is only sent the information you want to update.
 
     {
         "ok": true,
-        "message": "service updated"
+        "message": "notification updated"
     }
 
 ### DELETE /notifs/{id}
@@ -523,52 +415,17 @@ Possible filters:
         "result": {
             "rows": [
                 {
-                    "_id": "5a9f054f602dd0e540c71bd1",
+                    "_id": "5a9f054f602dd0e540c71bd3",
                     "professional": {
-                        "_id": "5a9f054f602dd0e540c71bc6",
+                        "_id": "5a9f054f602dd0e540c71bc8",
                         "isProfessional": true,
-                        "fellowshipNumber": 33,
-                        "gender": "Male",
-                        "name": "fisio",
+                        "name": "customerdeleted",
                         "lastName": "lastname",
-                        "email": "fisio@invalid.com",
-                        "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
-                        "address": "Fisio Address, 33",
-                        "phone": "626626626",
-                        "birthDate": "1970-12-30T12:30:00.000Z",
-                        "nationalId": "12345678Z",
-                        "registrationDate": "2018-01-01T01:01:00.000Z",
-                        "lastLoginDate": "2018-03-07T16:00:00.000Z",
-                        "__v": 0
+                        "registrationDate": "2018-02-02T02:02:00.000Z"
                     },
                     "name": "product 1",
                     "description": "1 hour session",
-                    "price": 30,
-                    "__v": 0
-                },
-                {
-                    "_id": "5a9f054f602dd0e540c71bd2",
-                    "professional": {
-                        "_id": "5a9f054f602dd0e540c71bc6",
-                        "isProfessional": true,
-                        "fellowshipNumber": 33,
-                        "gender": "Male",
-                        "name": "fisio",
-                        "lastName": "lastname",
-                        "email": "fisio@invalid.com",
-                        "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
-                        "address": "Fisio Address, 33",
-                        "phone": "626626626",
-                        "birthDate": "1970-12-30T12:30:00.000Z",
-                        "nationalId": "12345678Z",
-                        "registrationDate": "2018-01-01T01:01:00.000Z",
-                        "lastLoginDate": "2018-03-07T16:00:00.000Z",
-                        "__v": 0
-                    },
-                    "name": "product 2",
-                    "description": "2 hour session",
-                    "price": 50,
-                    "__v": 0
+                    "price": 300
                 }
             ]
         }
@@ -586,11 +443,8 @@ Save a new product.
 **Result:**
 
     {
-      "ok": true,
-      "created": {
-        "__v": 0,
-        ...
-      }
+        "ok": true,
+        "message": "product created"
     }
 
 ### PUT /products/{id}
@@ -622,6 +476,17 @@ Delete an existing product.
         "message": "product deleted"
     }
 
+### POST /register
+
+**Input Body**: { name, email, password }
+
+**Result:**
+
+    {
+      "ok": true,
+      "message": "user created!"
+    }
+
 ### GET /services
 
 **Input Query**: 
@@ -640,52 +505,17 @@ Possible filters:
         "result": {
             "rows": [
                 {
-                    "_id": "5aa00e386281ea2d347d4732",
+                    "_id": "5aa00e386281ea2d347d4734",
                     "professional": {
-                        "_id": "5a9f054f602dd0e540c71bc6",
+                        "_id": "5a9f054f602dd0e540c71bc8",
                         "isProfessional": true,
-                        "fellowshipNumber": 33,
-                        "gender": "Male",
-                        "name": "fisio",
+                        "name": "customerdeleted",
                         "lastName": "lastname",
-                        "email": "fisio@invalid.com",
-                        "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
-                        "address": "Fisio Address, 33",
-                        "phone": "626626626",
-                        "birthDate": "1970-12-30T12:30:00.000Z",
-                        "nationalId": "12345678Z",
-                        "registrationDate": "2018-01-01T01:01:00.000Z",
-                        "lastLoginDate": "2018-03-07T16:00:00.000Z",
-                        "__v": 0
+                        "registrationDate": "2018-02-02T02:02:00.000Z"
                     },
                     "name": "service 1",
                     "description": "1 hour session",
-                    "price": 30,
-                    "__v": 0
-                },
-                {
-                    "_id": "5aa00e386281ea2d347d4733",
-                    "professional": {
-                        "_id": "5a9f054f602dd0e540c71bc6",
-                        "isProfessional": true,
-                        "fellowshipNumber": 33,
-                        "gender": "Male",
-                        "name": "fisio",
-                        "lastName": "lastname",
-                        "email": "fisio@invalid.com",
-                        "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
-                        "address": "Fisio Address, 33",
-                        "phone": "626626626",
-                        "birthDate": "1970-12-30T12:30:00.000Z",
-                        "nationalId": "12345678Z",
-                        "registrationDate": "2018-01-01T01:01:00.000Z",
-                        "lastLoginDate": "2018-03-07T16:00:00.000Z",
-                        "__v": 0
-                    },
-                    "name": "service 2",
-                    "description": "2 hour session",
-                    "price": 50,
-                    "__v": 0
+                    "price": 300
                 }
             ]
         }
@@ -703,11 +533,8 @@ Save a new service.
 **Result:**
 
     {
-      "ok": true,
-      "created": {
-        "__v": 0,
-        ...
-      }
+        "ok": true,
+        "message": "service created"
     }
 
 ### PUT /services/{id}
@@ -739,6 +566,55 @@ Delete an existing service.
         "message": "service deleted"
     }
 
+### GET /users/{id}
+
+**Input Query**: { id }
+
+**Result:**
+
+    {
+        "ok": true,
+        "result": {
+            "rows": [
+                {
+                    "_id": "5a9f054f602dd0e540c71bc7",
+                    "isProfessional": true,
+                    "name": "customer",
+                    "lastName": "lastname",
+                    "registrationDate": "2018-02-02T02:02:00.000Z"
+                },
+                {
+                    "_id": "5a9f054f602dd0e540c71bc6",
+                    "isProfessional": true,
+                    "name": "fisio",
+                    "lastName": "lastname",
+                    "registrationDate": "2018-01-01T01:01:00.000Z"
+                }
+            ]
+        }
+    }
+
+### PUT /users
+
+**Input Body**: { email, password, gender, address, phone, birthDate, nationalId }
+
+**Result:**
+
+    {
+      "ok": true,
+      "message": "user updated!"
+    }
+
+### DELETE /users
+
+**Input Body**: { email, password }
+
+**Result:**
+
+    {
+      "ok": true,
+      "message": "user deleted!"
+    }
 
 ### POST /pushtokens
 

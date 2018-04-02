@@ -4,14 +4,12 @@
 	"generic": "generic error: {{message}}",
 	"the_field": "the field",
 	"unprocessable_entity": "unprocessable entity",
-	"validation_invalid": "the field {{field}} is invalid",
-	"validation_minchars": "{{field}} must have at least {{num}} characters",
 
 	"appointment_created": "appointment created",
 	"appointment_deleted": "appointment deleted",
+	"appointment_duplicated": "appointment id already exists",
 	"appointment_updated": "appointment updated",
-	"appointment_id_duplicated": "appointment id already exists",
-	"appointment_not_found": "appointment not found",
+	"appointment_not_completed": "{{num}} appointment are pending and confirmed","appointment_not_found": "appointment not found",
 	"duplicate_appointment": "the date already exists",
 
 	"product_created": "product created",
@@ -47,6 +45,14 @@
 	"user_deleted": "user deleted",
 	"user_updated": "user updated",
 	"user_or_password_incorrect": "incorrect authentication",
-	"user_not_found": "user_not_found"
+	"user_not_found": "user_not_found",
+
+	"validation_invalid": "the field {{field}} is invalid",
+	"validation_invalid_appointment_date": "the appointment {{date}} should be after {{now}}",
+	"validation_invalid_customer_hexadecimal": "invalid customer",
+	"validation_invalid_professional_hexadecimal": "invalid professional",
+	"validation_invalid_service_hexadecimal": "invalid service",
+	"validation_minchars": "{{field}} must have at least {{num}} characters",
+	"validation_invalid_hexadecimal": "validation_invalid_hexadecimal"
 
 }
