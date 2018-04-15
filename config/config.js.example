@@ -28,13 +28,13 @@ module.exports = {
         notifPrivateFields: '_id professional customer name description isSent creationDate sendingDate'
       },
       products: {
-        productsListPublicFields: '_id professional name description price',
-        productPublicFields: '_id professional name description price',
+        productsListPublicFields: '_id professional name description price isActive',
+        productPublicFields: '_id professional name description price isActive',
         productPrivateFields: '_id professional name description price isActive'
       },
       services: {
-        servicesListPublicFields: '_id professional name description price',
-        servicePublicFields: '_id professional name description price',
+        servicesListPublicFields: '_id professional name description price isActive',
+        servicePublicFields: '_id professional name description price isActive',
         servicePrivateFields: '_id professional name description price isActive'
       },
       users: {
