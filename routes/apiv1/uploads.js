@@ -3,11 +3,15 @@ var express = require('express');
 var fileUpload = require('express-fileupload');
 var fs = require('fs');
 
+const Mongoose = require("mongoose");
+
+const path = require("path");
+
 var app = express();
 
-var Users = require('../../models/User');
-var Products = require('../../models/Product');
-var Blogs = require('../../models/Blog');
+const User = Mongoose.model("User");
+const Product = Mongoose.model("Product");
+const Blog = Mongoose.model("Blog");
 
 // default options
 app.use(fileUpload());
@@ -56,16 +60,9 @@ app.put('/:type/:id', (req, res, next) => {
     var fileName = `${ id }-${ new Date().getMilliseconds() }.${ fileExtension }`;
 
     // Mover el file del temporal a un path
-    var path = `./../../uploads/${ type }/${ fileName }`;
+    var updatePath = path.resolve(__dirname, `../../uploads/${ type }/${ fileName }`);
 
-    // console.log('El path es:');
-    // console.log(path);
-    // console.log('El tipo es:');
-    // console.log(type);
-    // console.log('El nombre del archivo es:');
-    // console.log(fileName);
-
-    file.mv(path, err => {
+    file.mv(updatePath, err => {
 
         if (err) {
             console.log(err);
@@ -86,7 +83,7 @@ function uploadByType(type, id, fileName, res) {
 
     if (type === 'users') {
 
-        Users.findById(id, (err, user) => {
+        User.findById(id, (err, user) => {
 
             if (!user) {
                 return res.status(400).json({
@@ -96,21 +93,18 @@ function uploadByType(type, id, fileName, res) {
                 });
             }
 
-            console.log('Fallamos aqui path');
-            var oldPath = './../../uploads/users/' + user.img;
+            console.log(user);
+            var oldPath = path.resolve(__dirname, `../../uploads/users/${ user.img }`);
 
             // Si existe, elimina la image anterior
             if (fs.existsSync(oldPath)) {
-                console.log('Fallamos aqui cambiar el path(borrar antigua imagen)');
                 fs.unlink(oldPath);
             }
 
             user.img = fileName;
-            console.log('Fallamos aqui asignar imagen el archvio');
 
             user.save((err, updatedUser) => {
 
-                console.log('Fallamos aqui');
                 updatedUser.password = ':)';
 
                 return res.status(200).json({
@@ -127,17 +121,18 @@ function uploadByType(type, id, fileName, res) {
 
     if (type === 'products') {
 
-        Products.findById(id, (err, product) => {
+        Product.findById(id, (err, product) => {
 
             if (!product) {
                 return res.status(400).json({
                     ok: true,
-                    message: 'Médico no existe',
-                    errors: { message: 'Médico no existe' }
+                    message: 'El producto no existe',
+                    errors: { message: 'El producto no existe' }
                 });
             }
 
-            var oldPath = './../../uploads/products/' + product.img;
+            var oldPath = path.resolve(__dirname, `../../uploads/products/${ user.image }`);
+
 
             // Si existe, elimina la image anterior
             if (fs.existsSync(oldPath)) {
@@ -161,7 +156,7 @@ function uploadByType(type, id, fileName, res) {
 
     if (type === 'blogs') {
 
-        Blogs.findById(id, (err, blog) => {
+        Blog.findById(id, (err, blog) => {
 
             if (!blog) {
                 return res.status(400).json({
@@ -171,7 +166,7 @@ function uploadByType(type, id, fileName, res) {
                 });
             }
 
-            var oldPath = './../../uploads/blogs/' + blog.img;
+            var oldPath = path.resolve(__dirname, `../../uploads/blogs/${ user.image }`);
 
             // Si existe, elimina la image anterior
             if (fs.existsSync(oldPath)) {

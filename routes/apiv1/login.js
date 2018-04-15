@@ -48,26 +48,29 @@ Router.post("/", function(req, res, next) {
             } else {
                 // User found and same password
                 // Make token
-                user.password = "🤔 👻 😜";
 
-                const token = jwt.sign({ user: user }, config.jwt.secret, config.jwt.options);
+                const token = jwt.sign({ user: user },
+                    config.jwt.secret,
+                    config.jwt.options
+                );
 
                 console.log("Menu para:");
                 console.log(getMenu(user.isProfessional));
 
+                user.password = "🤔 👻 😜";
+
                 return res.status(200).json({
                     ok: true,
-                    user: user,
-                    id: user._id,
-                    token: token,
-                    menu: getMenu(user)
+                    result: {
+                        user: user,
+                        token: token,
+                        menu: getMenu(user)
+                    },
                 });
             }
         }
     });
 });
-
-module.exports = Router;
 
 function getMenu(user) {
     var menu = [{
@@ -94,4 +97,5 @@ function getMenu(user) {
 
     return menu;
 }
+
 module.exports = Router;
