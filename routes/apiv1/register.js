@@ -20,6 +20,9 @@ Router.post('/', function (req, res, next) {
       User.createRecord(req.body, function (err, user) {
         if (err) return next(err);
 
+        // Delete password
+        user.password = undefined;
+
         // User created
         return res
           .status(200)

@@ -46,10 +46,13 @@ Router.post('/', function (req, res, next) {
             ok: false,
             error: {
               code: 401,
-              message: res.__('users_wrong_password')
+              message: res.__('user_or_password_incorrect')
             }
           });
       } else {
+
+        // Delete password
+        user.password = undefined;
 
         // User found and same password
         // Make token
