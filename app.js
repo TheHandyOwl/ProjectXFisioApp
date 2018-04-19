@@ -23,6 +23,14 @@ require('./models/PushToken');
 
 const app = express();
 
+// CORS
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE, OPTIONS");
+  next();
+});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -46,8 +54,10 @@ app.use('/', require('./routes/index'));
 
 // API v1
 app.use('/apiv1/appointments', require('./routes/apiv1/appointments'));
+app.use('/apiv1/login', require('./routes/apiv1/login'));
 app.use('/apiv1/notifs', require('./routes/apiv1/notifs'));
 app.use('/apiv1/products', require('./routes/apiv1/products'));
+app.use('/apiv1/register', require('./routes/apiv1/register'));
 app.use('/apiv1/services', require('./routes/apiv1/services'));
 app.use('/apiv1/users', require('./routes/apiv1/users'));
 app.use('/apiv1/pushtokens', require('./routes/apiv1/pushtokens'));

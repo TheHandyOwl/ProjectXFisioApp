@@ -7,6 +7,10 @@ const User = Mongoose.model('User');
 const Service = Mongoose.model('Service');
 const Appointment = Mongoose.model('Appointment');
 
+const configDBServicesFields = require('./../../config/config').db.services;
+const configDBUsersFields = require('./../../config/config').db.users;
+
+
 // Auth con JWT
 const jwtAuth = require('../../lib/jwtAuth');
 Router.use(jwtAuth());
@@ -16,7 +20,42 @@ Router.use(jwtAuth());
 Router.get('/', (req, res, next) => {
 
   let filters = {};
-  filters.professional = req.decoded.user._id; // Check owner
+  let priceFrom = req.query.pricefrom;
+  let priceTo = req.query.priceto;
+  let professional = req.query.professional;
+  let id = req.query.id;
+
+  if (id) {
+    filters._id = req.query.id;
+
+    const idOk = Mongoose.Types.ObjectId.isValid(req.query.id);
+    if (idOk == false) return res
+      .status(422)
+      .json({
+        ok: false,
+        error: {
+          code: 422,
+          message: res.__('unprocessable_entity')
+        }
+      });
+  }
+
+  if (professional) {
+    filters.professional = req.query.professional;
+  }
+
+  if (priceFrom && priceTo){
+    filters.price = { $gte: priceFrom, $lte: priceTo } 
+  }
+
+  if (priceFrom && !priceTo){
+    filters.price = { $gte: priceFrom } 
+  }
+
+  if (!priceFrom && priceTo){
+    filters.price = { $lte: priceTo } 
+  }
+
   filters.deleted = false; // Not deleted
 
   const start = parseInt(req.query.start) || 0;
@@ -38,47 +77,12 @@ Router.get('/', (req, res, next) => {
   });
 });
 
-// Get a service by owner and not deleted
-
-Router.get('/:id', (req, res, next) => {
-
-  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
-  if (idOk == false ) return res
-                        .status(422)
-                        .json({
-                          ok: false,
-                          error: {
-                            code: 422,
-                            message: res.__('unprocessable_entity')
-                          }
-                        });
-
-  // Find service by owner and not deleted
-  Service.findOne( { _id: req.params.id, professional: req.decoded.user._id, deleted: false }, function (err, service) {
-    if (err) return next(err);
-
-    if (!service) {
-      return res
-        .status(401)
-        .json({
-          ok: false,
-          error: {
-            code: 401,
-            message: res.__('service_not_found')
-          }
-        });
-    } else if (service) {
-      User.populate( service, { path: 'professional' }, function(err, serviceAndProfessional) {
-        res.json({ ok: true, result: serviceAndProfessional });
-      });
-    }
-  });
-});
-
 // Create a service by owner and not deleted
 
 Router.post('/', function (req, res, next) {
+  req.body.professional = req.decoded.user._id;
   // Check owner
+  /*
   if ( (req.body.professional != null) && (req.body.professional != req.decoded.user._id) ) {
     return res
       .status(403)
@@ -90,8 +94,9 @@ Router.post('/', function (req, res, next) {
         }
       });
   }
+  */
 
-  Service.createRecord(req.body, function (err) {
+  Service.createRecord(req.body, function (err, service) {
     if (err) return next(err);
 
     // Service created
@@ -99,7 +104,8 @@ Router.post('/', function (req, res, next) {
       .status(200)
       .json({
         ok: true,
-        result: res.__('service_created')
+        result: service,
+        message: res.__('service_created')
       });
   });
 });
@@ -107,18 +113,9 @@ Router.post('/', function (req, res, next) {
 // Update a service by owner and not deleted
 
 Router.put('/:id', function (req, res, next) {
-
-  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
-  if (idOk == false ) return res
-                        .status(422)
-                        .json({
-                          ok: false,
-                          error: {
-                            code: 422,
-                            message: res.__('unprocessable_entity')
-                          }
-                        });
-
+  req.body.id = req.params.id;
+  req.body.professional = req.decoded.user._id;
+  /*
   if ( (req.body.id != null) && (req.body.id != req.params.id) ) {
     return res
       .status(422)
@@ -131,34 +128,8 @@ Router.put('/:id', function (req, res, next) {
       });
   }
 
-  Service.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, req.body, function (err, service) {
-    if (err) return next(err);
-
-    if (!service) {
-      return res
-        .status(401)
-        .json({
-          ok: false,
-          error: {
-            code: 401,
-            message: res.__('service_not_found')
-          }
-        });
-    } else if (service) {
-      return res
-        .status(200)
-        .json({
-          ok: true,
-          result: res.__('service_updated')
-        });
-    }
-  });
-
-});
-
-// Remove a service by owner and not deleted
-
-Router.delete('/:id', function (req, res, next) {
+  if (req.body.professional != null) delete req.body.professional;
+  */
 
   const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
   if (idOk == false ) return res
@@ -171,21 +142,82 @@ Router.delete('/:id', function (req, res, next) {
                           }
                         });
 
-  Service.findOne( { _id: req.params.id, professional: req.decoded.user._id, deleted: false }, function (err, service) {
+
+  Service.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false },
+    req.body,
+    {new: true},
+    function (err, service) {
     if (err) return next(err);
 
     if (!service) {
       return res
-        .status(401)
+        .status(404)
         .json({
           ok: false,
           error: {
-            code: 401,
+            code: 404,
             message: res.__('service_not_found')
           }
         });
     } else if (service) {
-      const now = new Date().toISOString();
+      return res
+        .status(200)
+        .json({
+          ok: true,
+          result: service,
+          message: res.__('service_updated')
+        });
+    }
+  });
+
+});
+
+// Remove a service by owner and not deleted
+Router.delete('/:id', function (req, res, next) {
+  req.body.id = req.params.id;
+  req.body.professional = req.decoded.user._id;
+
+  const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
+  if (idOk == false ) return res
+                        .status(422)
+                        .json({
+                          ok: false,
+                          error: {
+                            code: 422,
+                            message: res.__('unprocessable_entity')
+                          }
+                        });
+
+  Service.findOne( { _id: req.params.id, deleted: false }, function (err, service) {
+    if (err) return next(err);
+
+    if (!service) {
+      return res
+        .status(404)
+        .json({
+          ok: false,
+          error: {
+            code: 404,
+            message: res.__('service_not_found')
+          }
+        });
+    } else if (service) {
+
+      // Check owner
+      if (service.professional != req.decoded.user._id)  {
+        return res
+          .status(403)
+          .json({
+            ok: false,
+            error: {
+              code: 403,
+              message: res.__('forbidden_access')
+            }
+          });
+      }
+
+      // Pending appointments?
+      const now = new Date();
       Appointment.find( { service: service._id, isConfirmed: true, date: { $gte:  now }, deleted: false } ,function (err, appointmentsPending) {
         if (err) return next(err);
 
@@ -193,29 +225,34 @@ Router.delete('/:id', function (req, res, next) {
         if (!appointmentsPending || numAppointmentsPending == 0) {
           Appointment.where( { service: service._id } ).setOptions({ multi: true }).update( { deleted: true }, function (err, allAppointmentsToDelete) {
             if (err) return next(err);
-            Service.findOneAndUpdate( { _id: service._id }, { deleted: true }, function (err, serviceToDelete) {
+            Service.findOneAndUpdate( { _id: service._id },
+              { deleted: true },
+              {new: true},
+              function (err, service) {
               if (err) return next(err);
 
               return res
                 .status(200)
                 .json({
                   ok: true,
-                  result: res.__('service_deleted')
+                  result: service,
+                  message: res.__('service_deleted')
                 });
             });
           });
 
         } else {
           return res
-            .status(200)
+            .status(409)
             .json({
-              ok: true,
-              result: res.__('service_not_completed', { num: numAppointmentsPending })
+              ok: false,
+              message: res.__('service_not_completed', { num: numAppointmentsPending })
             });
         }
 
       });
-    }
+
+    };
 
   });
 });

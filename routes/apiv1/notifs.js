@@ -6,6 +6,10 @@ const Mongoose = require('mongoose');
 const User = Mongoose.model('User');
 const Notif = Mongoose.model('Notif');
 
+const configDBNotifsFields = require('./../../config/config').db.notifs;
+const configDBUsersFields = require('./../../config/config').db.users;
+
+
 // Auth con JWT
 const jwtAuth = require('../../lib/jwtAuth');
 Router.use(jwtAuth());
@@ -15,6 +19,8 @@ Router.use(jwtAuth());
 Router.get('/', (req, res, next) => {
 
   let filters = {};
+
+  filters.deleted = false;
 
   const start = parseInt(req.query.start) || 0;
   const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
@@ -39,7 +45,7 @@ Router.get('/', (req, res, next) => {
 // Find notif by id
 
 Router.get('/:id', (req, res, next) => {
-  
+
   const idOk =  Mongoose.Types.ObjectId.isValid(req.params.id);
   if (idOk == false ) return res
                         .status(422)
@@ -51,24 +57,40 @@ Router.get('/:id', (req, res, next) => {
                           }
                         });
 
-  Notif.findById(req.params.id).exec(function (err, notif) {
+  // Custom fields on query
+  let queryFields = "";
+  if ( req.params.id != req.decoded.user._id ) {
+    // Public information fields - All people
+    queryFields = configDBNotifsFields.notifsListPublicFields || '_id';
+  } else {
+    // Private information fields - Owner
+    queryFields = configDBNotifsFields.notifsListPublicFields || '_id';
+  }
+
+  Notif.findOne( { _id: req.params.id, deleted: false }, queryFields, function (err, notif) {
 
     if (err) return next(err);
 
     if (!notif) {
       return res
-        .status(401)
+        .status(404)
         .json({
           ok: false,
           error: {
-            code: 401,
+            code: 404,
             message: res.__('notification_not_found')
           }
         });
     } else if (notif) {
-    User.populate( notif, { path: 'customer' }, function(err, notifsAndCustomer) {
-        User.populate( notifsAndCustomer, { path: 'professional' }, function(err, notifsAndCustomerAndProfessional) {
-        res.json({ ok: true, result: notifsAndCustomerAndProfessional });
+    User.populate( notif,
+      { path: 'customer', select: configDBUsersFields.userPublicFields || '_id' },
+      function(err, notifsAndCustomer) {
+
+        User.populate( notifsAndCustomer,
+          { path: 'professional', select: configDBUsersFields.userPublicFields || '_id' },
+          function(err, notifsAndCustomerAndProfessional) {
+            res.json({ ok: true, result: notifsAndCustomerAndProfessional
+          });
         });
     });
     }
@@ -78,7 +100,7 @@ Router.get('/:id', (req, res, next) => {
 // Create an notif
 
 Router.post('/', function (req, res, next) {
-  Notif.createRecord(req.body, function (err) {
+  Notif.createRecord(req.body, function (err, notif) {
     if (err) return next(err);
 
     // Notif created
@@ -86,7 +108,8 @@ Router.post('/', function (req, res, next) {
       .status(200)
       .json({
         ok: true,
-        result: res.__('notification_created')
+        result: notif,
+        message: res.__('notification_created')
       });
   });
 });
@@ -121,16 +144,19 @@ Router.put('/:id', function (req, res, next) {
   if (req.body.professional != null) delete req.body.professional;
   if (req.body.customer != null) delete req.body.customer;
 
-  Notif.findOneAndUpdate({ _id: req.params.id, deleted: false }, req.body, function (err, notif) {
+  Notif.findOneAndUpdate({ _id: req.params.id, deleted: false },
+    req.body,
+    {new: true},
+    function (err, notif) {
     if (err) return next(err);
 
     if (!notif) {
       return res
-        .status(401)
+        .status(404)
         .json({
           ok: false,
           error: {
-            code: 401,
+            code: 404,
             message: res.__('notification_not_found')
           }
         });
@@ -139,7 +165,8 @@ Router.put('/:id', function (req, res, next) {
         .status(200)
         .json({
           ok: true,
-          result: res.__('notification_updated')
+          result: notif,
+          message: res.__('notification_updated')
         });
     }
   });
@@ -160,16 +187,19 @@ Router.delete('/:id', function (req, res, next) {
                           }
                         });
 
-  Notif.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false }, { deleted: true }, function (err, notif) {
+  Notif.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false },
+    { deleted: true },
+    {new: true},
+    function (err, notif) {
     if (err) return next(err);
 
     if (!notif) {
       return res
-        .status(401)
+        .status(404)
         .json({
           ok: false,
           error: {
-            code: 401,
+            code: 404,
             message: res.__('notification_not_found')
           }
         });
@@ -178,7 +208,8 @@ Router.delete('/:id', function (req, res, next) {
         .status(200)
         .json({
           ok: true,
-          result: res.__('notification_deleted')
+          result: notif,
+          message: res.__('notification_deleted')
         });
     }
   });
