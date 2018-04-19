@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
 const pushTokenSchema = mongoose.Schema({
-  plataform : { type: String, enum: ['ios', 'android'], index: true },
+  platform : { type: String, enum: ['ios', 'android'], index: true },
   token     : { type: String, index: true },
   user      : { type: String, index: true },
   createdAt : Date // It is important to know which is the latest one from a user!
