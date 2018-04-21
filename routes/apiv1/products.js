@@ -139,9 +139,8 @@ Router.put('/:id', function (req, res, next) {
       }
     });
 
-  Product.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false },
-    req.body,
-    {new: true},
+    //Product.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false },
+    Product.findOne({ _id: req.params.id, deleted: false },
     function (err, product) {
     if (err) return next(err);
 
@@ -156,13 +155,35 @@ Router.put('/:id', function (req, res, next) {
           }
         });
     } else if (product) {
-      return res
-        .status(200)
-        .json({
-          ok: true,
-          result: product,
-          message: res.__('product_updated')
-        });
+
+      // Check owner
+      if (product.professional != req.decoded.user._id)  {
+        return res
+          .status(403)
+          .json({
+            ok: false,
+            error: {
+              code: 403,
+              message: res.__('forbidden_access')
+            }
+          });
+      }
+
+      Product.findOneAndUpdate( { _id: req.params.id, professional: req.decoded.user._id, deleted: false },
+        req.body,
+        {new: true},
+        function (err, product) {
+        if (err) return next(err);
+
+        return res
+          .status(200)
+          .json({
+            ok: true,
+            result: product,
+            message: res.__('product_updated')
+          });
+      });
+      
     }
   });
 
