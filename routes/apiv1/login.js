@@ -55,11 +55,11 @@ Router.post("/", function(req, res, next) {
                     config.jwt.options
                 );
 
-                console.log("Menu para:");
-                console.log(getMenu(user.isProfessional));
-
                 // Delete password
                 user.password = "🤔 👻 😜";
+
+                console.log("Menu para:");
+                console.log(getMenu(user.isProfessional));
 
                 return res.status(200).json({
                     ok: true,

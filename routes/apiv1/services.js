@@ -143,9 +143,8 @@ Router.put('/:id', function (req, res, next) {
                         });
 
 
-  Service.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false },
-    req.body,
-    {new: true},
+  //Service.findOneAndUpdate({ _id: req.params.id, professional: req.decoded.user._id, deleted: false },
+  Service.findOne({ _id: req.params.id, deleted: false },
     function (err, service) {
     if (err) return next(err);
 
@@ -160,13 +159,35 @@ Router.put('/:id', function (req, res, next) {
           }
         });
     } else if (service) {
-      return res
-        .status(200)
-        .json({
-          ok: true,
-          result: service,
-          message: res.__('service_updated')
-        });
+
+      // Check owner
+      if (service.professional != req.decoded.user._id)  {
+        return res
+          .status(403)
+          .json({
+            ok: false,
+            error: {
+              code: 403,
+              message: res.__('forbidden_access')
+            }
+          });
+      }
+
+      Service.findOneAndUpdate( { _id: req.params.id, professional: req.decoded.user._id, deleted: false },
+        req.body,
+        {new: true},
+        function (err, service) {
+        if (err) return next(err);
+
+        return res
+          .status(200)
+          .json({
+            ok: true,
+            result: service,
+            message: res.__('service_updated')
+          });
+      });
+
     }
   });
 

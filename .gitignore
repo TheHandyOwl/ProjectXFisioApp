@@ -3,6 +3,8 @@
 
 config.js
 
+### Upload files
+uploads/users/
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Node template
