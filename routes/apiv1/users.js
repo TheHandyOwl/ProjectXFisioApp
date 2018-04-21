@@ -25,13 +25,15 @@ Router.get('/', (req, res, next) => {
     let id = req.query.id;
     let name = req.query.name;
     let lastName = req.query.lastName;
+    let isProfessional = req.query.isProfessional;
 
     filters.deleted = false; // Not deleted
-    // filters.isProfessional = true; // Only professionals
+    //filters.isProfessional = true; // Only professionals
 
     if (id) filters._id = id;
     if (name) filters.name = name;
     if (lastName) filters.lastName = lastName;
+    if (isProfessional) filters.isProfessional = isProfessional;
 
     const start = parseInt(req.query.start) || 0;
     const limit = parseInt(req.query.limit) || 1000; // Our API returns max 1000 registers
