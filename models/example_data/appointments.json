@@ -7,11 +7,11 @@
       "professional": "5a9f054f602dd0e540c71bc6",
       "isConfirmed": true,
       "isCancelled": false,
-      "date": "2018-02-02 12:00:00.000Z",
-      "latitude": 40.4166159,
-      "longitude": -3.703788,
-      "address": "Calle Usuario # 1",
-      "extraInfo": "Tercero izquierda"
+      "date": "2018-04-23 12:00:00.000Z",
+      "latitude": 40.412103,
+      "longitude": -3.718424,
+      "address": "Calle Moreno Nieto # 1",
+      "extraInfo": "3ra planta"
     },
     {
       "_id": "5aa444978f1844370be55511",
@@ -20,11 +20,11 @@
       "professional": "5a9f054f602dd0e540c71bc6",
       "isConfirmed": false,
       "isCancelled": false,
-      "date": "2018-02-02 13:00:00.000Z",
-      "latitude": 40.4166159,
-      "longitude": -3.703788,
-      "address": "Calle Usuario # 1",
-      "extraInfo": "Tercero izquierda"
+      "date": "2018-04-23 13:00:00.000Z",
+      "latitude": 40.414812,
+      "longitude": -3.706779,
+      "address": "Calle Botoneras # 6",
+      "extraInfo": "Frente al mexicano"
     },
     {
       "_id": "5aa444978f1844370be55512",
@@ -33,10 +33,10 @@
       "professional": "5a9f054f602dd0e540c71bc6",
       "isConfirmed": true,
       "isCancelled": false,
-      "date": "2018-04-04 12:00:00.000Z",
-      "latitude": 40.4166159,
-      "longitude": -3.703788,
-      "address": "Calle Usuario # 1",
+      "date": "2018-04-25 12:00:00.000Z",
+      "latitude": 40.423904,
+      "longitude": -3.673168,
+      "address": "Av. Felipe II # 17",
       "extraInfo": false
     },
     {
@@ -46,11 +46,11 @@
       "professional": "5a9f054f602dd0e540c71bc6",
       "isConfirmed": false,
       "isCancelled": false,
-      "date": "2018-04-04 13:00:00.000Z",
-      "latitude": 40.4166159,
-      "longitude": -3.703788,
-      "address": "Calle Usuario # 1",
-      "extraInfo": false
+      "date": "2018-04-25 13:00:00.000Z",
+      "latitude": 40.402721,
+      "longitude": -3.719949,
+      "address": "Paseo de los Melancólicos # 30",
+      "extraInfo": "Esperar a que acabe el concierto"
     },
     {
       "_id": "5aa444978f1844370be55514",
@@ -59,11 +59,11 @@
       "professional": "5a9f054f602dd0e540c71bc6",
       "isConfirmed": false,
       "isCancelled": false,
-      "date": "2018-04-04 13:00:00.000Z",
-      "latitude": 40.4166159,
-      "longitude": -3.703788,
-      "address": "Calle Usuario # 1",
-      "extraInfo": false
+      "date": "2018-04-25 13:00:00.000Z",
+      "latitude": 40.416896,
+      "longitude": -3.702403,
+      "address": "Puerta del Sol",
+      "extraInfo": "Preguntar por Maximilian"
     },
     {
       "_id": "5aa444978f1844370be55515",
@@ -72,11 +72,11 @@
       "professional": "5a9f054f602dd0e540c71bc6",
       "isConfirmed": true,
       "isCancelled": false,
-      "date": "2018-04-04 12:00:00.000Z",
-      "latitude": 40.4166159,
-      "longitude": -3.703788,
-      "address": "Calle Usuario # 1",
-      "extraInfo": false
+      "date": "2018-04-26 12:00:00.000Z",
+      "latitude": 40.452001,
+      "longitude": -3.688355,
+      "address": "Av. Concha Espina # 32",
+      "extraInfo": "Traer camiseta para firmar"
     },
     {
       "_id": "5aa444978f1844370be55516",
@@ -85,11 +85,11 @@
       "professional": "5a9f054f602dd0e540c71bc6",
       "isConfirmed": false,
       "isCancelled": false,
-      "date": "2018-04-04 13:00:00.000Z",
-      "latitude": 40.4166159,
-      "longitude": -3.703788,
-      "address": "Calle Usuario # 1",
-      "extraInfo": false
+      "date": "2018-04-26 13:00:00.000Z",
+      "latitude": 40.425262,
+      "longitude": -3.690664,
+      "address": "Plaza de Colón",
+      "extraInfo": "El paciente está, literalmente, TIESO"
     },
     {
       "_id": "5aa444978f1844370be55517",
@@ -98,11 +98,11 @@
       "professional": "5a9f054f602dd0e540c71bc8",
       "isConfirmed": false,
       "isCancelled": false,
-      "date": "2018-04-04 13:00:00.000Z",
-      "latitude": 40.4166159,
-      "longitude": -3.703788,
-      "address": "Calle Usuario # 1",
-      "extraInfo": false
+      "date": "2018-04-26 13:00:00.000Z",
+      "latitude": 40.426867,
+      "longitude": -3.694118,
+      "address": "Calle Génova # 13",
+      "extraInfo": "No quiere factura; pagará en B"
     }
   ]
 }
