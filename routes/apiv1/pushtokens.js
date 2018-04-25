@@ -11,14 +11,14 @@ router.post('/', function (req, res, next) {
   const nuevo = {
     token: req.body.pushtoken,
     user: req.body.iduser || undefined,
-    plataforma: req.body.plataforma
+    platform: req.body.platform
   };
 
-  PushToken.createRecord(nuevo, (err, creado) => {
+  PushToken.createRecord(nuevo, (err, created) => {
     if (err) return next(err);
 
     // return confirmation
-    return res.json({ ok: true, created: creado });
+    return res.json({ ok: true, created: created });
   });
 
 });

@@ -1,10 +1,8 @@
 {
-
 	"forbidden_access": "acceso prohibido",
 	"generic": "generic error: {{message}}",
 	"the_field": "el campo",
 	"unprocessable_entity": "entidad no procesable",
-
 	"appointment_created": "cita creada",
 	"appointment_deleted": "cita eliminada",
 	"appointment_duplicated": "id de cita ya existe",
@@ -12,7 +10,6 @@
 	"appointment_not_completed": "queda {{num}} cita pendiente y confirmada",
 	"appointment_not_found": "cita no encontrada",
 	"duplicate_appointment": "la cita ya existe",
-
 	"product_created": "producto creado",
 	"product_deleted": "producto eliminado",
 	"product_updated": "producto actualizado",
@@ -20,7 +17,6 @@
 	"product_name_duplicated": "el nombre de producto ya existe",
 	"product_not_found": "producto no encontrado",
 	"duplicate_product": "el producto ya existe",
-	
 	"service_created": "servicio creado",
 	"service_deleted": "servicio eliminado y todas las citas asociadas",
 	"service_updated": "servicio actualizado",
@@ -29,29 +25,24 @@
 	"service_not_completed": "queda(n) {{num}} cita(s) pendiente(s) y confirmada(s)",
 	"service_not_found": "servicio no encontrado",
 	"duplicate_service": "el servicio ya existe",
-
 	"token_information_error": "fallo de autenticación del token",
 	"token_not_provided": "no se proporciona token",
-
 	"notification_created": "Notificación creada",
 	"notification_deleted": "notification eliminada",
 	"notification_updated": "notification actualizada",
- 	"notification_name_duplicated": "el nombre de la notificación ya existe",
+	"notification_name_duplicated": "el nombre de la notificación ya existe",
 	"notification_not_found": "notificación no encontrada",
 	"post_name_duplicated": "el post ya existe",
-
 	"user_email_duplicated": "el email del usuario ya existe",
 	"users_user_created": "usuario creado",
 	"users_user_not_found": "usuario no encontrado",
 	"user_deleted": "usuario eliminado",
 	"user_updated": "usuario actualizado",
 	"user_or_password_incorrect": "autenticación incorrecta",
-
 	"validation_invalid": "el campo {{field}} no es válido",
 	"validation_invalid_appointment_date": "La cita {{date}} debería ser posterior a {{now}}",
 	"validation_invalid_customer_hexadecimal": "cliente no válido",
 	"validation_invalid_professional_hexadecimal": "profesional no valido",
 	"validation_invalid_service_hexadecimal": "servicio no válido",
 	"validation_minchars": "{{field}} debe tener al menos {{num}} caracteres"
-
 }
